@@ -72,7 +72,17 @@ t_max=0
 
 no_t=100
 
-for i in np.arange(3):
+full_z=np.empty([2, 1])
+
+full_t=np.empty(1)
+
+nudge_behaviour=0
+
+for i in np.arange(5):
+
+	#b_init[0]=b_init[0]+nudge_behaviour*np.random.random()*3
+
+	alpha[1]=alpha[1]+nudge_behaviour*np.random.random()*3
 
 	t_min=t_max
 
@@ -82,7 +92,11 @@ for i in np.arange(3):
 		
 	sol=solve_ivp(Behaviour_Model_ODE, [np.min(t_sol), np.max(t_sol)], b_init, dense_output=True, t_eval=t_sol)
 
-	z = sol.sol(t_sol)
+	z=sol.sol(t_sol)
+
+	full_z=np.hstack([full_z, z])
+
+	full_t=np.hstack([full_t, t_sol])
 
 	L=len(z[0,:])
 
@@ -92,16 +106,18 @@ for i in np.arange(3):
 
 	fig, ax = plt.subplots(nrows=1, ncols=2)
 
-	ax[0].plot(t_sol, z.T)
+	ax[0].plot(full_t, full_z.T)
 	#plt.ylim([0, 20])
 	#ax[0].x_label('t')
 
-
-	ax[1].plot(z.T[:,0],z.T[:,1])
+	ax[1].plot(full_z.T[:,0],full_z.T[:,1])
 
 	plt.show()
 	plt.close()
+	
+	#nudge_behaviour=int(input("Nudge behaviour? (1=yes)  "))
 
+	nudge_behaviour=1
 
 
 

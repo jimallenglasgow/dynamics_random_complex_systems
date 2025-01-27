@@ -1,4 +1,4 @@
-#to run: python3 dyadic_behaviour_ODE.py
+#to run: python3 dyadic_behaviour_ODE_vector_plot.py
 
 ########################################################
 
@@ -19,6 +19,7 @@ import scipy as sp
 from scipy.integrate import solve_ivp
 
 ###############################################################
+
 
 ##dyadic behaviour model
 
@@ -72,7 +73,7 @@ def Behaviour_Model_ODE(t, b):#, alpha, beta, gamma, delta, epsilon):
 		
 	return(b_dot)
 	
-no_eqs=5
+no_eqs=10
 
 alpha=10*(np.random.random(no_eqs)*2-1)
 
@@ -98,89 +99,6 @@ epsilon[1]=0
 
 print("epsilon = ",epsilon)
 
-#t=0
-
-#b_dot=Behaviour_Model_ODE(t, b, alpha, beta, gamma, delta, epsilon)
-		
-#print("b_dot = ",b_dot)
-
-b_init=np.random.random(no_eqs)*0.4
-	
-t_max=0
-
-no_t=250
-
-full_z=np.reshape(b_init,(no_eqs,1))
-
-print(full_z)
-
-#full_t=[]#np.empty(shape=[1])
-
-full_t=[0]
-
-print(full_t)
-
-nudge_behaviour=0
-
-for i in np.arange(3):
-
-#	b_init[[0,1]]=b_init[[0,1]]+nudge_behaviour*0.5#np.random.random(2)*2
-
-	alpha[[0,1]]=alpha[[0,1]]+nudge_behaviour*0.5#(np.random.random(2)*2)*0.5
-	
-#	beta=beta+nudge_behaviour*0.5#(np.random.random(2)*2)*0.5
-	
-#	delta[[0,1]]=delta[[0,1]]+nudge_behaviour*(np.random.random(2)*2)*0.5
-	
-	t_min=t_max
-
-	t_max=t_max+10
-
-	t_sol=np.linspace(t_min, t_max, no_t)
-		
-	sol=solve_ivp(Behaviour_Model_ODE, [np.min(t_sol), np.max(t_sol)], b_init, dense_output=True, t_eval=t_sol)
-
-	z=sol.sol(t_sol)
-	
-	full_z=np.hstack([full_z,z])
-		
-	full_t=np.hstack([full_t,t_sol])
-	
-	L=len(z[0,:])
-
-	b_init=z[:,L-1]
-
-	#print("new b_init = ",b_init)
-
-#	fig, ax = plt.subplots(nrows=1, ncols=2)
-
-#	ax[0].plot(full_t, full_z.T[:,[0,1]])
-	#plt.ylim([0, 20])
-	#ax[0].x_label('t')
-
-#	ax[1].plot(full_z.T[:,0],full_z.T[:,1])
-	
-#	ax[1].plot(full_t, full_z.T[:,np.arange(2,no_eqs)])
-
-#	plt.show()
-#	plt.close()
-#	
-	#nudge_behaviour=int(input("Nudge behaviour? (1=yes)  "))
-
-	nudge_behaviour=1
-
-fig, ax = plt.subplots(nrows=1, ncols=2)
-
-ax[0].plot(full_t, full_z.T[:,[0,1]])
-#plt.ylim([0, 20])
-#ax[0].x_label('t')
-
-#	ax[1].plot(full_z.T[:,0],full_z.T[:,1])
-
-ax[1].plot(full_t, full_z.T[:,np.arange(2,no_eqs)])
-
-plt.show()
-plt.close()
 
 #########
 
@@ -188,9 +106,11 @@ plt.close()
 
 full_vector_plot=[]
 
-for b1 in np.arange(0,1.02,0.02):
+b_init=np.random.random(no_eqs)*0.4
 
-	for b2 in np.arange(0,1.02,0.02):
+for b1 in np.arange(0,1.04,0.02):
+
+	for b2 in np.arange(0,1.04,0.02):
 	
 		b=b_init
 		
@@ -200,7 +120,7 @@ for b1 in np.arange(0,1.02,0.02):
 	
 		b_dot=Calc_b_dot(b)
 		
-		print("b1 = ",b[0], "b2 = ",b[1], "b dot = ",b_dot[[0, 1]])
+#		print("b1 = ",b[0], "b2 = ",b[1], "b dot = ",b_dot[[0, 1]])
 		
 		r=np.sqrt(b_dot[0]**2+b_dot[1]**2)
 		
@@ -212,17 +132,58 @@ for b1 in np.arange(0,1.02,0.02):
 
 full_vector_plot=np.reshape(full_vector_plot, (int(len(full_vector_plot)/5), 5))
 
-print("full_vector_plot")
+#print("full_vector_plot")
 
-print(full_vector_plot)
+#print(full_vector_plot)
 
 
 
-fig, ax = plt.subplots()
+fig, ax = plt.subplots(nrows=1, ncols=2)
 
-ax.quiver(full_vector_plot[:,0], full_vector_plot[:,1], full_vector_plot[:,2]/full_vector_plot[:,4], full_vector_plot[:,3]/full_vector_plot[:,4])
+ax[0].quiver(full_vector_plot[:,0], full_vector_plot[:,1], full_vector_plot[:,2]/full_vector_plot[:,4], full_vector_plot[:,3]/full_vector_plot[:,4])
+
+
+full_vector_plot=[]
+
+alpha[0]=alpha[0]+0.5
+
+b_init=np.random.random(no_eqs)*0.4
+
+for b1 in np.arange(0,1.04,0.02):
+
+	for b2 in np.arange(0,1.04,0.02):
+	
+		b=b_init
+		
+		b[0]=b1
+		
+		b[1]=b2
+	
+		b_dot=Calc_b_dot(b)
+		
+#		print("b1 = ",b[0], "b2 = ",b[1], "b dot = ",b_dot[[0, 1]])
+		
+		r=np.sqrt(b_dot[0]**2+b_dot[1]**2)
+		
+		if r==0:
+		
+			r=1
+
+		full_vector_plot=np.hstack([full_vector_plot, [b[0], b[1], b_dot[0], b_dot[1], r]])
+
+full_vector_plot=np.reshape(full_vector_plot, (int(len(full_vector_plot)/5), 5))
+
+#print("full_vector_plot")
+
+#print(full_vector_plot)
+
+ax[1].quiver(full_vector_plot[:,0], full_vector_plot[:,1], full_vector_plot[:,2]/full_vector_plot[:,4], full_vector_plot[:,3]/full_vector_plot[:,4])
+
 
 plt.show()
+
+fig.savefig("alpha_kick_vector_plot.png")
+
 plt.close()
 
 

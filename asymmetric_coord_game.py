@@ -26,9 +26,23 @@ class Agent():
 		
 		self.group=poss_group_members[agent_id]
 		
+		self.own_group_members=-1
+		
+		self.other_group_members=-1
+		
 		##
 		
 		self.prob_playing_0=np.random.random()
+		
+#		self.prob_play_in_even_slot=np.random.random()
+
+		self.prob_play_in_even_slot=1
+		
+		if poss_group_members[agent_id]==1:
+		
+			self.prob_play_in_even_slot=0
+			
+		self.prob_imi_own_group=1#np.random.random()
 		
 		##
 	
@@ -98,11 +112,11 @@ class Agent():
 
 ##input pars
 
-display_output=1
+display_output=-1
 
-no_agents=8 ##needs to be even
+no_agents=1000 ##needs to be even
 
-no_time_steps=1
+no_time_steps=100
 
 mut=0.05
 
@@ -150,8 +164,29 @@ for sel_agent in np.arange(no_agents):
 
 	all_agents.append(Agent(sel_agent, no_strats, poss_group_members))
 	
+
+for sel_agent in np.arange(no_agents):
+
+	sel_own_group=all_agents[sel_agent].group
+	
+	if sel_own_group==0:
+	
+		all_agents[sel_agent].own_group_members=group_0_members
+		all_agents[sel_agent].other_group_members=group_1_members
+		
+	else:
+	
+		all_agents[sel_agent].own_group_members=group_1_members
+		all_agents[sel_agent].other_group_members=group_0_members
+
+##############
+
+##run the dynamics
+	
 	
 for time_step in np.arange(no_time_steps):
+
+	print("time step = ",time_step)
 	
 	##select a strategy
 
@@ -165,15 +200,48 @@ for time_step in np.arange(no_time_steps):
 	
 	for sel_agent in np.arange(no_agents):
 	
-		sel_play_slot=np.random.permutation(all_possible_play_slots)[0]
+		q=all_agents[sel_agent].prob_play_in_even_slot
+	
+		mod_play_slots=np.mod(all_possible_play_slots, 2)
+		
+#		print("mod_play_slots = ",mod_play_slots)
+		
+		even_play_slots=all_possible_play_slots[np.where(mod_play_slots==0)[0]]
+		
+		odd_play_slots=all_possible_play_slots[np.where(mod_play_slots==1)[0]]
+		
+#		print("even = ",even_play_slots)
+		
+#		print("odd = ",odd_play_slots)
+		
+		possible_play_slots=odd_play_slots
+		
+		no_evens=len(even_play_slots)
+		
+		no_odds=len(odd_play_slots)
+		
+		if no_evens>0:
+		
+			r=np.random.random()
+			
+			if r<q:
+			
+				possible_play_slots=even_play_slots
+			
+		if no_odds==0:
+		
+			possible_play_slots=even_play_slots
+			
+		
+		sel_play_slot=np.random.permutation(possible_play_slots)[0]
 		
 		all_agents[sel_agent].play_slot=sel_play_slot
 		
 		all_possible_play_slots=np.delete(all_possible_play_slots, np.where(all_possible_play_slots==sel_play_slot)[0])
 		
-		print("all_possible_play_slots")
+#		print("all_possible_play_slots")
 		
-		print(all_possible_play_slots)
+#		print(all_possible_play_slots)
 	
 	
 	all_opponents=np.ones(no_agents)*-1
@@ -187,9 +255,9 @@ for time_step in np.arange(no_time_steps):
 
 	all_pairs=np.reshape(all_opponents, [no_pairs, 2])
 
-	print("Pairs of opponents")
-
-	print(all_pairs)
+#	print("Pairs of opponents")
+#
+#	print(all_pairs)
 
 	for sel_pair in np.arange(no_pairs):
 
@@ -210,8 +278,22 @@ for time_step in np.arange(no_time_steps):
 	agents_to_imitate=np.random.permutation(no_agents)
 
 	for sel_agent in np.arange(no_agents):
+	
+		w=all_agents[sel_agent].prob_imi_own_group
+		
+		r=np.random.random()
+		
+		if r<w:
+		
+			poss_agents_to_imitate=all_agents[sel_agent].own_group_members
+			
+		else:
+		
+			poss_agents_to_imitate=all_agents[sel_agent].other_group_members
+		
+		sel_agent_to_imitate=np.random.permutation(poss_agents_to_imitate)[0]
 
-		all_agents[sel_agent].agent_to_imitate=agents_to_imitate[sel_agent]
+		all_agents[sel_agent].agent_to_imitate=sel_agent_to_imitate
 		
 	for sel_agent in np.arange(no_agents):
 

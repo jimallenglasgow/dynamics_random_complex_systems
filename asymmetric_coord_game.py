@@ -32,17 +32,17 @@ class Agent():
 		
 		##
 		
-		self.prob_playing_0=np.random.choice([0, 0.5, 1])#np.random.random()#np.random.randint(2)#np.random.random()
+		self.prob_playing_0=np.random.random()#np.random.choice([0, 0.5, 1])#np.random.randint(2)#np.random.random()
 		
 #		self.prob_play_in_even_slot=np.random.random()
 
-		self.prob_play_own_group=np.random.choice([0, 0.5, 1])##np.random.randint(2)#np.random.randint(2)#np.random.random()
+		self.prob_play_own_group=0.1#np.random.random()#np.random.choice([0, 0.5, 1])##np.random.randint(2)#np.random.randint(2)
 		
 		if poss_group_members[agent_id]==1:
 		
 			self.prob_play_in_even_slot=0
 			
-		self.prob_imi_own_group=np.random.choice([0, 0.5, 1])#1#np.random.randint(2)#np.random.choice([0, 0.5, 1])#np.random.randint(2)#np.random.random()
+		self.prob_stay_in_own_group=0.9#np.random.random()#np.random.choice([0, 0.5, 1])#1#np.random.randint(2)#np.random.choice([0, 0.5, 1])#np.random.randint(2)
 		
 		##
 	
@@ -90,9 +90,9 @@ class Agent():
 		
 		q2=all_agents[self.agent_to_imitate].prob_play_own_group
 		
-		w1=self.prob_imi_own_group
+		w1=self.prob_stay_in_own_group
 		
-		w2=all_agents[self.agent_to_imitate].prob_imi_own_group
+		w2=all_agents[self.agent_to_imitate].prob_stay_in_own_group
 		
 		P1=self.payoff
 	
@@ -142,7 +142,7 @@ class Agent():
 		
 		self.prob_play_own_group=q1_new
 		
-		self.prob_imi_own_group=w1_new
+		self.prob_stay_in_own_group=w1_new
 
 ###############################################################
 
@@ -152,9 +152,9 @@ display_output=-1
 
 no_agents=1000 ##needs to be even
 
-no_time_steps=2500
+no_time_steps=500
 
-mut=[0, 0, 0]
+mut=[0.05, 0, 0]
 
 ####################################################
 
@@ -392,7 +392,7 @@ for time_step in np.arange(no_time_steps):
 
 	for sel_agent in np.arange(no_agents):
 	
-		w=all_agents[sel_agent].prob_imi_own_group
+		w=all_agents[sel_agent].prob_stay_in_own_group
 		
 		r=np.random.random()
 		
@@ -424,7 +424,7 @@ for time_step in np.arange(no_time_steps):
 		all_payoffs[sel_agent]=all_agents[sel_agent].payoff
 		all_ps[sel_agent]=all_agents[sel_agent].prob_playing_0
 		all_qs[sel_agent]=all_agents[sel_agent].prob_play_own_group
-		all_ws[sel_agent]=all_agents[sel_agent].prob_imi_own_group
+		all_ws[sel_agent]=all_agents[sel_agent].prob_stay_in_own_group
 		
 	
 	mean_payoff=np.mean(all_payoffs)

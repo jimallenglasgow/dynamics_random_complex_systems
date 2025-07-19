@@ -1,7 +1,7 @@
 https://www.appsilon.com/post/shiny-for-python-deploy-github-pages
 
-cd GitHub/socits_abm_demo
+cd Documents/GitHub/dynamics_random_complex_systems
 
-shinylive export socits_shiny docs
+shinylive export ds_shiny docs
 
 

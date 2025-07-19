@@ -1,4 +1,4 @@
-##shiny run --reload --launch-browser GitHub/dynamics_random_complex_systems/ds_shiny/app.py
+##shiny run --reload --launch-browser Documents/GitHub/dynamics_random_complex_systems/ds_shiny/app.py
 
 ########################################################
 
@@ -44,11 +44,13 @@ app_ui = ui.page_sidebar(
     
     ui.input_radio_buttons("run_type", "Type of run", choices=["Random", "Intuitive", "Counter-intuitive"]),
     
+    ui.input_slider("prop_interactions", "Prop. of possible interactions", 0, 1, 0.5),
+    
     ui.input_radio_buttons("parameter_to_update", "Parameter to update", choices=["None", "Value", "Max level", "Interaction"]),
     
     ui.input_slider("sel_node", "Selected node", 0, 15, 0, step = 1),
     
-    ui.input_slider("sel_other_node", "Selected other node", 0, 15, 1, step = 1),
+    ui.input_slider("sel_other_node", "Interaction from...", 0, 15, 1, step = 1),
     
     ui.input_slider("no_factors", "No. factors", 1, 15, 5, step = 1),
     
@@ -81,7 +83,7 @@ def server(input, output, session):
         
         kick_size=input.kick_size()
         
-        no_t=250
+        no_t=500
         
         no_factors=input.no_factors()
         
@@ -97,12 +99,22 @@ def server(input, output, session):
 
         max_resources=np.random.random(no_factors)*2
 
-        interactions=np.random.random([no_factors, no_factors])*2-1
-
+        initial_interactions=np.random.random([no_factors, no_factors])*2-1
+        
+        ##create an array that tells us which interactions to include
+        
+        interactions_include=(np.random.choice([0, 1], no_factors*no_factors, p=[1-input.prop_interactions(), input.prop_interactions()])).reshape(no_factors, no_factors)
+        
+        interactions=initial_interactions*interactions_include
+        
         for i in np.arange(no_factors):
 
             interactions[i,i]=0
+            
+        print("interactions")
         
+        print(interactions)
+
         def Calc_x_dot(x):
 
             x_dot=np.zeros(no_factors)
@@ -115,7 +127,7 @@ def server(input, output, session):
 
                 for sel_other_ind in np.arange(no_factors):
                 
-                    x_logistic_growth=x_logistic_growth+interactions[sel_ind, sel_other_ind]*x[sel_other_ind]
+                    x_logistic_growth=x_logistic_growth+interactions[sel_other_ind, sel_ind]*x[sel_other_ind]
                     
                 x_dot[sel_ind]=x_growth*x_logistic_growth
                     
@@ -127,6 +139,67 @@ def server(input, output, session):
             
             return(x_dot)
             
+    	##Some default settings to investigate
+    	
+        if input.run_type()=="Intuitive":
+           	
+                no_factors=5
+                
+                growth_rate=np.ones(no_factors)*2
+
+                growth_to_max_rate=np.zeros(no_factors)
+
+                max_resources=np.zeros(no_factors)
+
+                interactions=np.zeros([no_factors, no_factors])
+                
+                growth_to_max_rate[3]=1
+                
+                growth_to_max_rate[4]=1
+                
+                max_resources[3]=1
+                
+                max_resources[4]=1
+                
+                interactions[2, 0]=2
+                
+                interactions[4, 2]=2
+               
+                interactions[3, 0]=2
+                
+                interactions[3, 1]=1
+                
+                interactions[1, 0]=-1
+                
+        if input.run_type()=="Counter-intuitive":
+           	
+                no_factors=5
+                
+                growth_rate=np.ones(no_factors)*2
+
+                growth_to_max_rate=np.zeros(no_factors)
+
+                max_resources=np.zeros(no_factors)
+
+                interactions=np.zeros([no_factors, no_factors])
+                
+                growth_to_max_rate[3]=1
+                
+                growth_to_max_rate[4]=1
+                
+                max_resources[3]=1
+                
+                max_resources[4]=1
+                
+                interactions[2, 0]=2
+                
+                interactions[4, 2]=2
+               
+                interactions[3, 0]=0.5
+                
+                interactions[3, 1]=1
+                
+                interactions[1, 0]=-1
 
 
         #single_kick_data=Single_Behaviour_Kick(kick_size, no_factors, no_t, 1)
@@ -195,6 +268,10 @@ def server(input, output, session):
                 
         sol=solve_ivp(Behaviour_Model_ODE, [np.min(t_sol), np.max(t_sol)], x_init, dense_output=True, t_eval=t_sol)
 
+        print("sol")
+	
+        print(sol)
+
         z=sol.sol(t_sol)
 
         full_z=np.hstack([full_z,z])
@@ -202,8 +279,18 @@ def server(input, output, session):
         full_t=np.hstack([full_t,t_sol])
      
         fig, ax = plt.subplots(nrows=1, ncols=2)
+        
+        for sel_factor in np.arange(no_factors):
+        
+                set_line_width=1
+                
+                if sel_factor==0:
+                
+                        set_line_width=3
 
-        ax[0].plot(full_t, full_z.T)
+                ax[0].plot(full_t, full_z.T[:, sel_factor], linewidth=set_line_width, label=f"{sel_factor}")
+                
+        ax[0].legend(bbox_to_anchor=(1, -0.1), ncol=no_factors)
 
         #############################################################
 
@@ -214,9 +301,11 @@ def server(input, output, session):
 
         G = nx.DiGraph(interactions)
 
-        pos = nx.spring_layout(G, seed=seed)
+        #pos = nx.spring_layout(G, seed=seed)
+        
+        pos = nx.circular_layout(G, scale=2)
 
-        node_sizes = 200*(1+max_resources/np.sum(max_resources))
+        node_sizes = 200#200*(1+max_resources/np.sum(max_resources))
         M = G.number_of_edges()
 
         all_edge_colors = np.reshape(interactions, (len(interactions[:,0])*len(interactions[:,0]), 1))

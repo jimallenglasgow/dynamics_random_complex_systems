@@ -38,7 +38,7 @@ def Calc_x_dot(x):
 
 		for sel_other_ind in np.arange(no_factors):
 		
-			x_logistic_growth=x_logistic_growth+interactions[sel_ind, sel_other_ind]*x[sel_other_ind]
+			x_logistic_growth=x_logistic_growth+interactions[sel_other_ind, sel_ind]*x[sel_other_ind]
 			
 		x_dot[sel_ind]=x_growth*x_logistic_growth
 			
@@ -52,7 +52,7 @@ def Behaviour_Model_ODE(t, x):#, alpha, beta, gamma, delta, epsilon):
 	
 ############################
 	
-def Single_Behaviour_Kick(kick_size, no_factors, no_t, plot_dynamics=0):
+def Single_Behaviour_Kick(kick_size, no_factors, no_t, max_t, plot_dynamics=0):
 	
 	t_max=0
 	
@@ -186,11 +186,21 @@ def Single_Behaviour_Kick(kick_size, no_factors, no_t, plot_dynamics=0):
 	return(single_kick_data)
 
 
-kick_size=0.1
-	
 no_factors=5
 
 no_t=250
+
+max_t=20
+
+prop_interactions=0.5
+
+kick_size=1
+
+kick_type=2 ##1=value, 2=max, 3=interaction
+
+sel_node=1
+
+sel_other_node=1
 
 growth_rate=np.random.random(no_factors)*2
 
@@ -198,11 +208,21 @@ growth_to_max_rate=np.random.random(no_factors)*2
 
 max_resources=np.random.random(no_factors)*2
 
-interactions=np.random.random([no_factors, no_factors])*2-1
+initial_interactions=np.random.random([no_factors, no_factors])*2-1
+        
+##create an array that tells us which interactions to include
+
+interactions_include=(np.random.choice([0, 1], no_factors*no_factors, p=[1-prop_interactions, prop_interactions])).reshape(no_factors, no_factors)
+
+interactions=initial_interactions*interactions_include
 
 for i in np.arange(no_factors):
 
 	interactions[i,i]=0
+    
+##also, set the interaction between 1 and 0 to be 0.5 (always positive, and somewhere in the middle)
+
+interactions[1, 0]=0.5
 
 print("growth_rate = ", growth_rate)
 
@@ -214,8 +234,6 @@ print("interactions = ", interactions)
 
 #single_kick_data=Single_Behaviour_Kick(kick_size, no_factors, no_t, 1)
 
-t_max=0
-	
 single_kick_data=[]
 
 x_init=np.random.random(no_factors)*0.4
@@ -230,9 +248,9 @@ print(full_t)
 
 nudge_behaviour=0
 		
-t_min=t_max
+t_min=0
 
-t_max=t_max+10
+t_max=int(max_t/2)
 
 t_sol=np.linspace(t_min, t_max, no_t)
 		
@@ -249,30 +267,36 @@ L=len(z[0,:])
 x_init=z[:,L-1]
 
 single_kick_data=np.hstack([single_kick_data, x_init[[0, 1]]])
+
+##record the value before the kick_size
+
+before_intervention_value=x_init[0]
+
+print("before_intervention_value = ", before_intervention_value)
 
 ######
 
 ##nudge the system
 
-nudge_behaviour=1
+if kick_type==1:
 
-print("What aspect would you like to change?")
+    x_init[sel_node]=x_init[sel_node]+kick_size#np.random.random(2)*2
+    
+if kick_type==2:
 
-print("1 = the state of the resources or constructs")
+    max_resources[sel_node]=max_resources[sel_node]+kick_size#np.random.random(2)*2
+    
+if kick_type==3:
 
-print("2 = the maximum state of the resources or constructs")
-
-print("3 = how the resources and constructs interact")
-
-x_init[0]=x_init[0]+nudge_behaviour*kick_size#np.random.random(2)*2
+    interactions[sel_other_node, sel_node]=interactions[sel_other_node, sel_node]+kick_size#np.random.random(2)*2
 
 #######
 
 ##run for another 10 seconds to see what happens
 
-t_min=t_max
+t_min=int(max_t/2)
 
-t_max=t_max+10
+t_max=int(max_t)
 
 t_sol=np.linspace(t_min, t_max, no_t)
 		
@@ -288,11 +312,29 @@ L=len(z[0,:])
 
 x_init=z[:,L-1]
 
+last_value=x_init[0]
+
+print("last_value = ", last_value)
+
+intervention_effect=last_value-before_intervention_value
+
+print("intervention_effect = ", intervention_effect)
+
 single_kick_data=np.hstack([single_kick_data, x_init[[0, 1]]])
 	
 fig, ax = plt.subplots(nrows=1, ncols=2)
 
-ax[0].plot(full_t, full_z.T)
+for sel_factor in np.arange(no_factors):
+
+    set_line_width=1
+    
+    if sel_factor==0:
+    
+            set_line_width=3
+
+    ax[0].plot(full_t, full_z.T[:, sel_factor], linewidth=set_line_width, label=f"{sel_factor}")
+    
+ax[0].legend(bbox_to_anchor=(1, -0.1), ncol=no_factors)
 
 
 
@@ -308,9 +350,11 @@ G = nx.DiGraph(interactions)
 
 seed = 13648  # Seed random number generators for reproducibility
 #G = nx.random_k_out_graph(10, 3, 0.5, seed=seed)
-pos = nx.spring_layout(G, seed=seed)
+#pos = nx.spring_layout(G, seed=seed)
 
-node_sizes = 200*(1+max_resources/np.sum(max_resources))
+pos = nx.circular_layout(G, scale=2)
+
+node_sizes = 200#*(1+max_resources/np.sum(max_resources))
 M = G.number_of_edges()
 
 all_edge_colors = np.reshape(interactions, (len(interactions[:,0])*len(interactions[:,0]), 1))

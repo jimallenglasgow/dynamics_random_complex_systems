@@ -172,9 +172,9 @@ max_t=20
 
 prop_interactions=0.8
 
-all_kick_sizes=np.random.random(no_runs)#np.ones(no_runs)
+all_kick_sizes=np.random.random(no_runs)*3#np.ones(no_runs)
 
-kick_type=1 ##1=value, 2=max, 3=interaction
+kick_type=3 ##1=value, 2=max, 3=interaction
 
 all_intervention_effects=[]
 
@@ -191,7 +191,7 @@ for sel_run in np.arange(no_runs):
     max_resources=np.random.random(no_factors)*2
 
     initial_interactions=np.random.random([no_factors, no_factors])*2-1
-            
+    
     ##create an array that tells us which interactions to include
 
     interactions_include=(np.random.choice([0, 1], no_factors*no_factors, p=[1-prop_interactions, prop_interactions])).reshape(no_factors, no_factors)
@@ -204,8 +204,38 @@ for sel_run in np.arange(no_runs):
         
     ##also, set the interaction between 1 and 0 to be 0.5 (always positive, and somewhere in the middle)
 
-    interactions[1, 0]=0.5
+#    interactions[1, 0]=0.5
 
+    ########################
+    
+    ##or run this for a specific system
+    
+    growth_rate=np.ones(no_factors)*2
+
+    growth_to_max_rate=np.zeros(no_factors)
+
+    max_resources=np.zeros(no_factors)
+
+    interactions=np.zeros([no_factors, no_factors])
+    
+    growth_to_max_rate[3]=1
+    
+    growth_to_max_rate[4]=1
+    
+    max_resources[3]=1
+    
+    max_resources[4]=1
+    
+    interactions[2, 0]=2
+    
+    interactions[4, 2]=2
+   
+    interactions[3, 0]=0.5
+    
+    interactions[3, 1]=1
+    
+    interactions[1, 0]=-1
+            
     intervention_effect=Calc_Intervention_Effect(no_factors, no_t, max_t, prop_interactions, kick_size, kick_type)
 
 #    print("intervention_effect = ", intervention_effect)

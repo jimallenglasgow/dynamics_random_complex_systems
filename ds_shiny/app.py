@@ -1,4 +1,4 @@
-##shiny run --reload --launch-browser Documents/GitHub/dynamics_random_complex_systems/ds_shiny/app.py
+##shiny run --reload --launch-browser GitHub/dynamics_random_complex_systems/ds_shiny/app.py
 
 ########################################################
 
@@ -29,7 +29,7 @@ app_ui = ui.page_sidebar(
     
     ui.div(
         ui.input_action_button(
-            "run", "Run this model", class_="btn-primary"
+            "run", "Run the dynamical systems model", class_="btn-primary"
         ),
         
     ),
@@ -37,7 +37,7 @@ app_ui = ui.page_sidebar(
     ui.div(
         
         ui.input_action_button(
-            "reset_model", "Reset the model", class_="btn-primary"
+            "reset_model", "Generate a new model", class_="btn-primary"
         ),
         
     ),
@@ -46,15 +46,15 @@ app_ui = ui.page_sidebar(
     
     ui.input_slider("prop_interactions", "Prop. of possible interactions", 0, 1, 0.5),
     
-    ui.input_radio_buttons("parameter_to_update", "Parameter to update", choices=["None", "Value", "Max level", "Interaction"]),
+    ui.input_radio_buttons("parameter_to_update", "How to intervene", choices=["None", "Value", "Max level", "Interaction"]),
     
-    ui.input_slider("sel_node", "Selected node", 0, 15, 0, step = 1),
+    ui.input_slider("sel_node", "Selected node to intervene on", 0, 15, 0, step = 1),
     
     ui.input_slider("sel_other_node", "Interaction from...", 0, 15, 1, step = 1),
     
     ui.input_slider("no_factors", "No. factors", 1, 15, 5, step = 1),
     
-    ui.input_slider("kick_size", "Kick size", -2, 2, 0.1, step = 0.1),
+    ui.input_slider("kick_size", "Intervention size", -2, 2, 0.1, step = 0.1),
     
     ui.input_slider("max_time", "Maximum time", 0, 50, 20, step = 1),
     
@@ -290,7 +290,11 @@ def server(input, output, session):
 
                 ax[0].plot(full_t, full_z.T[:, sel_factor], linewidth=set_line_width, label=f"{sel_factor}")
                 
-        ax[0].legend(bbox_to_anchor=(1, -0.1), ncol=no_factors)
+        ax[0].legend(bbox_to_anchor=(1, -0.3), ncol=no_factors)
+        
+        ax[0].set_xlabel("Time")
+        
+        ax[0].set_ylabel("Node value")
 
         #############################################################
 
@@ -348,6 +352,8 @@ def server(input, output, session):
         #plt.show()
 
         #plt.close()
+        
+        fig.suptitle("Try to intervene to increase the value of node 0", fontsize=16)
         
         return fig
      

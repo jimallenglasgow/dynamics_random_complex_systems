@@ -1,6 +1,6 @@
 https://www.appsilon.com/post/shiny-for-python-deploy-github-pages
 
-cd Documents/GitHub/dynamics_random_complex_systems
+cd GitHub/dynamics_random_complex_systems
 
 shinylive export ds_shiny docs
 

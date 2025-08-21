@@ -200,24 +200,32 @@ for sel_run in np.arange(no_runs):
 
     interactions=np.zeros([no_factors, no_factors])
     
+    ##max resources
+    
     growth_to_max_rate[3]=1
     
     growth_to_max_rate[4]=1
     
-    max_resources[3]=1
+    max_resources[3]=1 ##s
     
-    max_resources[4]=1
+    max_resources[4]=1 ##m
     
-    interactions[2, 0]=2
+    ##interactions into the key node
     
-    interactions[4, 2]=2
+    interactions[2, 0]=2 ##epsilon
+    
+    interactions[1, 0]=-1 ##beta
    
-    interactions[3, 0]=0.5
+    interactions[3, 0]=0.5 ##alpha
     
-    interactions[3, 1]=1
+    ##and from the resources
     
-    interactions[1, 0]=-1
-            
+    interactions[3, 1]=1 ##gamma
+    
+    interactions[4, 2]=2 ##delta
+    
+    ##now calculate the intervention effect
+    
     intervention_effect=Calc_Intervention_Effect(no_factors, no_t, max_t, prop_interactions, kick_size, kick_type)
 
     print("intervention_effect = ", intervention_effect)

@@ -208,9 +208,9 @@ sel_other_node=1
 
 factor_order=np.random.permutation(np.arange(no_factors))
 
-print("Factor order")
+#print("Factor order")
 
-print(factor_order)
+#print(factor_order)
 
 factor_assignment=np.ones(no_factors)*-1
 
@@ -352,11 +352,21 @@ for sel_factor in np.arange(no_factors):
 
     set_line_width=1
     
-    if sel_factor==0:
+    set_line_type="solid"
+    
+    sel_assignment=factor_assignment[sel_factor]
+    
+    if sel_assignment==1:
     
             set_line_width=3
+            
+    if sel_assignment==-1:
+    
+            set_line_width=3
+            
+            set_line_type="dashed"
 
-    ax[0].plot(full_t, full_z.T[:, sel_factor], linewidth=set_line_width, label=f"{sel_factor}")
+    ax[0].plot(full_t, full_z.T[:, sel_factor], linewidth=set_line_width, linestyle=set_line_type, label=f"{sel_factor}")
     
 ax[0].legend(bbox_to_anchor=(1, -0.1), ncol=no_factors)
 

@@ -184,6 +184,248 @@ def Single_Behaviour_Kick(kick_size, no_factors, no_t, max_t, plot_dynamics=0):
 
 	
 	return(single_kick_data)
+    
+def Single_Model_Run(full_inputs, model_inputs):
+
+    plot_output=model_inputs[0]
+    no_factors=model_inputs[1]
+    no_each_type_of_factor=model_inputs[2]
+    no_t=model_inputs[3]
+    max_t=model_inputs[4]
+    prop_interactions=model_inputs[5]
+    kick_size=model_inputs[6]
+    kick_type=model_inputs[7]
+    sel_node=model_inputs[8]
+    sel_other_node=model_inputs[9]
+    factor_order=model_inputs[10]
+
+    #print("Factor order")
+
+    #print(factor_order)
+
+    factor_assignment=np.ones(no_factors)*-1
+
+    des_factors=factor_order[0:no_each_type_of_factor[0]]
+
+    factor_assignment[des_factors]=1
+
+    neutral_factors=factor_order[no_each_type_of_factor[0]:(no_each_type_of_factor[0]+no_each_type_of_factor[1])]
+
+    factor_assignment[neutral_factors]=0
+
+    print("Factor assignment")
+
+    print(factor_assignment)
+
+    #print("full inputs = ", full_inputs)
+
+    ##separate the full input into the actual inputs
+
+    growth_rate=full_inputs[0:no_factors]
+
+    growth_to_max_rate=full_inputs[no_factors:2*no_factors]
+
+    max_resources=full_inputs[2*no_factors:3*no_factors]
+
+    no_full_inputs=len(full_inputs)
+
+    interactions_long=full_inputs[3*no_factors:(no_full_inputs+1)]
+
+    interactions=np.reshape(interactions_long, (no_factors, no_factors))
+
+    #print("growth_rate = ", growth_rate)
+
+    #print("growth_to_max_rate = ", growth_to_max_rate)
+
+    #print("max_resources = ", max_resources)
+
+    #print("interactions = ", interactions)
+
+    ###########
+
+    ##run the dynamics
+
+    single_kick_data=[]
+
+    x_init=np.random.random(no_factors)*0.4
+            
+    full_z=np.reshape(x_init,(no_factors,1))
+
+    print(full_z)
+
+    full_t=[0]
+
+    print(full_t)
+
+    nudge_behaviour=0
+            
+    t_min=0
+
+    t_max=int(max_t/2)
+
+    t_sol=np.linspace(t_min, t_max, no_t)
+            
+    sol=solve_ivp(Behaviour_Model_ODE, [np.min(t_sol), np.max(t_sol)], x_init, dense_output=True, t_eval=t_sol)
+
+    z=sol.sol(t_sol)
+
+    full_z=np.hstack([full_z,z])
+            
+    full_t=np.hstack([full_t,t_sol])
+
+    L=len(z[0,:])
+
+    x_init=z[:,L-1]
+
+    single_kick_data=np.hstack([single_kick_data, x_init[[0, 1]]])
+
+    ##record the value before the kick_size
+
+    before_intervention_value=x_init[0]
+    
+    final_value=x_init
+
+    print("before_intervention_value = ", before_intervention_value)
+
+    ######
+
+    ##nudge the system
+
+    if kick_type==1:
+
+        x_init[sel_node]=x_init[sel_node]+kick_size#np.random.random(2)*2
+        
+    if kick_type==2:
+
+        max_resources[sel_node]=max_resources[sel_node]+kick_size#np.random.random(2)*2
+        
+    if kick_type==3:
+
+        interactions[sel_other_node, sel_node]=interactions[sel_other_node, sel_node]+kick_size#np.random.random(2)*2
+
+    #######
+
+    intervention_effect=0
+
+    if kick_type>0: ##only double the run if we have intervened
+
+        ##run for another 10 seconds to see what happens
+
+        t_min=int(max_t/2)
+
+        t_max=int(max_t)
+
+        t_sol=np.linspace(t_min, t_max, no_t)
+                
+        sol=solve_ivp(Behaviour_Model_ODE, [np.min(t_sol), np.max(t_sol)], x_init, dense_output=True, t_eval=t_sol)
+
+        z=sol.sol(t_sol)
+
+        full_z=np.hstack([full_z,z])
+                
+        full_t=np.hstack([full_t,t_sol])
+
+        L=len(z[0,:])
+
+        x_init=z[:,L-1]
+
+        last_value=x_init[0]
+
+        print("last_value = ", last_value)
+
+        intervention_effect=last_value-before_intervention_value
+
+        print("intervention_effect = ", intervention_effect)
+
+        single_kick_data=np.hstack([single_kick_data, x_init[[0, 1]]])
+        
+        final_value=x_init
+        
+    if plot_output==1:
+        
+        fig, ax = plt.subplots(nrows=1, ncols=2)
+
+        for sel_factor in np.arange(no_factors):
+
+            set_line_width=1
+            
+            set_line_type="solid"
+            
+            sel_assignment=factor_assignment[sel_factor]
+            
+            if sel_assignment==1:
+            
+                    set_line_width=3
+                    
+            if sel_assignment==-1:
+            
+                    set_line_width=3
+                    
+                    set_line_type="dashed"
+
+            ax[0].plot(full_t, full_z.T[:, sel_factor], linewidth=set_line_width, linestyle=set_line_type, label=f"{sel_factor}")
+            
+        ax[0].legend(bbox_to_anchor=(1, -0.1), ncol=no_factors)
+
+
+
+        print("single_kick_data")
+
+        print(single_kick_data)
+
+        #############################################################
+
+        ##plot the connecting networkx
+
+        G = nx.DiGraph(interactions)
+
+        seed = 13648  # Seed random number generators for reproducibility
+        #G = nx.random_k_out_graph(10, 3, 0.5, seed=seed)
+        #pos = nx.spring_layout(G, seed=seed)
+
+        pos = nx.circular_layout(G, scale=2)
+
+        node_sizes = 200#*(1+max_resources/np.sum(max_resources))
+        M = G.number_of_edges()
+
+        all_edge_colors = np.reshape(interactions, (len(interactions[:,0])*len(interactions[:,0]), 1))
+
+        edge_colors=all_edge_colors[all_edge_colors!=0]
+
+        cmap = plt.cm.plasma
+
+        nodes = nx.draw_networkx_nodes(G, pos, node_size=node_sizes, node_color="white", edgecolors="black")
+
+        edges = nx.draw_networkx_edges(
+            G,
+            pos,
+            node_size=node_sizes,
+            arrowstyle="->",
+            arrowsize=10,
+            edge_color=edge_colors,
+            edge_cmap=cmap,
+            width=2,
+            connectionstyle='arc3,rad=0.1'
+        )
+
+        labels=nx.draw_networkx_labels(G, pos=pos)
+
+        pc = mpl.collections.PatchCollection(edges, cmap=cmap)
+        pc.set_array(edge_colors)
+
+        ax[1] = plt.gca()
+        ax[1].set_axis_off()
+        plt.colorbar(pc, ax=ax[1])
+
+        plt.show()
+                
+        fig.savefig("single_kick.png")
+                
+        plt.close()
+        
+    return(final_value)
+
+
 
 
 plot_output=1
@@ -259,237 +501,11 @@ full_inputs=np.append(full_inputs, interactions_long)
 
 model_inputs=[plot_output, no_factors, no_each_type_of_factor, no_t, max_t, prop_interactions, kick_size, kick_type, sel_node, sel_other_node, factor_order]
 
-plot_output=model_inputs[0]
-no_factors=model_inputs[1]
-no_each_type_of_factor=model_inputs[2]
-no_t=model_inputs[3]
-max_t=model_inputs[4]
-prop_interactions=model_inputs[5]
-kick_size=model_inputs[6]
-kick_type=model_inputs[7]
-sel_node=model_inputs[8]
-sel_other_node=model_inputs[9]
-factor_order=model_inputs[10]
+final_values=Single_Model_Run(full_inputs, model_inputs)
 
-#print("Factor order")
+print("Final values")
 
-#print(factor_order)
-
-factor_assignment=np.ones(no_factors)*-1
-
-des_factors=factor_order[0:no_each_type_of_factor[0]]
-
-factor_assignment[des_factors]=1
-
-neutral_factors=factor_order[no_each_type_of_factor[0]:(no_each_type_of_factor[0]+no_each_type_of_factor[1])]
-
-factor_assignment[neutral_factors]=0
-
-print("Factor assignment")
-
-print(factor_assignment)
-
-#print("full inputs = ", full_inputs)
-
-##separate the full input into the actual inputs
-
-growth_rate=full_inputs[0:no_factors]
-
-growth_to_max_rate=full_inputs[no_factors:2*no_factors]
-
-max_resources=full_inputs[2*no_factors:3*no_factors]
-
-no_full_inputs=len(full_inputs)
-
-interactions_long=full_inputs[3*no_factors:(no_full_inputs+1)]
-
-interactions=np.reshape(interactions_long, (no_factors, no_factors))
-
-#print("growth_rate = ", growth_rate)
-
-#print("growth_to_max_rate = ", growth_to_max_rate)
-
-#print("max_resources = ", max_resources)
-
-#print("interactions = ", interactions)
-
-###########
-
-##run the dynamics
-
-single_kick_data=[]
-
-x_init=np.random.random(no_factors)*0.4
-		
-full_z=np.reshape(x_init,(no_factors,1))
-
-print(full_z)
-
-full_t=[0]
-
-print(full_t)
-
-nudge_behaviour=0
-		
-t_min=0
-
-t_max=int(max_t/2)
-
-t_sol=np.linspace(t_min, t_max, no_t)
-		
-sol=solve_ivp(Behaviour_Model_ODE, [np.min(t_sol), np.max(t_sol)], x_init, dense_output=True, t_eval=t_sol)
-
-z=sol.sol(t_sol)
-
-full_z=np.hstack([full_z,z])
-		
-full_t=np.hstack([full_t,t_sol])
-
-L=len(z[0,:])
-
-x_init=z[:,L-1]
-
-single_kick_data=np.hstack([single_kick_data, x_init[[0, 1]]])
-
-##record the value before the kick_size
-
-before_intervention_value=x_init[0]
-
-print("before_intervention_value = ", before_intervention_value)
-
-######
-
-##nudge the system
-
-if kick_type==1:
-
-    x_init[sel_node]=x_init[sel_node]+kick_size#np.random.random(2)*2
-    
-if kick_type==2:
-
-    max_resources[sel_node]=max_resources[sel_node]+kick_size#np.random.random(2)*2
-    
-if kick_type==3:
-
-    interactions[sel_other_node, sel_node]=interactions[sel_other_node, sel_node]+kick_size#np.random.random(2)*2
-
-#######
-
-intervention_effect=0
-
-if kick_type>0: ##only double the run if we have intervened
-
-    ##run for another 10 seconds to see what happens
-
-    t_min=int(max_t/2)
-
-    t_max=int(max_t)
-
-    t_sol=np.linspace(t_min, t_max, no_t)
-            
-    sol=solve_ivp(Behaviour_Model_ODE, [np.min(t_sol), np.max(t_sol)], x_init, dense_output=True, t_eval=t_sol)
-
-    z=sol.sol(t_sol)
-
-    full_z=np.hstack([full_z,z])
-            
-    full_t=np.hstack([full_t,t_sol])
-
-    L=len(z[0,:])
-
-    x_init=z[:,L-1]
-
-    last_value=x_init[0]
-
-    print("last_value = ", last_value)
-
-    intervention_effect=last_value-before_intervention_value
-
-    print("intervention_effect = ", intervention_effect)
-
-    single_kick_data=np.hstack([single_kick_data, x_init[[0, 1]]])
-    
-if plot_output==1:
-	
-    fig, ax = plt.subplots(nrows=1, ncols=2)
-
-    for sel_factor in np.arange(no_factors):
-
-        set_line_width=1
-        
-        set_line_type="solid"
-        
-        sel_assignment=factor_assignment[sel_factor]
-        
-        if sel_assignment==1:
-        
-                set_line_width=3
-                
-        if sel_assignment==-1:
-        
-                set_line_width=3
-                
-                set_line_type="dashed"
-
-        ax[0].plot(full_t, full_z.T[:, sel_factor], linewidth=set_line_width, linestyle=set_line_type, label=f"{sel_factor}")
-        
-    ax[0].legend(bbox_to_anchor=(1, -0.1), ncol=no_factors)
-
-
-
-    print("single_kick_data")
-
-    print(single_kick_data)
-
-    #############################################################
-
-    ##plot the connecting networkx
-
-    G = nx.DiGraph(interactions)
-
-    seed = 13648  # Seed random number generators for reproducibility
-    #G = nx.random_k_out_graph(10, 3, 0.5, seed=seed)
-    #pos = nx.spring_layout(G, seed=seed)
-
-    pos = nx.circular_layout(G, scale=2)
-
-    node_sizes = 200#*(1+max_resources/np.sum(max_resources))
-    M = G.number_of_edges()
-
-    all_edge_colors = np.reshape(interactions, (len(interactions[:,0])*len(interactions[:,0]), 1))
-
-    edge_colors=all_edge_colors[all_edge_colors!=0]
-
-    cmap = plt.cm.plasma
-
-    nodes = nx.draw_networkx_nodes(G, pos, node_size=node_sizes, node_color="white", edgecolors="black")
-
-    edges = nx.draw_networkx_edges(
-        G,
-        pos,
-        node_size=node_sizes,
-        arrowstyle="->",
-        arrowsize=10,
-        edge_color=edge_colors,
-        edge_cmap=cmap,
-        width=2,
-        connectionstyle='arc3,rad=0.1'
-    )
-
-    labels=nx.draw_networkx_labels(G, pos=pos)
-
-    pc = mpl.collections.PatchCollection(edges, cmap=cmap)
-    pc.set_array(edge_colors)
-
-    ax[1] = plt.gca()
-    ax[1].set_axis_off()
-    plt.colorbar(pc, ax=ax[1])
-
-    plt.show()
-            
-    fig.savefig("single_kick.png")
-            
-    plt.close()
+print(final_values)
 
 
 

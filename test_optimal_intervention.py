@@ -648,7 +648,7 @@ plot_count=2
 
 full_interactions_long=np.reshape(set_interactions, (1,-1))
 
-set_interactions_long=full_interactions_long[0, :]
+updated_interactions_long=full_interactions_long[0, :].copy()
 
 ##find one of the interactions which is 0
 
@@ -656,7 +656,7 @@ poss_added_interaction=np.where(set_interactions_long==0)[0]
 
 sel_added_interaction=np.random.permutation(poss_added_interaction)[0]
 
-set_interactions_long[sel_added_interaction]=np.random.random()*2-1
+updated_interactions_long[sel_added_interaction]=np.random.random()*2-1
 
 print("growth_rate = ", set_growth_rate)
 
@@ -672,7 +672,7 @@ full_inputs=np.append(set_growth_rate, set_growth_to_max_rate)
 
 full_inputs=np.append(full_inputs, set_max_resources)
 
-full_inputs=np.append(full_inputs, set_interactions_long)
+full_inputs=np.append(full_inputs, updated_interactions_long)
 
 print("Full inputs")
 
@@ -684,11 +684,53 @@ model_inputs=[plot_output, no_factors, no_each_type_of_factor, no_t, max_t, prop
 
 total_score=Calc_Final_State_Score(full_inputs, model_inputs)
 
+############################
 
+##and now add some noise to all the bits 
 
+noise_to_add=0.5
 
+plot_count=3
 
+updated_growth_rate=set_growth_rate+np.random.random(no_factors)*2*noise_to_add-noise_to_add
 
+updated_growth_rate[updated_growth_rate<0]=0
+
+updated_growth_to_max_rate=set_growth_to_max_rate+np.random.random(no_factors)*2*noise_to_add-noise_to_add
+
+updated_growth_to_max_rate[updated_growth_to_max_rate<0]=0
+
+updated_max_resources=set_max_resources+np.random.random(no_factors)*2*noise_to_add-noise_to_add
+
+updated_max_resources[updated_max_resources<0]=0
+
+positive_interactions=np.where(set_interactions_long>0.01)[0]
+
+no_positive_interactions=len(positive_interactions)
+
+set_interactions_long[positive_interactions]=set_interactions_long[positive_interactions]+np.random.random(no_positive_interactions)*2*noise_to_add-noise_to_add
+
+negative_interactions=np.where(set_interactions_long>0.01)[0]
+
+no_negative_interactions=len(negative_interactions)
+
+set_interactions_long[negative_interactions]=set_interactions_long[negative_interactions]+np.random.random(no_negative_interactions)*2*noise_to_add-noise_to_add
+
+full_inputs=np.append(updated_growth_rate, updated_growth_to_max_rate)
+
+full_inputs=np.append(full_inputs, updated_max_resources)
+
+full_inputs=np.append(full_inputs, set_interactions_long)
+
+print("Full inputs")
+
+print(full_inputs)
+
+model_inputs=[plot_output, no_factors, no_each_type_of_factor, no_t, max_t, prop_interactions, kick_size, kick_type, sel_node, sel_other_node, factor_order]
+
+##calculate the score
+
+total_score=Calc_Final_State_Score(full_inputs, model_inputs)
 
 
 

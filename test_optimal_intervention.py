@@ -454,7 +454,7 @@ def Calc_Final_State_Score(full_inputs, model_inputs):
 
   #  print(final_values)
 
-    goal_state=np.ones(no_factors)*10
+    goal_state=np.ones(no_factors)*5
 
     factor_assignment=np.ones(no_factors)*-1
 
@@ -469,20 +469,38 @@ def Calc_Final_State_Score(full_inputs, model_inputs):
     #print("Factor assignment")
 
     #print(factor_assignment)
-
+    
     goal_state[np.where(factor_assignment==-1)[0]]=0
 
     goal_state[np.where(factor_assignment==0)[0]]='nan'
-
+    
+    factor_fit=np.zeros(no_factors)
+    
+    for sel_factor in np.arange(no_factors):
+    
+        sel_factor_assignment=factor_assignment[sel_factor]
+        
+        sel_factor_fit=abs(goal_state[sel_factor]-final_values[sel_factor])
+        
+        if sel_factor_assignment==-1:
+        
+                if final_values[sel_factor]>1:
+                
+                        #print("BIG BAD")
+                        
+                        sel_factor_fit=100
+        
+        factor_fit[sel_factor]=sel_factor_fit
+        
 #    print("Goal state")
 
  #   print(goal_state)
 
-    factor_fit=abs(goal_state-final_values)
+#    factor_fit=abs(goal_state-final_values)
 
-  #  print("Factor fit")
+#    print("Factor fit")
 
-   # print(factor_fit)
+ #   print(factor_fit)
 
     total_score=np.nansum(factor_fit)
     
@@ -619,6 +637,8 @@ best_values=all_intervention_values[best_intervention, :]
 
 print("best_values = ",best_values)
 
+
+
 ############################
 
 ##using the best solution, let's have a look at that intervention
@@ -639,6 +659,24 @@ model_inputs=[plot_output, no_factors, no_each_type_of_factor, no_t, max_t, prop
 ##calculate the score
 
 total_score=Calc_Final_State_Score(full_inputs, model_inputs)
+
+##what is the best intervention?
+
+if best_intervention_point<no_factors:
+
+        print("Intervention type = growth rate on factor ", best_intervention_point)
+        
+elif best_intervention_point<2*no_factors:
+
+        print("Intervention type = growth to max rate on factor ", np.mod(best_intervention_point, no_factors))
+        
+elif best_intervention_point<3*no_factors:
+
+        print("Intervention type = max resources on factor ", np.mod(best_intervention_point, no_factors))
+        
+else:
+
+        print("Intervention type = interaction on factor ", np.mod(best_intervention_point, no_factors), "from factor ", np.floor((best_intervention_point-3*no_factors)/no_factors))
 
 ############################
 
@@ -688,49 +726,55 @@ total_score=Calc_Final_State_Score(full_inputs, model_inputs)
 
 ##and now add some noise to all the bits 
 
-noise_to_add=0.5
+noise_to_add=0.1
 
-plot_count=3
+for plot_count in np.arange(3,14):
 
-updated_growth_rate=set_growth_rate+np.random.random(no_factors)*2*noise_to_add-noise_to_add
+#plot_count=3
 
-updated_growth_rate[updated_growth_rate<0]=0
+        updated_growth_rate=set_growth_rate+np.random.random(no_factors)*2*noise_to_add-noise_to_add
 
-updated_growth_to_max_rate=set_growth_to_max_rate+np.random.random(no_factors)*2*noise_to_add-noise_to_add
+        updated_growth_rate[updated_growth_rate<0]=0
 
-updated_growth_to_max_rate[updated_growth_to_max_rate<0]=0
+        updated_growth_to_max_rate=set_growth_to_max_rate+np.random.random(no_factors)*2*noise_to_add-noise_to_add
 
-updated_max_resources=set_max_resources+np.random.random(no_factors)*2*noise_to_add-noise_to_add
+        updated_growth_to_max_rate[updated_growth_to_max_rate<0]=0
 
-updated_max_resources[updated_max_resources<0]=0
+        updated_max_resources=set_max_resources+np.random.random(no_factors)*2*noise_to_add-noise_to_add
 
-positive_interactions=np.where(set_interactions_long>0.01)[0]
+        updated_max_resources[updated_max_resources<0]=0
 
-no_positive_interactions=len(positive_interactions)
+        updated_interactions_long=set_interactions_long.copy()
 
-set_interactions_long[positive_interactions]=set_interactions_long[positive_interactions]+np.random.random(no_positive_interactions)*2*noise_to_add-noise_to_add
+        positive_interactions=np.where(set_interactions_long>0.01)[0]
 
-negative_interactions=np.where(set_interactions_long>0.01)[0]
+        no_positive_interactions=len(positive_interactions)
 
-no_negative_interactions=len(negative_interactions)
+        updated_interactions_long[positive_interactions]=set_interactions_long[positive_interactions]+np.random.random(no_positive_interactions)*2*noise_to_add-noise_to_add
 
-set_interactions_long[negative_interactions]=set_interactions_long[negative_interactions]+np.random.random(no_negative_interactions)*2*noise_to_add-noise_to_add
+        negative_interactions=np.where(set_interactions_long>0.01)[0]
 
-full_inputs=np.append(updated_growth_rate, updated_growth_to_max_rate)
+        no_negative_interactions=len(negative_interactions)
 
-full_inputs=np.append(full_inputs, updated_max_resources)
+        updated_interactions_long[negative_interactions]=set_interactions_long[negative_interactions]+np.random.random(no_negative_interactions)*2*noise_to_add-noise_to_add
 
-full_inputs=np.append(full_inputs, set_interactions_long)
+        full_inputs=np.append(updated_growth_rate, updated_growth_to_max_rate)
 
-print("Full inputs")
+        full_inputs=np.append(full_inputs, updated_max_resources)
 
-print(full_inputs)
+        full_inputs=np.append(full_inputs, updated_interactions_long)
 
-model_inputs=[plot_output, no_factors, no_each_type_of_factor, no_t, max_t, prop_interactions, kick_size, kick_type, sel_node, sel_other_node, factor_order]
+#        print("Full inputs")
 
-##calculate the score
+ #       print(full_inputs)
 
-total_score=Calc_Final_State_Score(full_inputs, model_inputs)
+        model_inputs=[plot_output, no_factors, no_each_type_of_factor, no_t, max_t, prop_interactions, kick_size, kick_type, sel_node, sel_other_node, factor_order]
+
+        ##calculate the score
+
+        total_score=Calc_Final_State_Score(full_inputs, model_inputs)
+        
+        print("Total score = ", total_score)
 
 
 

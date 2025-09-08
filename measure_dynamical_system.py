@@ -1,6 +1,6 @@
 ##location: cd Github/dynamics_random_complex_systems
 
-##to run: python measure_dynamical_system.py
+##to run: python3 measure_dynamical_system.py
 
 ########################################################
 
@@ -659,15 +659,64 @@ fig.savefig(f"dynamic_correlations.png")
         
 plt.close()
 
-correlations_value=np.corrcoef(correlation_array[:,0], correlation_array[:,1])
+correlations_between_factors=np.zeros([no_factors, no_factors])
+
+for sel_output_1 in np.arange(no_factors):
+
+        for sel_output_2 in np.arange(no_factors):
+
+                correlation_array=all_outputs[:,[sel_output_1, sel_output_2]]
+
+                correlations_value=np.corrcoef(correlation_array[:,0], correlation_array[:,1])
+                
+                correlations_between_factors[sel_output_1, sel_output_2]=correlations_value[0,1]
 
 print("Correlation values")
 
-print(correlations_value)
+print(correlations_between_factors)
 
 print("And the original interaction")
 
 print(set_interactions)
+
+##################################################
+
+##based on these what intervention should we try?
+
+full_inputs=np.append(set_growth_rate, set_growth_to_max_rate)
+
+full_inputs=np.append(full_inputs, set_max_resources)
+
+full_inputs=np.append(full_inputs, set_interactions_long)
+
+print("Full inputs")
+
+print(full_inputs)
+
+kick_size=1
+
+kick_type=int(input("What type of kick? 1=value, 2=max, 3=interaction.... "))#-1 ##1=value, 2=max, 3=interaction, -1=no kick
+
+sel_node=int(input("Which node? = "))
+
+if kick_type==3:
+
+        sel_other_node=int(input("Which node should the interaction come from?... "))
+
+model_inputs=[plot_output, no_factors, no_each_type_of_factor, no_t, max_t, prop_interactions, kick_size, kick_type, sel_node, sel_other_node, factor_order]
+
+##calculate the score
+
+final_value=Single_Model_Run(full_inputs, model_inputs)
+
+
+
+
+
+
+
+
+
 
 
 

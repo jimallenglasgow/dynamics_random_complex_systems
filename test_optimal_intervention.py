@@ -1,6 +1,6 @@
 ##location: cd Github/dynamics_random_complex_systems
 
-##to run: python3 test_optimal_intervention.py
+##to run: python test_optimal_intervention.py
 
 ########################################################
 
@@ -21,6 +21,9 @@ import networkx as nx
 
 import scipy as sp
 from scipy.integrate import solve_ivp
+
+
+plt.rcParams['figure.figsize'] = [10, 10]
 
 ###############################################################
 
@@ -210,6 +213,7 @@ def Single_Model_Run(full_inputs, model_inputs):
     sel_node=model_inputs[8]
     sel_other_node=model_inputs[9]
     factor_order=model_inputs[10]
+    multiple_plots=model_inputs[11]
 
     #print("Factor order")
 
@@ -324,6 +328,33 @@ def Single_Model_Run(full_inputs, model_inputs):
         if kick_type==4:
         
                 full_inputs[int(best_intervention_point)]=best_intervention_value
+                
+                ##what is the best intervention?
+
+                if best_intervention_point<no_factors:
+
+                        print("Intervention type = growth rate on factor ", best_intervention_point)
+                        
+                        best_int_title=f"Intervention type = growth rate on factor {best_intervention_point}"
+                        
+                elif best_intervention_point<2*no_factors:
+
+                        print("Intervention type = growth to max rate on factor ", np.mod(best_intervention_point, no_factors))
+                        
+                        best_int_title=f"Intervention type = growth to max rate on factor {np.mod(best_intervention_point, no_factors)}"
+                        
+                elif best_intervention_point<3*no_factors:
+
+                        print("Intervention type = max resources on factor ", np.mod(best_intervention_point, no_factors))
+                        
+                        best_int_title=f"Intervention type = max resources on factor {np.mod(best_intervention_point, no_factors)}"
+                        
+                else:
+
+                        print("Intervention type = interaction on factor ", np.mod(best_intervention_point, no_factors), "from factor ", np.floor((best_intervention_point-3*no_factors)/no_factors))
+
+                        best_int_title=f"Intervention type = interaction on factor {np.mod(best_intervention_point, no_factors)} from factor {np.floor((best_intervention_point-3*no_factors)/no_factors)}"
+
 
         ##run for another 10 seconds to see what happens
 
@@ -360,7 +391,6 @@ def Single_Model_Run(full_inputs, model_inputs):
     if plot_output==1:
         
         fig, ax = plt.subplots(nrows=1, ncols=2)
-
         for sel_factor in np.arange(no_factors):
 
             set_line_width=1
@@ -383,6 +413,7 @@ def Single_Model_Run(full_inputs, model_inputs):
             
         ax[0].legend(bbox_to_anchor=(1, -0.1), ncol=no_factors)
 
+        plt.title(best_int_title)
 
 
         print("single_kick_data")
@@ -438,6 +469,10 @@ def Single_Model_Run(full_inputs, model_inputs):
         fig.savefig(f"single_kick_{plot_count}.png")
                 
         plt.close()
+        
+    if multiple_plots==1:
+        
+        final_value=[full_z, full_t]
         
     return(final_value)
     
@@ -512,6 +547,8 @@ def Calc_Final_State_Score(full_inputs, model_inputs):
 
 plot_output=0 ##1=yes
 
+multiple_plots=0 ##1=yes
+
 no_factors=5
 
 no_each_type_of_factor=[2, 1, 2] ##must add up to the number of factors [desirable, neutral, undesirable]
@@ -520,7 +557,7 @@ no_t=250
 
 max_t=30
 
-prop_interactions=0.5
+prop_interactions=0.6
 
 kick_size=1
 
@@ -595,7 +632,7 @@ initial_full_inputs=full_inputs.copy()
 
 max_intervention_value=10
 
-all_intervention_values=np.array([100, 100, 100])
+all_intervention_values=np.array([1000, 1000, 1000])
 
 for sel_intervention in possible_intervention_points:
 
@@ -611,7 +648,7 @@ for sel_intervention in possible_intervention_points:
 		
 		full_inputs[sel_intervention]=intervention_value
 		
-		model_inputs=[plot_output, no_factors, no_each_type_of_factor, no_t, max_t, prop_interactions, kick_size, kick_type, sel_node, sel_other_node, factor_order]
+		model_inputs=[plot_output, no_factors, no_each_type_of_factor, no_t, max_t, prop_interactions, kick_size, kick_type, sel_node, sel_other_node, factor_order, multiple_plots]
 
 		##calculate the score
 
@@ -654,93 +691,48 @@ best_intervention_value=best_values[1]
 
 full_inputs=initial_full_inputs.copy()
 		
-model_inputs=[plot_output, no_factors, no_each_type_of_factor, no_t, max_t, prop_interactions, kick_size, kick_type, sel_node, sel_other_node, factor_order]
+model_inputs=[plot_output, no_factors, no_each_type_of_factor, no_t, max_t, prop_interactions, kick_size, kick_type, sel_node, sel_other_node, factor_order, multiple_plots]
 
 ##calculate the score
 
 total_score=Calc_Final_State_Score(full_inputs, model_inputs)
 
-##what is the best intervention?
-
-if best_intervention_point<no_factors:
-
-        print("Intervention type = growth rate on factor ", best_intervention_point)
-        
-elif best_intervention_point<2*no_factors:
-
-        print("Intervention type = growth to max rate on factor ", np.mod(best_intervention_point, no_factors))
-        
-elif best_intervention_point<3*no_factors:
-
-        print("Intervention type = max resources on factor ", np.mod(best_intervention_point, no_factors))
-        
-else:
-
-        print("Intervention type = interaction on factor ", np.mod(best_intervention_point, no_factors), "from factor ", np.floor((best_intervention_point-3*no_factors)/no_factors))
-
-############################
-
-##now let's add a new edge to the dynamical system, just to see what that does to our best intervention
-
-plot_count=2
-
-full_interactions_long=np.reshape(set_interactions, (1,-1))
-
-updated_interactions_long=full_interactions_long[0, :].copy()
-
-##find one of the interactions which is 0
-
-poss_added_interaction=np.where(set_interactions_long==0)[0]
-
-sel_added_interaction=np.random.permutation(poss_added_interaction)[0]
-
-updated_interactions_long[sel_added_interaction]=np.random.random()*2-1
-
-print("growth_rate = ", set_growth_rate)
-
-print("growth_to_max_rate = ", set_growth_to_max_rate)
-
-print("max_resources = ", set_max_resources)
-
-print("interactions = ", set_interactions)
-
-#print("interactions long = ", interactions_long)
-
-full_inputs=np.append(set_growth_rate, set_growth_to_max_rate)
-
-full_inputs=np.append(full_inputs, set_max_resources)
-
-full_inputs=np.append(full_inputs, updated_interactions_long)
-
-print("Full inputs")
-
-print(full_inputs)
-
-model_inputs=[plot_output, no_factors, no_each_type_of_factor, no_t, max_t, prop_interactions, kick_size, kick_type, sel_node, sel_other_node, factor_order]
-
-##calculate the score
-
-total_score=Calc_Final_State_Score(full_inputs, model_inputs)
 
 ############################
 
 ##and now add some noise to all the bits 
 
-noise_to_add=0.1
+plot_output=0 ##1=yes
 
-for plot_count in np.arange(3,14):
+multiple_plots=1 ##1=yes
+
+noise_to_add=1
+
+factor_assignment=np.ones(no_factors)*-1
+
+des_factors=factor_order[0:no_each_type_of_factor[0]]
+
+factor_assignment[des_factors]=1
+
+neutral_factors=factor_order[no_each_type_of_factor[0]:(no_each_type_of_factor[0]+no_each_type_of_factor[1])]
+
+factor_assignment[neutral_factors]=0
+
+fig, ax = plt.subplots(nrows=5, ncols=2)
+
+for plot_count in np.arange(10):
 
 #plot_count=3
 
-        updated_growth_rate=set_growth_rate+np.random.random(no_factors)*2*noise_to_add-noise_to_add
+        updated_growth_rate=set_growth_rate.copy()+np.random.random(no_factors)*2*noise_to_add-noise_to_add
 
         updated_growth_rate[updated_growth_rate<0]=0
 
-        updated_growth_to_max_rate=set_growth_to_max_rate+np.random.random(no_factors)*2*noise_to_add-noise_to_add
+        updated_growth_to_max_rate=set_growth_to_max_rate.copy()+np.random.random(no_factors)*2*noise_to_add-noise_to_add
 
         updated_growth_to_max_rate[updated_growth_to_max_rate<0]=0
 
-        updated_max_resources=set_max_resources+np.random.random(no_factors)*2*noise_to_add-noise_to_add
+        updated_max_resources=set_max_resources.copy()+np.random.random(no_factors)*2*noise_to_add-noise_to_add
 
         updated_max_resources[updated_max_resources<0]=0
 
@@ -768,17 +760,238 @@ for plot_count in np.arange(3,14):
 
  #       print(full_inputs)
 
-        model_inputs=[plot_output, no_factors, no_each_type_of_factor, no_t, max_t, prop_interactions, kick_size, kick_type, sel_node, sel_other_node, factor_order]
+        model_inputs=[plot_output, no_factors, no_each_type_of_factor, no_t, max_t, prop_interactions, kick_size, kick_type, sel_node, sel_other_node, factor_order, multiple_plots]
 
         ##calculate the score
 
-        total_score=Calc_Final_State_Score(full_inputs, model_inputs)
+        final_values=Single_Model_Run(full_inputs, model_inputs)
         
-        print("Total score = ", total_score)
+        full_z=final_values[0]
+        
+        full_t=final_values[1]
+        
+        plot_row=int(np.mod(plot_count, 5))
+        
+        plot_col=int(np.floor(plot_count/5))
+        
+        for sel_factor in np.arange(no_factors):
+
+            set_line_width=1
+            
+            set_line_type="solid"
+            
+            sel_assignment=factor_assignment[sel_factor]
+            
+            if sel_assignment==1:
+            
+                    set_line_width=3
+                    
+            if sel_assignment==-1:
+            
+                    set_line_width=3
+                    
+                    set_line_type="dashed"
+
+            ax[plot_row, plot_col].plot(full_t, full_z.T[:, sel_factor], linewidth=set_line_width, linestyle=set_line_type, label=f"{sel_factor}")
+            
+        if plot_count==5:
+            
+            ax[plot_row, plot_col].legend(bbox_to_anchor=(1, -0.1), ncol=no_factors)
+        
+#        print("Total score = ", total_score)
+        
+plt.title("Noisy system")
+        
+plt.show()
+        
+fig.savefig(f"noisy_intervention.png")
+        
+plt.close()
+
+####################################################################
+
+##and now add an additional edge to our dynamical system to see what that does
+
+plot_output=0 ##1=yes
+
+multiple_plots=1 ##1=yes
+
+factor_assignment=np.ones(no_factors)*-1
+
+des_factors=factor_order[0:no_each_type_of_factor[0]]
+
+factor_assignment[des_factors]=1
+
+neutral_factors=factor_order[no_each_type_of_factor[0]:(no_each_type_of_factor[0]+no_each_type_of_factor[1])]
+
+factor_assignment[neutral_factors]=0
+
+fig, ax = plt.subplots(nrows=5, ncols=2)
+
+for plot_count in np.arange(10):
+
+#plot_count=3
+
+        updated_interactions_long=set_interactions_long.copy()
+
+        poss_added_interaction=np.where(set_interactions_long==0)[0]
+
+        sel_added_interaction=np.random.permutation(poss_added_interaction)[0]
+
+        updated_interactions_long[sel_added_interaction]=np.random.random()*2-1
+
+        full_inputs=np.append(set_growth_rate, set_growth_to_max_rate)
+
+        full_inputs=np.append(full_inputs, set_max_resources)
+
+        full_inputs=np.append(full_inputs, updated_interactions_long)
+
+#        print("Full inputs")
+
+ #       print(full_inputs)
+
+        model_inputs=[plot_output, no_factors, no_each_type_of_factor, no_t, max_t, prop_interactions, kick_size, kick_type, sel_node, sel_other_node, factor_order, multiple_plots]
+
+        ##calculate the score
+
+        final_values=Single_Model_Run(full_inputs, model_inputs)
+        
+        full_z=final_values[0]
+        
+        full_t=final_values[1]
+        
+        plot_row=int(np.mod(plot_count, 5))
+        
+        plot_col=int(np.floor(plot_count/5))
+        
+        for sel_factor in np.arange(no_factors):
+
+            set_line_width=1
+            
+            set_line_type="solid"
+            
+            sel_assignment=factor_assignment[sel_factor]
+            
+            if sel_assignment==1:
+            
+                    set_line_width=3
+                    
+            if sel_assignment==-1:
+            
+                    set_line_width=3
+                    
+                    set_line_type="dashed"
+
+            ax[plot_row, plot_col].plot(full_t, full_z.T[:, sel_factor], linewidth=set_line_width, linestyle=set_line_type, label=f"{sel_factor}")
+            
+        if plot_count==5:
+            
+            ax[plot_row, plot_col].legend(bbox_to_anchor=(1, -0.1), ncol=no_factors)
+        
+#        print("Total score = ", total_score)
+        
+plt.title("Additional edge in the dynamics")
+        
+plt.show()
+        
+fig.savefig(f"additional_connection_intervention.png")
+        
+plt.close()
 
 
+####################################################################
 
+##and now vary the size of our optimal intervention
 
+plot_output=0 ##1=yes
+
+multiple_plots=1 ##1=yes
+
+factor_assignment=np.ones(no_factors)*-1
+
+des_factors=factor_order[0:no_each_type_of_factor[0]]
+
+factor_assignment[des_factors]=1
+
+neutral_factors=factor_order[no_each_type_of_factor[0]:(no_each_type_of_factor[0]+no_each_type_of_factor[1])]
+
+factor_assignment[neutral_factors]=0
+
+fig, ax = plt.subplots(nrows=5, ncols=2)
+
+full_inputs=np.append(set_growth_rate, set_growth_to_max_rate)
+
+full_inputs=np.append(full_inputs, set_max_resources)
+
+full_inputs=np.append(full_inputs, set_interactions_long)
+
+initial_intervention_value=best_intervention_value
+
+for plot_count in np.arange(10):
+
+#plot_count=3
+
+#        print("Full inputs")
+
+ #       print(full_inputs)
+ 
+        full_inputs=np.append(set_growth_rate, set_growth_to_max_rate)
+
+        full_inputs=np.append(full_inputs, set_max_resources)
+
+        full_inputs=np.append(full_inputs, set_interactions_long)
+ 
+        best_intervention_value=initial_intervention_value+np.random.random()*2*noise_to_add-noise_to_add
+
+        model_inputs=[plot_output, no_factors, no_each_type_of_factor, no_t, max_t, prop_interactions, kick_size, kick_type, sel_node, sel_other_node, factor_order, multiple_plots]
+
+        ##calculate the score
+
+        final_values=Single_Model_Run(full_inputs, model_inputs)
+        
+        full_z=final_values[0]
+        
+        full_t=final_values[1]
+        
+        plot_row=int(np.mod(plot_count, 5))
+        
+        plot_col=int(np.floor(plot_count/5))
+        
+        for sel_factor in np.arange(no_factors):
+
+            set_line_width=1
+            
+            set_line_type="solid"
+            
+            sel_assignment=factor_assignment[sel_factor]
+            
+            if sel_assignment==1:
+            
+                    set_line_width=3
+                    
+            if sel_assignment==-1:
+            
+                    set_line_width=3
+                    
+                    set_line_type="dashed"
+
+            ax[plot_row, plot_col].plot(full_t, full_z.T[:, sel_factor], linewidth=set_line_width, linestyle=set_line_type, label=f"{sel_factor}")
+            
+        if plot_count==5:
+            
+            ax[plot_row, plot_col].legend(bbox_to_anchor=(1, -0.1), ncol=no_factors)
+        
+#        print("Total score = ", total_score)
+
+plt.title("Noisy intervention effect")
+        
+plt.show()
+        
+fig.savefig(f"varied_intervention_effectiveness.png")
+        
+plt.close()
+
+best_intervention_value=initial_intervention_value ##reset the value
 
 
 

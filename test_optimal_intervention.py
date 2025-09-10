@@ -706,7 +706,7 @@ plot_output=0 ##1=yes
 
 multiple_plots=1 ##1=yes
 
-noise_to_add=1
+noise_to_add=0.5
 
 factor_assignment=np.ones(no_factors)*-1
 

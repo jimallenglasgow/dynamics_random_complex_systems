@@ -114,6 +114,28 @@ def server(input, output, session):
         print("interactions")
         
         print(interactions)
+        
+        no_des_un_des=int(0.4*no_factors)
+        
+        no_neutral=no_factors-2*no_des_un_des
+        
+        no_each_type_of_factor=[no_des_un_des, no_neutral, no_des_un_des]
+
+        factor_order=np.random.permutation(np.arange(no_factors))
+        
+        factor_assignment=np.ones(no_factors)*-1
+
+        des_factors=factor_order[0:no_each_type_of_factor[0]]
+
+        factor_assignment[des_factors]=1
+
+        neutral_factors=factor_order[no_each_type_of_factor[0]:(no_each_type_of_factor[0]+no_each_type_of_factor[1])]
+
+        factor_assignment[neutral_factors]=0
+        
+        print("factor_assignment")
+        
+        print(factor_assignment)
 
         def Calc_x_dot(x):
 
@@ -283,12 +305,22 @@ def server(input, output, session):
         for sel_factor in np.arange(no_factors):
         
                 set_line_width=1
+            
+                set_line_type="solid"
                 
-                if sel_factor==0:
+                sel_assignment=factor_assignment[sel_factor]
+                
+                if sel_assignment==1:
                 
                         set_line_width=3
+                        
+                if sel_assignment==-1:
+                
+                        set_line_width=3
+                        
+                        set_line_type="dashed"
 
-                ax[0].plot(full_t, full_z.T[:, sel_factor], linewidth=set_line_width, label=f"{sel_factor}")
+                ax[0].plot(full_t, full_z.T[:, sel_factor], linewidth=set_line_width, linestyle=set_line_type, label=f"{sel_factor}")
                 
         ax[0].legend(bbox_to_anchor=(1, -0.3), ncol=no_factors)
         
@@ -353,7 +385,7 @@ def server(input, output, session):
 
         #plt.close()
         
-        fig.suptitle("Try to intervene to increase the value of node 0", fontsize=16)
+        fig.suptitle("Try to intervene to increase the value of a good node (solid line)", fontsize=16)
         
         return fig
      

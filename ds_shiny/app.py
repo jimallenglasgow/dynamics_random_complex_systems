@@ -322,7 +322,7 @@ def server(input, output, session):
 
                 ax[0].plot(full_t, full_z.T[:, sel_factor], linewidth=set_line_width, linestyle=set_line_type, label=f"{sel_factor}")
                 
-        ax[0].legend(bbox_to_anchor=(1, -0.3), ncol=no_factors)
+        ax[0].legend(bbox_to_anchor=(1, -0.3), ncol=5)#no_factors)
         
         ax[0].set_xlabel("Time")
         

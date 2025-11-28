@@ -1,4 +1,5 @@
-﻿Negative social control,Family cohesion,
+﻿From,To,Sign
+Negative social control,Family cohesion,
 Negative social control,Verbal encouragement,
 Negative social control,"Shared chores, home environment",
 Home physical environment,Shared SB in the family,
@@ -48,3 +49,9 @@ Family SES,Physical environment safety,
 Family SES,Physical environment,
 Family SES,Passive transport availability,
 Family SES,Home physical environment,
+Descriptive norms outside family,Family interest in SB activities,-
+Physical environment safety,Family logistical support,
+Physical environment safety,Descriptive norms outside family,
+Physical environment safety,Community physical environment,
+Community physical environment,Descriptive norms outside family,
+Community physical environment,Physical environment safety,

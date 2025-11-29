@@ -32,7 +32,7 @@ def deriv_vec(t, y):
 
     return B @ y
 
-num_eqs=10
+num_eqs=100
 
 A=np.random.normal(loc=0, scale=1/num_eqs, size=[num_eqs,num_eqs])
 
@@ -52,6 +52,9 @@ K=np.ones(num_eqs)
 
 r=np.ones(num_eqs)
 
+mu=5#np.random.random()*2-1
+
+sigma=4#np.random.random()
 
 def Calc_ydot(y):
 
@@ -66,10 +69,12 @@ def Calc_ydot(y):
 		yi_new=0
 	
 		for j in np.arange(N):
-	
-			yi_new=yi_new+A[i,j]*y[j]
+		
+			yi_new=yi_new+(sigma/num_eqs)*A[i,j]*y[j]+(mu/num_eqs)*y[j]
 			
-		y_new[i]=(r[i]/K[i])*y[i]*(K[i]-y[i]-yi_new)
+		#y_new[i]=(r[i]/K[i])*y[i]*(K[i]-y[i]-yi_new)
+		
+		y_new[i]=y[i]*(K[i]-y[i]-yi_new)
 		
 	return y_new
 
@@ -118,32 +123,32 @@ plt.show()
 plt.close()
 
 
-L=len(z[0,:])
+#L=len(z[0,:])
 
-y_init=z[:,L-1]
+#y_init=z[:,L-1]
 
 ##and nudge it
 
-y_init=y_init+np.random.normal(scale=0.1, size=num_eqs)
+#y_init=y_init+np.random.normal(scale=0.1, size=num_eqs)
 
-t_min=20
+#t_min=20
 
-t_max=40
+#t_max=40
 
-t_sol=np.linspace(t_min, t_max, 50)
+#t_sol=np.linspace(t_min, t_max, 50)
 	
-sol=solve_ivp(General_LV, [t_min, t_max], y_init, dense_output=True, t_eval=t_sol)
+#sol=solve_ivp(General_LV, [t_min, t_max], y_init, dense_output=True, t_eval=t_sol)
 
-z = sol.sol(t_sol)
+#z = sol.sol(t_sol)
 
-full_z=np.hstack([full_z,z])
+#full_z=np.hstack([full_z,z])
 	
-full_t=np.hstack([full_t,t_sol])
+#full_t=np.hstack([full_t,t_sol])
 
-plt.plot(full_t, full_z.T[:,np.arange(2,num_eqs)])
-plt.xlabel('t')
-plt.show()
-plt.close()
+#plt.plot(full_t, full_z.T[:,np.arange(2,num_eqs)])
+#plt.xlabel('t')
+#plt.show()
+#plt.close()
 
 
 

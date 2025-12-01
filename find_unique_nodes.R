@@ -20,6 +20,8 @@ all_degrees<-merge(in_degree, out_degree, all = T)
 
 all_degrees[is.na(all_degrees)]<-0
 
+##NOTE: in-degree for family cohesion is one higher than in the publication, but this appears to be right
+
 
 
 

@@ -1,65 +1,73 @@
 ﻿From,To,Sign
-Injunctive norms,Community physical environment,+
-Physical environment safety,Community physical environment,+
-Inclusive gender/cultural norms,Descriptive norms outside family,+
-Physical environment safety,Descriptive norms outside family,+
 Community physical environment,Descriptive norms outside family,+
-Family cohesion,Emotional support,+
-Verbal encouragement,Emotional support,+
-Inclusive gender/cultural norms,Emotional support,+
-Dog ownership,Emotional support,+
-Negative social control,Family cohesion,-
-Regulatory support in family,Family cohesion,+
-Shared SB in the family,Family cohesion,+
-Verbal encouragement,Family cohesion,+
-Inclusive gender/cultural norms,Family cohesion,+
-Flexibility in roles,Family cohesion,+
-Family logistical support,Family cohesion,+
-Dog ownership,Family cohesion,+
-Informational support,Family cohesion,+
-Family SB modeling,Family interest in SB activities,+
-Shared SB in the family,Family interest in SB activities,+
-Injunctive norms,Family interest in SB activities,+
-Informational support,Family interest in SB activities,-
-Descriptive norms outside family,Family interest in SB activities,-
-Family cohesion,Family logistical support,+
-Flexibility in roles,Family logistical support,+
-Informational support,Family logistical support,+
-Family SES,Family logistical support,+
-Physical environment safety,Family logistical support,+
 Community physical environment,Family logistical support,+
-Home physical environment,Family SB modeling,+
-Shared SB in the family,Family SB modeling,+
-Family interest in SB activities,Family SB modeling,+
-Injunctive norms,Family SB modeling,+
-Informational support,Family SB modeling,-
-Injunctive norms,Flexibility in roles,+
-Inclusive gender/cultural norms,Flexibility in roles,+
-Family SES,Flexibility in roles,+
-Family interest in SB activities,Home physical environment,+
-Family SES,Home physical environment,+
+Community physical environment,Physical environment safety,+
+Descriptive norms outside family,Family interest in SB activities,-
+Dog ownership,Emotional support,+
+Dog ownership,Family cohesion,+
+Dog ownership,"Shared chores, home environment",+
+Family cohesion,Emotional support,+
+Family cohesion,Family logistical support,+
 Family cohesion,Informational support,+
-Injunctive norms,Informational support,-
-Family SES,Informational support,+
 Family cohesion,Negative social control,-
+Family cohesion,Regulatory support in family,+
+Family cohesion,"Shared chores, home environment",+
+Family cohesion,Shared SB in the family,+
+Family cohesion,Verbal encouragement,+
+Family interest in SB activities,Family logistical support,-
+Family interest in SB activities,Family SB modeling,+
+Family interest in SB activities,Home physical environment,+
+Family interest in SB activities,Informational support,-
+Family interest in SB activities,Regulatory support in family,-
+Family interest in SB activities,Verbal encouragement,-
+Family interest in SB activities,Shared SB in the family,+
+Family logistical support,Family cohesion,+
+Family logistical support,"Shared chores, home environment",+
+Family SB modeling,Family interest in SB activities,+
+Family SB modeling,Shared SB in the family,+
+Family SES,Family logistical support,+
+Family SES,Flexibility in roles,+
+Family SES,Home physical environment,+
+Family SES,Informational support,+
 Family SES,Passive transport availability,+
 Family SES,Physical environment,+
 Family SES,Physical environment safety,+
-Community physical environment,Physical environment safety,+
-Family cohesion,Regulatory support in family,+
-Family interest in SB activities,Regulatory support in family,-
+Flexibility in roles,Family cohesion,+
+Flexibility in roles,Family logistical support,+
 Flexibility in roles,Regulatory support in family,+
-Informational support,Regulatory support in family,+
-Negative social control,"Shared chores, home environment",+
-Family cohesion,"Shared chores, home environment",+
 Flexibility in roles,"Shared chores, home environment",+
-Family logistical support,"Shared chores, home environment",+
-Dog ownership,"Shared chores, home environment",+
+Home physical environment,Family interest in SB activities,+
+Home physical environment,Family SB modeling,+
 Home physical environment,Shared SB in the family,+
-Family SB modeling,Shared SB in the family,+
-Family cohesion,Shared SB in the family,+
-Informational support,Shared SB in the family,-
-Negative social control,Verbal encouragement,-
-Family cohesion,Verbal encouragement,+
-Family interest in SB activities,Verbal encouragement,-
+Home physical environment,Regulatory support in family,+
+Inclusive gender/cultural norms,Descriptive norms outside family,+
+Inclusive gender/cultural norms,Emotional support,+
+Inclusive gender/cultural norms,Family cohesion,+
+Inclusive gender/cultural norms,Flexibility in roles,+
 Inclusive gender/cultural norms,Verbal encouragement,+
+Informational support,Family cohesion,+
+Informational support,Family interest in SB activities,-
+Informational support,Family logistical support,+
+Informational support,Family SB modeling,-
+Informational support,Regulatory support in family,+
+Informational support,Shared SB in the family,-
+Informational support,Home physical environment,-
+Injunctive norms,Community physical environment,+
+Injunctive norms,Family interest in SB activities,+
+Injunctive norms,Family SB modeling,+
+Injunctive norms,Flexibility in roles,+
+Injunctive norms,Informational support,-
+Negative social control,Family cohesion,-
+Negative social control,"Shared chores, home environment",+
+Negative social control,Verbal encouragement,-
+Physical environment safety,Community physical environment,+
+Physical environment safety,Descriptive norms outside family,+
+Physical environment safety,Family logistical support,+
+Regulatory support in family,Family cohesion,+
+Shared SB in the family,Family cohesion,+
+Shared SB in the family,Family interest in SB activities,+
+Shared SB in the family,Family SB modeling,+
+Verbal encouragement,Emotional support,+
+Verbal encouragement,Family cohesion,+
+Verbal encouragement,Informational support,+
+Inclusive gender/cultural norms,"Shared chores, home environment",-

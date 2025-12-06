@@ -20,17 +20,39 @@ all_degrees<-merge(in_degree, out_degree, all = T)
 
 all_degrees[is.na(all_degrees)]<-0
 
-##NOTE: in-degree for family cohesion is one higher than in the publication, but this appears to be right
+##add all possible edges to PA and SB, to be put in a file an decided upon
 
+unique_nodes<-all_degrees[,c("Node")]
 
+unique_nodes_to_PA<-unique_nodes[,to:="PA"]
 
+names(unique_nodes_to_PA)<-c("From", "To")
 
+unique_nodes<-all_degrees[,c("Node")]
 
+unique_nodes_from_PA<-unique_nodes[,from:="PA"]
 
+names(unique_nodes_from_PA)<-c("To", "From")
 
+unique_nodes_PA<-rbind(unique_nodes_to_PA, unique_nodes_from_PA)
 
+unique_nodes<-all_degrees[,c("Node")]
 
+unique_nodes_to_SB<-unique_nodes[,to:="SB"]
 
+names(unique_nodes_to_SB)<-c("From", "To")
 
+unique_nodes<-all_degrees[,c("Node")]
 
+unique_nodes_from_SB<-unique_nodes[,from:="SB"]
+
+names(unique_nodes_from_SB)<-c("To", "From")
+
+unique_nodes_SB<-rbind(unique_nodes_to_SB, unique_nodes_from_SB)
+
+additional_nodes<-rbind(unique_nodes_PA, unique_nodes_SB)
+
+additional_nodes$Sign<-NA
+
+write.csv(additional_nodes, "additional_nodes.csv", row.names = F)
 

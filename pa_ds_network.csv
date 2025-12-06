@@ -1,6 +1,5 @@
-﻿From,To,Sign
+From,To,Sign
 Community physical environment,Descriptive norms outside family,+
-Community physical environment,Family logistical support,+
 Community physical environment,Physical environment safety,+
 Descriptive norms outside family,Family interest in SB activities,-
 Dog ownership,Emotional support,+
@@ -23,6 +22,7 @@ Family interest in SB activities,Verbal encouragement,-
 Family interest in SB activities,Shared SB in the family,+
 Family logistical support,Family cohesion,+
 Family logistical support,"Shared chores, home environment",+
+Family logistical support,Verbal encouragement,+
 Family SB modeling,Family interest in SB activities,+
 Family SB modeling,Shared SB in the family,+
 Family SES,Family logistical support,+
@@ -30,7 +30,7 @@ Family SES,Flexibility in roles,+
 Family SES,Home physical environment,+
 Family SES,Informational support,+
 Family SES,Passive transport availability,+
-Family SES,Physical environment,+
+Family SES,Community physical environment,+
 Family SES,Physical environment safety,+
 Flexibility in roles,Family cohesion,+
 Flexibility in roles,Family logistical support,+
@@ -45,13 +45,13 @@ Inclusive gender/cultural norms,Emotional support,+
 Inclusive gender/cultural norms,Family cohesion,+
 Inclusive gender/cultural norms,Flexibility in roles,+
 Inclusive gender/cultural norms,Verbal encouragement,+
-Informational support,Family cohesion,+
 Informational support,Family interest in SB activities,-
 Informational support,Family logistical support,+
 Informational support,Family SB modeling,-
 Informational support,Regulatory support in family,+
 Informational support,Shared SB in the family,-
 Informational support,Home physical environment,-
+Informational support,Verbal encouragement,+
 Injunctive norms,Community physical environment,+
 Injunctive norms,Family interest in SB activities,+
 Injunctive norms,Family SB modeling,+
@@ -64,6 +64,8 @@ Physical environment safety,Community physical environment,+
 Physical environment safety,Descriptive norms outside family,+
 Physical environment safety,Family logistical support,+
 Regulatory support in family,Family cohesion,+
+Regulatory support in family,"Shared chores, home environment",+
+Regulatory support in family,Verbal encouragement,+
 Shared SB in the family,Family cohesion,+
 Shared SB in the family,Family interest in SB activities,+
 Shared SB in the family,Family SB modeling,+
@@ -71,3 +73,4 @@ Verbal encouragement,Emotional support,+
 Verbal encouragement,Family cohesion,+
 Verbal encouragement,Informational support,+
 Inclusive gender/cultural norms,"Shared chores, home environment",-
+"Shared chores, home environment",Family cohesion,+

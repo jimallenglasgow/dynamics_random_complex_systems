@@ -34,23 +34,7 @@ unique_nodes_from_PA<-unique_nodes[,from:="PA"]
 
 names(unique_nodes_from_PA)<-c("To", "From")
 
-unique_nodes_PA<-rbind(unique_nodes_to_PA, unique_nodes_from_PA)
-
-unique_nodes<-all_degrees[,c("Node")]
-
-unique_nodes_to_SB<-unique_nodes[,to:="SB"]
-
-names(unique_nodes_to_SB)<-c("From", "To")
-
-unique_nodes<-all_degrees[,c("Node")]
-
-unique_nodes_from_SB<-unique_nodes[,from:="SB"]
-
-names(unique_nodes_from_SB)<-c("To", "From")
-
-unique_nodes_SB<-rbind(unique_nodes_to_SB, unique_nodes_from_SB)
-
-additional_nodes<-rbind(unique_nodes_PA, unique_nodes_SB)
+additional_nodes<-rbind(unique_nodes_to_PA, unique_nodes_from_PA)
 
 additional_nodes$Sign<-NA
 

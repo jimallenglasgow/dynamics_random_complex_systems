@@ -1,85 +1,43 @@
-"From","To","Sign"
-"Community physical environment","PA",NA
-"Descriptive norms outside family","PA",NA
-"Dog ownership","PA",NA
-"Emotional support","PA",NA
-"Family SB modeling","PA",NA
-"Family SES","PA",NA
-"Family cohesion","PA",NA
-"Family interest in SB activities","PA",NA
-"Family logistical support","PA",NA
-"Flexibility in roles","PA",NA
-"Home physical environment","PA",NA
-"Inclusive gender/cultural norms","PA",NA
-"Informational support","PA",NA
-"Injunctive norms","PA",NA
-"Negative social control","PA",NA
-"Passive transport availability","PA",NA
-"Physical environment safety","PA",NA
-"Regulatory support in family","PA",NA
-"Shared SB in the family","PA",NA
-"Shared chores, home environment","PA",NA
-"Verbal encouragement","PA",NA
-"PA","Community physical environment",NA
-"PA","Descriptive norms outside family",NA
-"PA","Dog ownership",NA
-"PA","Emotional support",NA
-"PA","Family SB modeling",NA
-"PA","Family SES",NA
-"PA","Family cohesion",NA
-"PA","Family interest in SB activities",NA
-"PA","Family logistical support",NA
-"PA","Flexibility in roles",NA
-"PA","Home physical environment",NA
-"PA","Inclusive gender/cultural norms",NA
-"PA","Informational support",NA
-"PA","Injunctive norms",NA
-"PA","Negative social control",NA
-"PA","Passive transport availability",NA
-"PA","Physical environment safety",NA
-"PA","Regulatory support in family",NA
-"PA","Shared SB in the family",NA
-"PA","Shared chores, home environment",NA
-"PA","Verbal encouragement",NA
-"Community physical environment","SB",NA
-"Descriptive norms outside family","SB",NA
-"Dog ownership","SB",NA
-"Emotional support","SB",NA
-"Family SB modeling","SB",NA
-"Family SES","SB",NA
-"Family cohesion","SB",NA
-"Family interest in SB activities","SB",NA
-"Family logistical support","SB",NA
-"Flexibility in roles","SB",NA
-"Home physical environment","SB",NA
-"Inclusive gender/cultural norms","SB",NA
-"Informational support","SB",NA
-"Injunctive norms","SB",NA
-"Negative social control","SB",NA
-"Passive transport availability","SB",NA
-"Physical environment safety","SB",NA
-"Regulatory support in family","SB",NA
-"Shared SB in the family","SB",NA
-"Shared chores, home environment","SB",NA
-"Verbal encouragement","SB",NA
-"SB","Community physical environment",NA
-"SB","Descriptive norms outside family",NA
-"SB","Dog ownership",NA
-"SB","Emotional support",NA
-"SB","Family SB modeling",NA
-"SB","Family SES",NA
-"SB","Family cohesion",NA
-"SB","Family interest in SB activities",NA
-"SB","Family logistical support",NA
-"SB","Flexibility in roles",NA
-"SB","Home physical environment",NA
-"SB","Inclusive gender/cultural norms",NA
-"SB","Informational support",NA
-"SB","Injunctive norms",NA
-"SB","Negative social control",NA
-"SB","Passive transport availability",NA
-"SB","Physical environment safety",NA
-"SB","Regulatory support in family",NA
-"SB","Shared SB in the family",NA
-"SB","Shared chores, home environment",NA
-"SB","Verbal encouragement",NA
+From,To,Sign
+Community physical environment,PA,+
+Descriptive norms outside family,PA,+
+Dog ownership,PA,+
+Emotional support,PA,+
+Family SB modeling,PA,-
+Family SES,PA,NA
+Family cohesion,PA,NA
+Family interest in SB activities,PA,-
+Family logistical support,PA,+
+Flexibility in roles,PA,+
+Home physical environment,PA,+
+Inclusive gender/cultural norms,PA,NA
+Informational support,PA,+
+Injunctive norms,PA,+
+Negative social control,PA,0
+Passive transport availability,PA,+
+Physical environment safety,PA,+
+Regulatory support in family,PA,+
+Shared SB in the family,PA,-
+"Shared chores, home environment",PA,+
+Verbal encouragement,PA,+
+PA,Community physical environment,NA
+PA,Descriptive norms outside family,+
+PA,Dog ownership,NA
+PA,Emotional support,+
+PA,Family SB modeling,-
+PA,Family SES,NA
+PA,Family cohesion,0
+PA,Family interest in SB activities,-
+PA,Family logistical support,NA
+PA,Flexibility in roles,-
+PA,Home physical environment,NA
+PA,Inclusive gender/cultural norms,NA
+PA,Informational support,NA
+PA,Injunctive norms,+
+PA,Negative social control,0
+PA,Passive transport availability,NA
+PA,Physical environment safety,NA
+PA,Regulatory support in family,0
+PA,Shared SB in the family,-
+PA,"Shared chores, home environment",-
+PA,Verbal encouragement,NA

@@ -1,6 +1,6 @@
 ##location: cd Github/dynamics_random_complex_systems
 
-##to run: python single_random_kick.py
+##to run: python single_intervention_PA.py
 
 ########################################################
 
@@ -458,15 +458,19 @@ def Single_Model_Run(full_inputs, model_inputs):
 
 plot_output=1
 
-no_factors=5
+no_factors=25
 
-no_each_type_of_factor=[1, 4, 0] ##must add up to the number of factors [desirable, neutral, undesirable]
+no_each_type_of_factor=[5, 5, 0] ##must add up to the number of factors [desirable, neutral, undesirable]
 
 no_t=250
 
 max_t=20
 
-prop_interactions=0.5
+prop_interactions=0.1
+
+interaction_mean=0.1 ##average strength of the interactions
+
+interaction_std=0.2 ##standard deviation of the strength of the interactions
 
 kick_size=2
 
@@ -491,17 +495,48 @@ set_growth_to_max_rate=np.random.random(no_factors)*2
 
 set_max_resources=np.random.random(no_factors)*2
 
-initial_interactions=np.random.random([no_factors, no_factors])*2-1
+set_interactions=np.zeros([no_factors, no_factors])
         
 ##create an array that tells us which interactions to include
 
-interactions_include=(np.random.choice([0, 1], no_factors*no_factors, p=[1-prop_interactions, prop_interactions])).reshape(no_factors, no_factors)
+interactions_include=(np.random.choice([0, -1, 1, 2], no_factors*no_factors, p=[1-prop_interactions, prop_interactions/3, prop_interactions/3, prop_interactions/3])).reshape(no_factors, no_factors)
 
-set_interactions=initial_interactions*interactions_include
+##no self loops
 
 for i in np.arange(no_factors):
 
-	set_interactions[i,i]=0
+    interactions_include[i,i]=0
+
+for i in np.arange(no_factors):
+    
+    for j in np.arange(no_factors):
+        
+        sel_interaction=0
+        
+        sel_interaction_type=interactions_include[i, j]
+        
+        if sel_interaction_type==-1:
+            
+            sel_interaction=-abs(np.random.normal(-interaction_mean, interaction_std))
+            
+        if sel_interaction_type==1:
+            
+            sel_interaction=abs(np.random.normal(interaction_mean, interaction_std))
+            
+        if sel_interaction_type==2:
+            
+            sel_interaction=np.random.normal(0, interaction_std)
+            
+        set_interactions[i, j]=sel_interaction
+
+print("Connections")
+
+print(interactions_include)
+
+print("Interaction strength")
+
+print(set_interactions)        
+
     
 ##also, set the interaction between 1 and 0 to be 0.5 (always positive, and somewhere in the middle)
 

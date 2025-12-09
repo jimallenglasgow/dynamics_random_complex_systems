@@ -52,13 +52,25 @@ full_network_ID[Sign=="+", Sign:=1]
 full_network_ID[Sign=="-", Sign:=-1]
 full_network_ID[Sign=="0", Sign:=2]
 
+##add some self loops so that we get a square adjacency matrix
+
+for(sel_id in node_ids$ID){
+  
+  sel_id_df<-data.table(Sign=NA, From_ID=sel_id, To_ID=sel_id)
+  
+  full_network_ID<-rbind(full_network_ID, sel_id_df)
+  
+}
+
 full_network_ID_wide<-full_network_ID %>% spread(key = "To_ID", value="Sign")
 
+full_network_ID_wide$From_ID<-NULL
 
+full_network_ID_wide[is.na(full_network_ID_wide)]<-0
 
+##save it
 
-
-
+write.csv(full_network_ID_wide, "PA_network.csv", row.names = F)
 
 
 

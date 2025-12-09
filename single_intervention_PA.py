@@ -19,6 +19,8 @@ import matplotlib.animation as animation
 
 import networkx as nx
 
+import pandas as pd
+
 import scipy as sp
 from scipy.integrate import solve_ivp
 
@@ -409,9 +411,9 @@ def Single_Model_Run(full_inputs, model_inputs):
 
         seed = 13648  # Seed random number generators for reproducibility
         #G = nx.random_k_out_graph(10, 3, 0.5, seed=seed)
-        #pos = nx.spring_layout(G, seed=seed)
+        pos = nx.spring_layout(G, seed=seed)
 
-        pos = nx.circular_layout(G, scale=2)
+        #pos = nx.circular_layout(G, scale=2)
 
         node_sizes = 200#*(1+max_resources/np.sum(max_resources))
         M = G.number_of_edges()
@@ -456,11 +458,13 @@ def Single_Model_Run(full_inputs, model_inputs):
 
 #######################################################################################
 
+use_emp_network=1
+
 plot_output=1
 
-no_factors=25
+no_factors=10
 
-no_each_type_of_factor=[5, 5, 0] ##must add up to the number of factors [desirable, neutral, undesirable]
+no_each_type_of_factor=[1, 0, 0] ##must add up to the number of factors [desirable, neutral, undesirable]
 
 no_t=250
 
@@ -478,7 +482,7 @@ kick_type=4 ##1=value, 2=max, 3=interaction, 4=random
 
 sel_node=1
 
-sel_other_node=1
+sel_other_node=0
 
 ##decide which nodes are desirable and undesirable
 
@@ -488,24 +492,34 @@ factor_order=np.random.permutation(np.arange(no_factors))
 ################################################
 
 ##run a single instantiation of the dynamic system
-
-set_growth_rate=np.random.random(no_factors)*2
-
-set_growth_to_max_rate=np.random.random(no_factors)*2
-
-set_max_resources=np.random.random(no_factors)*2
-
-set_interactions=np.zeros([no_factors, no_factors])
         
 ##create an array that tells us which interactions to include
 
+##choose whether to use this set of interactions, or the empirical ones
+
 interactions_include=(np.random.choice([0, -1, 1, 2], no_factors*no_factors, p=[1-prop_interactions, prop_interactions/3, prop_interactions/3, prop_interactions/3])).reshape(no_factors, no_factors)
+
+if use_emp_network==1:
+
+        interactions_include=np.array(pd.read_csv("PA_network.csv"))#, header=None)
+        
+        no_factors=len(interactions_include[:,0])
+        
+print("no_factors = ",no_factors)
+        
+print("Interactions to include")
+
+print(interactions_include)
 
 ##no self loops
 
 for i in np.arange(no_factors):
 
     interactions_include[i,i]=0
+
+##generate some random interactions
+    
+set_interactions=np.zeros([no_factors, no_factors])
 
 for i in np.arange(no_factors):
     
@@ -535,12 +549,23 @@ print(interactions_include)
 
 print("Interaction strength")
 
-print(set_interactions)        
+print(set_interactions)
+
 
     
 ##also, set the interaction between 1 and 0 to be 0.5 (always positive, and somewhere in the middle)
 
 #interactions[1, 0]=0.5
+
+##set other random inputs
+
+set_growth_rate=np.random.random(no_factors)*2
+
+set_growth_to_max_rate=np.random.random(no_factors)*2
+
+set_max_resources=np.random.random(no_factors)*2
+
+##and put all inputs into own long vector
 
 full_interactions_long=np.reshape(set_interactions, (1,-1))
 

@@ -43,7 +43,7 @@ def Calc_x_dot(x):
         interactions=np.reshape(interactions_long, (no_factors, no_factors))
         
         x_dot=np.zeros(no_factors)
-
+        
         for sel_ind in np.arange(no_factors):
 
                 x_growth=x[sel_ind]*growth_rate[sel_ind]
@@ -236,17 +236,17 @@ def Single_Model_Run(full_inputs, model_inputs):
 
     ##separate the full input into the actual inputs
 
-#    growth_rate=full_inputs[0:no_factors]
+    growth_rate=full_inputs[0:no_factors]
 
- #   growth_to_max_rate=full_inputs[no_factors:2*no_factors]
+    growth_to_max_rate=full_inputs[no_factors:2*no_factors]
 
-  #  max_resources=full_inputs[2*no_factors:3*no_factors]
+    max_resources=full_inputs[2*no_factors:3*no_factors]
 
-   # no_full_inputs=len(full_inputs)
+    no_full_inputs=len(full_inputs)
 
-    #interactions_long=full_inputs[3*no_factors:(no_full_inputs+1)]
+    interactions_long=full_inputs[3*no_factors:(no_full_inputs+1)]
 
-    #interactions=np.reshape(interactions_long, (no_factors, no_factors))
+    interactions=np.reshape(interactions_long, (no_factors, no_factors))
 
     #print("growth_rate = ", growth_rate)
 
@@ -299,6 +299,8 @@ def Single_Model_Run(full_inputs, model_inputs):
     before_intervention_value=x_init[0]
     
     final_value=x_init
+    
+#    print("Key interaction value = ", set_interactions[20, 0])
 
     print("before_intervention_value = ", before_intervention_value)
 
@@ -312,11 +314,11 @@ def Single_Model_Run(full_inputs, model_inputs):
         
     if kick_type==2:
 
-        set_max_resources[sel_node]=set_max_resources[sel_node]+kick_size#np.random.random(2)*2
+        max_resources[sel_node]=max_resources[sel_node]+kick_size#np.random.random(2)*2
         
     if kick_type==3:
 
-        set_interactions[sel_other_node, sel_node]=set_interactions[sel_other_node, sel_node]+kick_size#np.random.random(2)*2
+        interactions[sel_other_node, sel_node]=interactions[sel_other_node, sel_node]+kick_size#np.random.random(2)*2
         
     if kick_type==4:
     
@@ -337,6 +339,8 @@ def Single_Model_Run(full_inputs, model_inputs):
     #######
 
     intervention_effect=0
+    
+#    print("Key interaction value = ", set_interactions[20, 0])
    
     if kick_type>0: ##only double the run if we have intervened
 
@@ -373,8 +377,14 @@ def Single_Model_Run(full_inputs, model_inputs):
         final_value=x_init
         
     ##plot the PA and em supp factors
+    
+    if no_factors>20:
         
-    main_factors_to_plot=[0, 20]
+        main_factors_to_plot=[0, 20]
+        
+    else:
+        
+        main_factors_to_plot=[0]
     
     for sel_factor in main_factors_to_plot:
 
@@ -433,17 +443,17 @@ no_factors=10
 
 no_each_type_of_factor=[1, 0, 0] ##must add up to the number of factors [desirable, neutral, undesirable]
 
-no_t=400
+no_t=1000
 
-max_t=40
+max_t=50
 
-prop_interactions=0.1
+prop_interactions=0.5
 
-interaction_mean=0.1 ##average strength of the interactions
+interaction_mean=0.2 ##average strength of the interactions
 
 interaction_std=0.2 ##standard deviation of the strength of the interactions
 
-kick_size=1
+kick_size=2
 
 ##decide which nodes are desirable and undesirable
 
@@ -552,13 +562,17 @@ full_inputs=np.append(full_inputs, set_interactions_long)
 
 fig, ax = plt.subplots(nrows=3, ncols=2)
 
+##choose a node at random to change
+
+sel_intervention_node=20#np.random.permutation(np.arange(1, no_factors))[0]
+
 ##value intervention
 
 plot_row=0
 
 kick_type=1 ##1=value, 2=max, 3=interaction, 4=random
 
-sel_node=20
+sel_node=sel_intervention_node#20
 
 sel_other_node=0
 
@@ -572,9 +586,23 @@ plot_row=1
 
 kick_type=2 ##1=value, 2=max, 3=interaction, 4=random
 
-sel_node=20
+sel_node=sel_intervention_node#20
 
-sel_other_node=0
+sel_other_node=20
+
+model_inputs=[plot_output, no_factors, no_each_type_of_factor, no_t, max_t, prop_interactions, kick_size, kick_type, sel_node, sel_other_node, factor_order, plot_row]
+
+final_values=Single_Model_Run(full_inputs, model_inputs)
+
+##interaction intervention
+
+plot_row=2
+
+kick_type=3 ##1=value, 2=max, 3=interaction, 4=random
+
+sel_node=0
+
+sel_other_node=sel_intervention_node#20
 
 model_inputs=[plot_output, no_factors, no_each_type_of_factor, no_t, max_t, prop_interactions, kick_size, kick_type, sel_node, sel_other_node, factor_order, plot_row]
 
@@ -583,6 +611,8 @@ final_values=Single_Model_Run(full_inputs, model_inputs)
 print("Final values")
 
 print(final_values)
+
+print("sel intervention node = ", sel_intervention_node)
 
 plt.show()
         

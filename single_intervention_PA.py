@@ -505,6 +505,8 @@ if use_emp_network==1:
         
         no_factors=len(interactions_include[:,0])
         
+        factor_order=np.arange(no_factors)
+        
 print("no_factors = ",no_factors)
         
 print("Interactions to include")

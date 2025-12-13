@@ -404,6 +404,16 @@ def Single_Model_Run(full_inputs, model_inputs):
 
         ax[plot_row, 0].plot(full_t, full_z.T[:, sel_factor], linewidth=set_line_width, linestyle=set_line_type, label=f"{sel_factor}")
         
+        if plot_row==0:
+            
+            ax[plot_row, 0].set_title("PA (thick) and Em. supp.")
+            ax[plot_row, 1].set_title("All other constructs")
+        
+        if plot_row==2:
+            
+            ax[plot_row, 0].set_xlabel("Time")
+            ax[plot_row, 1].set_xlabel("Time")
+        
 #        ax[0].legend(bbox_to_anchor=(1, -0.1), ncol=no_factors)
 
     ##and plot all the others
@@ -435,6 +445,8 @@ def Single_Model_Run(full_inputs, model_inputs):
 
 #######################################################################################
 
+np.random.seed(1214)
+
 use_emp_network=1
 
 plot_output=1
@@ -453,7 +465,7 @@ interaction_mean=0.2 ##average strength of the interactions
 
 interaction_std=0.2 ##standard deviation of the strength of the interactions
 
-kick_size=2
+kick_size=1
 
 ##decide which nodes are desirable and undesirable
 

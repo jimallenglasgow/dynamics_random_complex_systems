@@ -21,6 +21,8 @@ import networkx as nx
 
 import pandas as pd
 
+import time as time
+
 import scipy as sp
 from scipy.integrate import solve_ivp
 
@@ -586,15 +588,13 @@ full_inputs=np.append(full_inputs, set_interactions_long)
 
 ##and plot the intervention effects
 
-no_repeats=10
+no_repeats=3
 
 ##choose a node to change
 
 x_init0=np.random.random(no_factors)*0.4
 
 sel_intervention_node=20#np.random.permutation(np.arange(1, no_factors))[0]
-
-#fig, ax = plt.subplots(ncols=2, nrows=4)
 
 ###############################################################################
 
@@ -610,7 +610,7 @@ sel_node=0
 
 sel_other_node=sel_intervention_node#20
 
-all_variable_values=np.arange(0.2, 0.81, 0.6)
+all_variable_values=np.arange(0.2, 0.26, 0.05)
 
 no_vars=len(all_variable_values)
 
@@ -680,7 +680,7 @@ for sel_variable_value in all_variable_values:
 
     intervention_array_sign=intervention_array>0
 
-    pd=np.sum(intervention_array_sign, axis=1)/no_repeats
+    pd_calc=np.sum(intervention_array_sign, axis=1)/no_repeats
 
 #    print("intervention_array_sign")
 
@@ -688,13 +688,13 @@ for sel_variable_value in all_variable_values:
 
     print("pd...")
 
-    print(pd)
+    print(pd_calc)
     
     all_data[int(data_count*no_factors):int((data_count+1)*no_factors), 0]=sel_variable_value
     
     all_data[int(data_count*no_factors):int((data_count+1)*no_factors), 1]=np.arange(no_factors)
     
-    all_data[int(data_count*no_factors):int((data_count+1)*no_factors), 2]=pd
+    all_data[int(data_count*no_factors):int((data_count+1)*no_factors), 2]=pd_calc
     
     data_count=data_count+1
 
@@ -702,15 +702,102 @@ print("All data")
 
 print(all_data)
 
+##create the data frame
 
+df=pd.DataFrame(data=all_data, columns=["Var", "Factor", "pd_value"])
 
+##and save it
 
+np.random.seed(int(time.time()))
 
+save_int=np.random.randint(low=100, high=999)
 
+df.to_csv(f'pd_data_{save_int}.csv', index=False)
 
+##and now plot it
 
+plot_data=np.array(df)
 
+print("plot_data")
 
+print(plot_data)
+
+##first PA and em supp
+
+fig, ax = plt.subplots(nrows=2)
+
+plot_factors=[0, 20]
+
+plot_row=0
+
+for sel_plot_factor in plot_factors:
+    
+    factor_data_locs=np.where(plot_data[:,1]==sel_plot_factor)[0]
+    
+    print("factor_data_locs")
+
+    print(factor_data_locs)
+    
+    factor_var_data=plot_data[factor_data_locs, 0]
+    
+    factor_pd_data=plot_data[factor_data_locs, 2]
+    
+    ax[plot_row].plot(factor_var_data, factor_pd_data, '.')
+
+    plot_row=plot_row+1
+    
+plt.show()
+        
+fig.savefig(f"many_interventions_pd_PA_em_supp_{save_int}.png")
+        
+plt.close()
+
+##and then the others
+
+half_remaining_factors=int(np.round((no_factors-2)/2)+1)
+
+fig, ax = plt.subplots(nrows=half_remaining_factors, ncols=2)
+
+all_factors_to_plot=np.arange(no_factors)
+    
+factors_to_plot=np.delete(all_factors_to_plot, plot_factors)
+
+plot_row=0
+
+plot_col=0
+
+factor_count=0
+
+for sel_plot_factor in factors_to_plot:
+    
+    if factor_count<half_remaining_factors/2:
+        
+        plot_row=0
+
+        plot_col=1
+    
+    factor_data_locs=np.where(plot_data[:,1]==sel_plot_factor)[0]
+    
+    print("factor_data_locs")
+
+    print(factor_data_locs)
+    
+    factor_var_data=plot_data[factor_data_locs, 0]
+    
+    factor_pd_data=plot_data[factor_data_locs, 2]
+    
+    ax[plot_row, plot_col].plot(factor_var_data, factor_pd_data, '.')
+
+    plot_row=plot_row+1
+    
+    factor_count=factor_count+1
+    
+    
+plt.show()
+        
+fig.savefig(f"many_interventions_pd_other_factors_{save_int}.png")
+        
+plt.close()
 
 
 

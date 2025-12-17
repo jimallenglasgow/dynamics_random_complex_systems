@@ -21,6 +21,8 @@ import networkx as nx
 
 import pandas as pd
 
+import time as time
+
 import scipy as sp
 from scipy.integrate import solve_ivp
 
@@ -465,7 +467,7 @@ no_each_type_of_factor=[1, 0, 0] ##must add up to the number of factors [desirab
 
 no_t=1000
 
-max_t=50
+max_t=3
 
 prop_interactions=0.5
 
@@ -586,7 +588,7 @@ full_inputs=np.append(full_inputs, set_interactions_long)
 
 ##and plot the intervention effects
 
-no_repeats=10
+no_repeats=100
 
 ##choose a node to change
 
@@ -1021,8 +1023,12 @@ if max_intervention_effect>50:
 ax[plot_row+1, 1].set_xlim([min_intervention_effect-1, max_intervention_effect+1])
 
 plt.show()
+
+np.random.seed(int(time.time()))
+
+save_int=np.random.randint(low=100, high=999)
         
-fig.savefig(f"many_interventions_{use_emp_network}_int_node_{sel_intervention_node}.png")
+fig.savefig(f"many_interventions_{use_emp_network}_int_node_{sel_intervention_node}_{save_int}.png")
         
 plt.close()
 

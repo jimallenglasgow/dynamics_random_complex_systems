@@ -78,25 +78,23 @@ no_factors=int(np.max(plot_data[:, 1]))
 
 half_remaining_factors=int(np.round((no_factors-2)/2)+1)
 
-fig, ax = plt.subplots(nrows=half_remaining_factors+1, ncols=2)
+fig, ax = plt.subplots(nrows=half_remaining_factors-1, ncols=2)
 
 all_factors_to_plot=np.arange(no_factors)
     
 factors_to_plot=np.delete(all_factors_to_plot, plot_factors)
 
-plot_row=0
-
 plot_col=0
 
-factor_count=0
+plot_row=0
 
-for sel_plot_factor in factors_to_plot:
+#factor_count=0
+
+for sel_plot_factor_count in np.arange(int(np.round(len(factors_to_plot)/2))):
     
-    if factor_count<half_remaining_factors/2:
-        
-        plot_row=0
-
-        plot_col=1
+    print("sel_plot_factor_count = ",sel_plot_factor_count)
+    
+    sel_plot_factor=factors_to_plot[sel_plot_factor_count]
     
     factor_data_locs=np.where(plot_data[:,1]==sel_plot_factor)[0]
     
@@ -112,7 +110,35 @@ for sel_plot_factor in factors_to_plot:
 
     plot_row=plot_row+1
     
-    factor_count=factor_count+1
+#    factor_count=factor_count+1
+
+plot_col=1
+
+plot_row=0
+
+#factor_count=0
+
+for sel_plot_factor_count in np.arange(int(np.round(len(factors_to_plot)/2))):
+    
+    print("sel_plot_factor_count = ",sel_plot_factor_count)
+    
+    sel_plot_factor=factors_to_plot[sel_plot_factor_count+int(np.round(len(factors_to_plot)/2))-1]
+    
+    factor_data_locs=np.where(plot_data[:,1]==sel_plot_factor)[0]
+    
+    print("factor_data_locs")
+
+    print(factor_data_locs)
+    
+    factor_var_data=plot_data[factor_data_locs, 0]
+    
+    factor_pd_data=plot_data[factor_data_locs, 2]
+    
+    ax[plot_row, plot_col].plot(factor_var_data, factor_pd_data, '.')
+
+    plot_row=plot_row+1
+    
+#    factor_count=factor_count+1
     
     
 plt.show()

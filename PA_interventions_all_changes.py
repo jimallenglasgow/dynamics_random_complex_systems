@@ -1022,6 +1022,17 @@ if max_intervention_effect>50:
 
 ax[plot_row+1, 1].set_xlim([min_intervention_effect-1, max_intervention_effect+1])
 
+
+
+
+
+
+
+
+#############################################################
+
+##save the plot
+
 plt.show()
 
 np.random.seed(int(time.time()))

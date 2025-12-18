@@ -19,6 +19,8 @@ import matplotlib.animation as animation
 
 import networkx as nx
 
+import time as time
+
 import pandas as pd
 
 import scipy as sp
@@ -321,6 +323,32 @@ def Single_Model_Run(full_inputs, model_inputs):
         interactions[sel_other_node, sel_node]=interactions[sel_other_node, sel_node]+kick_size#np.random.random(2)*2
         
     if kick_type==4:
+        
+        possible_structural_additions=np.where(interactions==0)
+        
+#        print("possible_structural_additions")
+        
+ #       print(possible_structural_additions)
+        
+        no_possible_structural_additions=len(possible_structural_additions[0])
+        
+        sel_structural_addition=np.random.permutation(np.arange(no_possible_structural_additions))[0]
+        
+  #      print("sel_structural_addition = ",sel_structural_addition)
+        
+        sel_i=possible_structural_additions[0][sel_structural_addition]
+        
+        sel_j=possible_structural_additions[1][sel_structural_addition]
+        
+   #     print("A to change = (",sel_i,",",sel_j,")")
+        
+    #    print(interactions[sel_i, sel_j])
+        
+        interactions[sel_i, sel_j]=np.random.normal(0, interaction_std)
+        
+     #   print("new interaction = ",interactions[sel_i, sel_j])
+        
+    if kick_type==5:
     
         all_possible_intervention_points=np.where(full_inputs!=0)[0]
         
@@ -572,7 +600,7 @@ full_inputs=np.append(full_inputs, set_max_resources)
 
 full_inputs=np.append(full_inputs, set_interactions_long)
 
-fig, ax = plt.subplots(nrows=3, ncols=2)
+fig, ax = plt.subplots(nrows=4, ncols=2)
 
 ##choose a node at random to change
 
@@ -582,7 +610,7 @@ sel_intervention_node=20#np.random.permutation(np.arange(1, no_factors))[0]
 
 plot_row=0
 
-kick_type=1 ##1=value, 2=max, 3=interaction, 4=random
+kick_type=1 ##1=value, 2=max, 3=interaction, 4=structure, 5=random
 
 sel_node=sel_intervention_node#20
 
@@ -596,7 +624,7 @@ final_values=Single_Model_Run(full_inputs, model_inputs)
 
 plot_row=1
 
-kick_type=2 ##1=value, 2=max, 3=interaction, 4=random
+kick_type=2 ##1=value, 2=max, 3=interaction, 4=structure, 5=random
 
 sel_node=sel_intervention_node#20
 
@@ -610,7 +638,7 @@ final_values=Single_Model_Run(full_inputs, model_inputs)
 
 plot_row=2
 
-kick_type=3 ##1=value, 2=max, 3=interaction, 4=random
+kick_type=3 ##1=value, 2=max, 3=interaction, 4=structure, 5=random
 
 sel_node=0
 
@@ -626,9 +654,37 @@ print(final_values)
 
 print("sel intervention node = ", sel_intervention_node)
 
+##structure intervention
+
+plot_row=3
+
+kick_type=4 ##1=value, 2=max, 3=interaction, 4=structure, 5=random
+
+sel_node=0
+
+sel_other_node=sel_intervention_node#20
+
+model_inputs=[plot_output, no_factors, no_each_type_of_factor, no_t, max_t, prop_interactions, kick_size, kick_type, sel_node, sel_other_node, factor_order, plot_row]
+
+final_values=Single_Model_Run(full_inputs, model_inputs)
+
+print("Final values")
+
+print(final_values)
+
+print("sel intervention node = ", sel_intervention_node)
+
+########
+
+##plot and save the results
+
 plt.show()
+
+np.random.seed(int(time.time()))
+
+save_int=np.random.randint(low=100, high=999)
         
-fig.savefig("intervention_examples.png")
+fig.savefig(f"intervention_examples_{save_int}.png")
         
 plt.close()
 

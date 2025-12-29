@@ -1,6 +1,6 @@
 ##location: cd Github/dynamics_random_complex_systems
 
-##to run: python single_intervention_PA.py
+##to run: python3 single_intervention_PA.py
 
 ########################################################
 

@@ -1,6 +1,6 @@
 ##location: cd Github/dynamics_random_complex_systems
 
-##to run: python PA_interventions_all_changes.py
+##to run: python3 PA_interventions_all_changes.py
 
 ########################################################
 
@@ -467,7 +467,7 @@ no_each_type_of_factor=[1, 0, 0] ##must add up to the number of factors [desirab
 
 no_t=1000
 
-max_t=3
+max_t=50
 
 prop_interactions=0.5
 
@@ -475,7 +475,7 @@ interaction_mean=0.2 ##average strength of the interactions
 
 interaction_std=0.2 ##standard deviation of the strength of the interactions
 
-kick_size=1
+kick_size=0.2
 
 ##decide which nodes are desirable and undesirable
 
@@ -588,13 +588,13 @@ full_inputs=np.append(full_inputs, set_interactions_long)
 
 ##and plot the intervention effects
 
-no_repeats=100
+no_repeats=50
 
 ##choose a node to change
 
 x_init0=np.random.random(no_factors)*0.4
 
-sel_intervention_node=20#np.random.permutation(np.arange(1, no_factors))[0]
+sel_intervention_node=5#20#np.random.permutation(np.arange(1, no_factors))[0]
 
 sel_node=sel_intervention_node#20
 

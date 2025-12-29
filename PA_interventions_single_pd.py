@@ -1,6 +1,6 @@
 ##location: cd Github/dynamics_random_complex_systems
 
-##to run: python PA_interventions_single_pd.py
+##to run: python3 PA_interventions_single_pd.py
 
 ########################################################
 
@@ -588,7 +588,7 @@ full_inputs=np.append(full_inputs, set_interactions_long)
 
 ##and plot the intervention effects
 
-no_repeats=3
+no_repeats=10
 
 ##choose a node to change
 
@@ -610,7 +610,7 @@ sel_node=0
 
 sel_other_node=sel_intervention_node#20
 
-all_variable_values=np.arange(0.2, 0.26, 0.05)
+all_variable_values=np.arange(1, no_factors, 1)
 
 no_vars=len(all_variable_values)
 
@@ -620,7 +620,7 @@ data_count=0
 
 for sel_variable_value in all_variable_values:
     
-    interaction_mean=sel_variable_value
+    sel_other_node=sel_variable_value
     
     for intervention_count in np.arange(no_repeats):
     

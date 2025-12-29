@@ -1,6 +1,6 @@
 ##location: cd Github/dynamics_random_complex_systems
 
-##to run: python plot_PA_interventions_single_pd.py
+##to run: python3 plot_PA_interventions_single_pd.py
 
 ########################################################
 
@@ -30,7 +30,7 @@ from scipy.integrate import solve_ivp
 
 ##and load in the data
 
-save_int=385
+save_int=774
 
 df=pd.read_csv(f'pd_data_{save_int}.csv')
 

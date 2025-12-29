@@ -1,6 +1,6 @@
 ##location: cd Github/dynamics_random_complex_systems
 
-##to run: python PA_interventions_example.py
+##to run: python3 PA_interventions_example.py
 
 ########################################################
 
@@ -346,6 +346,8 @@ def Single_Model_Run(full_inputs, model_inputs):
         
         interactions[sel_i, sel_j]=np.random.normal(0, interaction_std)
         
+        interactions[sel_other_node, sel_node]=interactions[sel_other_node, sel_node]+kick_size
+        
      #   print("new interaction = ",interactions[sel_i, sel_j])
         
     if kick_type==5:
@@ -600,11 +602,11 @@ full_inputs=np.append(full_inputs, set_max_resources)
 
 full_inputs=np.append(full_inputs, set_interactions_long)
 
-fig, ax = plt.subplots(nrows=4, ncols=2)
+fig, ax = plt.subplots(nrows=3, ncols=2)
 
 ##choose a node at random to change
 
-sel_intervention_node=20#np.random.permutation(np.arange(1, no_factors))[0]
+sel_intervention_node=5#20#np.random.permutation(np.arange(1, no_factors))[0]
 
 ##value intervention
 
@@ -622,6 +624,12 @@ final_values=Single_Model_Run(full_inputs, model_inputs)
 
 ##max intervention
 
+full_inputs=np.append(set_growth_rate, set_growth_to_max_rate)
+
+full_inputs=np.append(full_inputs, set_max_resources)
+
+full_inputs=np.append(full_inputs, set_interactions_long)
+
 plot_row=1
 
 kick_type=2 ##1=value, 2=max, 3=interaction, 4=structure, 5=random
@@ -635,6 +643,12 @@ model_inputs=[plot_output, no_factors, no_each_type_of_factor, no_t, max_t, prop
 final_values=Single_Model_Run(full_inputs, model_inputs)
 
 ##interaction intervention
+
+full_inputs=np.append(set_growth_rate, set_growth_to_max_rate)
+
+full_inputs=np.append(full_inputs, set_max_resources)
+
+full_inputs=np.append(full_inputs, set_interactions_long)
 
 plot_row=2
 
@@ -656,23 +670,29 @@ print("sel intervention node = ", sel_intervention_node)
 
 ##structure intervention
 
-plot_row=3
+#full_inputs=np.append(set_growth_rate, set_growth_to_max_rate)
 
-kick_type=4 ##1=value, 2=max, 3=interaction, 4=structure, 5=random
+#full_inputs=np.append(full_inputs, set_max_resources)
 
-sel_node=0
+#full_inputs=np.append(full_inputs, set_interactions_long)
 
-sel_other_node=sel_intervention_node#20
+#plot_row=3
 
-model_inputs=[plot_output, no_factors, no_each_type_of_factor, no_t, max_t, prop_interactions, kick_size, kick_type, sel_node, sel_other_node, factor_order, plot_row]
+#kick_type=4 ##1=value, 2=max, 3=interaction, 4=structure, 5=random
 
-final_values=Single_Model_Run(full_inputs, model_inputs)
+#sel_node=0
 
-print("Final values")
+#sel_other_node=sel_intervention_node#20
 
-print(final_values)
+#model_inputs=[plot_output, no_factors, no_each_type_of_factor, no_t, max_t, prop_interactions, kick_size, kick_type, sel_node, sel_other_node, factor_order, plot_row]#
 
-print("sel intervention node = ", sel_intervention_node)
+#final_values=Single_Model_Run(full_inputs, model_inputs)
+
+#print("Final values")
+
+#print(final_values)
+
+#print("sel intervention node = ", sel_intervention_node)
 
 ########
 

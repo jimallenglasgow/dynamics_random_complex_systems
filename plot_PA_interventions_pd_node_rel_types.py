@@ -30,7 +30,7 @@ from scipy.integrate import solve_ivp
 
 ##and load in the data
 
-save_int=774
+save_int=868
 
 df=pd.read_csv(f'pd_data_{save_int}.csv')
 

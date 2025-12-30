@@ -588,7 +588,7 @@ full_inputs=np.append(full_inputs, set_interactions_long)
 
 ##and plot the intervention effects
 
-no_repeats=10
+no_repeats=500
 
 ##choose a node to change
 

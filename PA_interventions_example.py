@@ -507,9 +507,9 @@ no_factors=10
 
 no_each_type_of_factor=[1, 0, 0] ##must add up to the number of factors [desirable, neutral, undesirable]
 
-no_t=500
+no_t=50
 
-max_t=50
+max_t=5
 
 prop_interactions=0.5
 

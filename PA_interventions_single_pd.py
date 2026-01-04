@@ -47,10 +47,14 @@ def Calc_x_dot(x):
         x_dot=np.zeros(no_factors)
         
         for sel_ind in np.arange(no_factors):
+        
+                #print(interactions[sel_ind, sel_ind])
 
                 x_growth=x[sel_ind]*growth_rate[sel_ind]
 
-                x_logistic_growth=growth_to_max_rate[sel_ind]*max_resources[sel_ind]-x[sel_ind]
+#                x_logistic_growth=growth_to_max_rate[sel_ind]*max_resources[sel_ind]-interactions[sel_ind, sel_ind]*x[sel_ind]
+
+                x_logistic_growth=max_resources[sel_ind]
 
                 for sel_other_ind in np.arange(no_factors):
 		
@@ -62,9 +66,9 @@ def Calc_x_dot(x):
             
             x_dot_tmp=x_dot[sel_ind]
             
-            if x_dot_tmp>100:
+            if x_dot_tmp>10:
                 
-                x_dot[sel_ind]=100
+                x_dot[sel_ind]=10
 			
         return(x_dot)
 
@@ -324,7 +328,19 @@ def Single_Model_Run(full_inputs, model_inputs):
         
     if kick_type==2:
 
-        max_resources[sel_node]=max_resources[sel_node]+kick_size#np.random.random(2)*2
+        interaction_type=interactions[sel_node, 0]
+        
+        #print("interaction_type = ", interaction_type)
+
+        kick_sign=np.sign(interaction_type)
+        
+        if kick_sign==0:
+        
+                kick_sign=1
+
+        #print("kick_sign = ", kick_sign)
+
+        max_resources[sel_node]=max_resources[sel_node]+kick_size*kick_sign#np.random.random(2)*2
         
     if kick_type==3:
 
@@ -467,15 +483,15 @@ no_each_type_of_factor=[1, 0, 0] ##must add up to the number of factors [desirab
 
 no_t=1000
 
-max_t=50
+max_t=100
 
 prop_interactions=0.5
 
-interaction_mean=0.2 ##average strength of the interactions
+interaction_mean=1/no_factors ##average strength of the interactions
 
-interaction_std=0.2 ##standard deviation of the strength of the interactions
+interaction_std=1/no_factors ##standard deviation of the strength of the interactions
 
-kick_size=1
+kick_size=4/no_factors
 
 ##decide which nodes are desirable and undesirable
 
@@ -506,11 +522,11 @@ print("Interactions to include")
 
 print(interactions_include)
 
-##no self loops
+##include negative self loops
 
 for i in np.arange(no_factors):
 
-    interactions_include[i,i]=0
+    interactions_include[i,i]=1
 
 ##generate some random interactions
     
@@ -536,6 +552,10 @@ for i in np.arange(no_factors):
             
             sel_interaction=np.random.normal(0, interaction_std)
             
+        if sel_interaction_type==3:
+            
+            sel_interaction=-abs(np.random.normal(0.5, interaction_std))
+                    
         set_interactions[i, j]=sel_interaction
 
 print("Connections")
@@ -545,6 +565,12 @@ print(interactions_include)
 print("Interaction strength")
 
 print(set_interactions)
+
+##add in a self-interaction, which will take a different value from the other interactions
+
+for i in np.arange(no_factors):
+
+    interactions_include[i,i]=3#0
 
 
     
@@ -612,6 +638,8 @@ sel_other_node=sel_intervention_node#20
 
 all_variable_values=np.arange(1, no_factors, 1)
 
+#all_variable_values=np.arange(1, 11, 1)
+
 no_vars=len(all_variable_values)
 
 all_data=np.zeros([int(no_vars*no_factors), 3])
@@ -620,7 +648,7 @@ data_count=0
 
 for sel_variable_value in all_variable_values:
     
-    sel_other_node=sel_variable_value
+    sel_node=sel_variable_value
     
     for intervention_count in np.arange(no_repeats):
     
@@ -647,6 +675,10 @@ for sel_variable_value in all_variable_values:
                 if sel_interaction_type==2:
                     
                     sel_interaction=np.random.normal(0, interaction_std)
+                    
+                if sel_interaction_type==3:
+            
+                    sel_interaction=-abs(np.random.normal(0.5, interaction_std))
                     
                 set_interactions[i, j]=sel_interaction
                 

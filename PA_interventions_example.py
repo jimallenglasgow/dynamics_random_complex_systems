@@ -50,13 +50,23 @@ def Calc_x_dot(x):
 
                 x_growth=x[sel_ind]*growth_rate[sel_ind]
 
-                x_logistic_growth=growth_to_max_rate[sel_ind]*max_resources[sel_ind]-x[sel_ind]
+                #x_logistic_growth=growth_to_max_rate[sel_ind]*max_resources[sel_ind]#-x[sel_ind]
+                
+                x_logistic_growth=max_resources[sel_ind]#-x[sel_ind]
 
                 for sel_other_ind in np.arange(no_factors):
 		
                         x_logistic_growth=x_logistic_growth+interactions[sel_other_ind, sel_ind]*x[sel_other_ind]
 			
                 x_dot[sel_ind]=x_growth*x_logistic_growth
+                
+        for sel_ind in np.arange(no_factors):
+            
+            x_dot_tmp=x_dot[sel_ind]
+            
+            if x_dot_tmp>10:
+                
+                x_dot[sel_ind]=10
 			
         return(x_dot)
 
@@ -264,7 +274,7 @@ def Single_Model_Run(full_inputs, model_inputs):
 
     single_kick_data=[]
 
-    x_init=np.random.random(no_factors)*0.4
+    x_init=np.random.random(no_factors)*0.2#(1/no_factors)
             
     full_z=np.reshape(x_init,(no_factors,1))
 
@@ -316,7 +326,19 @@ def Single_Model_Run(full_inputs, model_inputs):
         
     if kick_type==2:
 
-        max_resources[sel_node]=max_resources[sel_node]+kick_size#np.random.random(2)*2
+        interaction_type=interactions[sel_node, 0]
+        
+        #print("interaction_type = ", interaction_type)
+
+        kick_sign=np.sign(interaction_type)
+        
+        if kick_sign==0:
+        
+                kick_sign=1
+
+        #print("kick_sign = ", kick_sign)
+
+        max_resources[sel_node]=max_resources[sel_node]+kick_size*kick_sign#np.random.random(2)*2
         
     if kick_type==3:
 
@@ -475,7 +497,7 @@ def Single_Model_Run(full_inputs, model_inputs):
 
 #######################################################################################
 
-np.random.seed(1214)
+#np.random.seed(1214)
 
 use_emp_network=1
 
@@ -485,17 +507,17 @@ no_factors=10
 
 no_each_type_of_factor=[1, 0, 0] ##must add up to the number of factors [desirable, neutral, undesirable]
 
-no_t=1000
+no_t=500
 
 max_t=50
 
 prop_interactions=0.5
 
-interaction_mean=0.2 ##average strength of the interactions
+interaction_mean=1/no_factors ##average strength of the interactions
 
-interaction_std=0.2 ##standard deviation of the strength of the interactions
+interaction_std=1/no_factors ##standard deviation of the strength of the interactions
 
-kick_size=1
+kick_size=1#/no_factors
 
 ##decide which nodes are desirable and undesirable
 
@@ -526,11 +548,11 @@ print("Interactions to include")
 
 print(interactions_include)
 
-##no self loops
+##add in a different interaction size for the self-regulation
 
 for i in np.arange(no_factors):
 
-    interactions_include[i,i]=0
+    interactions_include[i,i]=3#0
 
 ##generate some random interactions
     
@@ -546,7 +568,7 @@ for i in np.arange(no_factors):
         
         if sel_interaction_type==-1:
             
-            sel_interaction=-abs(np.random.normal(-interaction_mean, interaction_std))
+            sel_interaction=-abs(np.random.normal(interaction_mean, interaction_std))
             
         if sel_interaction_type==1:
             
@@ -555,6 +577,10 @@ for i in np.arange(no_factors):
         if sel_interaction_type==2:
             
             sel_interaction=np.random.normal(0, interaction_std)
+            
+        if sel_interaction_type==3:
+            
+            sel_interaction=-abs(np.random.normal(0.5, interaction_std))
             
         set_interactions[i, j]=sel_interaction
 
@@ -574,12 +600,17 @@ print(set_interactions)
 
 ##set other random inputs
 
-set_growth_rate=np.random.random(no_factors)*2
+set_growth_rate=np.ones(no_factors)#np.random.random(no_factors)#*(1/no_factors)
 
-set_growth_to_max_rate=np.random.random(no_factors)*2
+set_growth_to_max_rate=np.ones(no_factors)#np.random.random(no_factors)*2
 
 set_max_resources=np.random.random(no_factors)*2
 
+#for i in np.arange(no_factors):
+
+ #       set_max_resources[i]=abs(set_interactions[i, i])
+        
+        
 ##and put all inputs into own long vector
 
 full_interactions_long=np.reshape(set_interactions, (1,-1))
@@ -606,7 +637,7 @@ fig, ax = plt.subplots(nrows=3, ncols=2)
 
 ##choose a node at random to change
 
-sel_intervention_node=5#20#np.random.permutation(np.arange(1, no_factors))[0]
+sel_intervention_node=20#5#np.random.permutation(np.arange(1, no_factors))[0]
 
 ##value intervention
 

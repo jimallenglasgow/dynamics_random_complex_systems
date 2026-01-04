@@ -30,7 +30,7 @@ from scipy.integrate import solve_ivp
 
 ##and load in the data
 
-save_int=868
+save_int=886
 
 df=pd.read_csv(f'pd_data_{save_int}.csv')
 
@@ -41,6 +41,7 @@ interactions_include=np.array(pd.read_csv("PA_network.csv"))#, header=None)
 all_PA_interactions=(interactions_include[:,0])#+1)/3
 
 PA_interactions=np.delete(all_PA_interactions, 0)
+#PA_interactions=np.delete(all_PA_interactions, np.arange(10,22))
 
 print("PA_interactions")
 

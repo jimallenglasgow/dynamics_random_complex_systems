@@ -48,9 +48,13 @@ def Calc_x_dot(x):
         
         for sel_ind in np.arange(no_factors):
 
+                #print(interactions[sel_ind, sel_ind])
+
                 x_growth=x[sel_ind]*growth_rate[sel_ind]
 
-                x_logistic_growth=growth_to_max_rate[sel_ind]*max_resources[sel_ind]-x[sel_ind]
+#                x_logistic_growth=growth_to_max_rate[sel_ind]*max_resources[sel_ind]-interactions[sel_ind, sel_ind]*x[sel_ind]
+
+                x_logistic_growth=max_resources[sel_ind]
 
                 for sel_other_ind in np.arange(no_factors):
 		
@@ -471,11 +475,11 @@ max_t=50
 
 prop_interactions=0.5
 
-interaction_mean=0.2 ##average strength of the interactions
+interaction_mean=0#1/no_factors ##average strength of the interactions
 
-interaction_std=0.2 ##standard deviation of the strength of the interactions
+interaction_std=1/no_factors ##standard deviation of the strength of the interactions
 
-kick_size=0.2
+kick_size=4/no_factors
 
 ##decide which nodes are desirable and undesirable
 
@@ -510,7 +514,7 @@ print(interactions_include)
 
 for i in np.arange(no_factors):
 
-    interactions_include[i,i]=0
+    interactions_include[i,i]=3
 
 ##generate some random interactions
     
@@ -535,6 +539,10 @@ for i in np.arange(no_factors):
         if sel_interaction_type==2:
             
             sel_interaction=np.random.normal(0, interaction_std)
+            
+        if sel_interaction_type==3:
+            
+            sel_interaction=-abs(np.random.normal(0.5, interaction_std))
             
         set_interactions[i, j]=sel_interaction
 
@@ -588,7 +596,7 @@ full_inputs=np.append(full_inputs, set_interactions_long)
 
 ##and plot the intervention effects
 
-no_repeats=50
+no_repeats=200
 
 ##choose a node to change
 
@@ -640,6 +648,10 @@ for intervention_count in np.arange(no_repeats):
                 
                 sel_interaction=np.random.normal(0, interaction_std)
                 
+            if sel_interaction_type==3:
+            
+                sel_interaction=-abs(np.random.normal(0.5, interaction_std))
+            
             set_interactions[i, j]=sel_interaction
             
     full_interactions_long=np.reshape(set_interactions, (1,-1))
@@ -760,6 +772,10 @@ for intervention_count in np.arange(no_repeats):
                 
                 sel_interaction=np.random.normal(0, interaction_std)
                 
+            if sel_interaction_type==3:
+            
+                sel_interaction=-abs(np.random.normal(0.5, interaction_std))
+                
             set_interactions[i, j]=sel_interaction
             
     full_interactions_long=np.reshape(set_interactions, (1,-1))
@@ -871,6 +887,10 @@ for intervention_count in np.arange(no_repeats):
             if sel_interaction_type==2:
                 
                 sel_interaction=np.random.normal(0, interaction_std)
+            
+            if sel_interaction_type==3:
+            
+                sel_interaction=-abs(np.random.normal(0.5, interaction_std))
                 
             set_interactions[i, j]=sel_interaction
             

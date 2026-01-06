@@ -526,7 +526,7 @@ print(interactions_include)
 
 for i in np.arange(no_factors):
 
-    interactions_include[i,i]=1
+    interactions_include[i,i]=3
 
 ##generate some random interactions
     
@@ -554,7 +554,7 @@ for i in np.arange(no_factors):
             
         if sel_interaction_type==3:
             
-            sel_interaction=-abs(np.random.normal(0.5, interaction_std))
+            sel_interaction=-1#abs(np.random.normal(0.5, interaction_std))
                     
         set_interactions[i, j]=sel_interaction
 
@@ -620,7 +620,7 @@ no_repeats=500
 
 x_init0=np.random.random(no_factors)*0.4
 
-sel_intervention_node=20#np.random.permutation(np.arange(1, no_factors))[0]
+sel_intervention_node=5#20#np.random.permutation(np.arange(1, no_factors))[0]
 
 ###############################################################################
 
@@ -630,15 +630,13 @@ intervention_array=np.zeros([no_factors, no_repeats])
 
 intervention_factors=np.zeros([no_factors, no_repeats])
 
-kick_type=2 ##1=value, 2=max, 3=interaction, 4=random
+kick_type=3 ##1=value, 2=max, 3=interaction, 4=random
 
 sel_node=0
 
 sel_other_node=sel_intervention_node#20
 
-all_variable_values=np.arange(1, no_factors, 1)
-
-#all_variable_values=np.arange(1, 11, 1)
+all_variable_values=np.arange(0, 0.4, 0.05)
 
 no_vars=len(all_variable_values)
 
@@ -648,7 +646,7 @@ data_count=0
 
 for sel_variable_value in all_variable_values:
     
-    sel_node=sel_variable_value
+    interaction_mean=sel_variable_value
     
     for intervention_count in np.arange(no_repeats):
     
@@ -666,11 +664,15 @@ for sel_variable_value in all_variable_values:
                 
                 if sel_interaction_type==-1:
                     
-                    sel_interaction=-abs(np.random.normal(-interaction_mean, interaction_std))
+                    #sel_interaction=-abs(np.random.normal(-interaction_mean, interaction_std))
+                    
+                    sel_interaction=np.random.normal(-interaction_mean, interaction_std)
                     
                 if sel_interaction_type==1:
                     
-                    sel_interaction=abs(np.random.normal(interaction_mean, interaction_std))
+                    #sel_interaction=abs(np.random.normal(interaction_mean, interaction_std))
+                    
+                    sel_interaction=np.random.normal(interaction_mean, interaction_std)
                     
                 if sel_interaction_type==2:
                     
@@ -678,7 +680,7 @@ for sel_variable_value in all_variable_values:
                     
                 if sel_interaction_type==3:
             
-                    sel_interaction=-abs(np.random.normal(0.5, interaction_std))
+                    sel_interaction=-1#abs(np.random.normal(0.5, interaction_std))
                     
                 set_interactions[i, j]=sel_interaction
                 

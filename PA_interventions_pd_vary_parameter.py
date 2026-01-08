@@ -1,6 +1,6 @@
 ##location: cd Github/dynamics_random_complex_systems
 
-##to run: python3 PA_interventions_single_pd.py
+##to run: python PA_interventions_pd_vary_parameter.py
 
 ########################################################
 
@@ -64,11 +64,11 @@ def Calc_x_dot(x):
                 
         for sel_ind in np.arange(no_factors):
             
-            x_dot_tmp=x_dot[sel_ind]
+            x_tmp=x[sel_ind]
             
-            if x_dot_tmp>10:
+            if x_tmp>50:
                 
-                x_dot[sel_ind]=10
+                x_dot[sel_ind]=0
 			
         return(x_dot)
 

@@ -1,6 +1,6 @@
 ##location: cd Github/dynamics_random_complex_systems
 
-##to run: python3 PA_interventions_example.py
+##to run: python PA_interventions_example.py
 
 ########################################################
 
@@ -62,12 +62,12 @@ def Calc_x_dot(x):
                 
         for sel_ind in np.arange(no_factors):
             
-            x_dot_tmp=x_dot[sel_ind]
+            x_tmp=x[sel_ind]
             
-            if x_dot_tmp>10:
+            if x_tmp>50:
                 
-                x_dot[sel_ind]=10
-			
+                x_dot[sel_ind]=0
+                
         return(x_dot)
 
 def Behaviour_Model_ODE(t, x):#, alpha, beta, gamma, delta, epsilon):
@@ -503,19 +503,19 @@ use_emp_network=1
 
 plot_output=1
 
-no_factors=10
+no_factors=21
 
 no_each_type_of_factor=[1, 0, 0] ##must add up to the number of factors [desirable, neutral, undesirable]
 
-no_t=50
+no_t=1000
 
-max_t=5
+max_t=100
 
 prop_interactions=0.5
 
-interaction_mean=1/no_factors ##average strength of the interactions
+interaction_mean=0#/no_factors ##average strength of the interactions
 
-interaction_std=1/no_factors ##standard deviation of the strength of the interactions
+interaction_std=0.2#/no_factors ##standard deviation of the strength of the interactions
 
 kick_size=1#/no_factors
 
@@ -580,7 +580,7 @@ for i in np.arange(no_factors):
             
         if sel_interaction_type==3:
             
-            sel_interaction=-abs(np.random.normal(0.5, interaction_std))
+            sel_interaction=-1#abs(np.random.normal(0.5, interaction_std))
             
         set_interactions[i, j]=sel_interaction
 

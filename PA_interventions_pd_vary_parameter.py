@@ -481,17 +481,17 @@ no_factors=10
 
 no_each_type_of_factor=[1, 0, 0] ##must add up to the number of factors [desirable, neutral, undesirable]
 
-no_t=50
+no_t=1000
 
-max_t=5
+max_t=50
 
 prop_interactions=0.5
 
-interaction_mean=1/no_factors ##average strength of the interactions
+interaction_mean=1#/no_factors ##average strength of the interactions
 
-interaction_std=1/no_factors ##standard deviation of the strength of the interactions
+interaction_std=0.2#1/no_factors ##standard deviation of the strength of the interactions
 
-kick_size=4/no_factors
+kick_size=0.5#4/no_factors
 
 ##decide which nodes are desirable and undesirable
 
@@ -542,7 +542,7 @@ for i in np.arange(no_factors):
         
         if sel_interaction_type==-1:
             
-            sel_interaction=-abs(np.random.normal(-interaction_mean, interaction_std))
+            sel_interaction=-abs(np.random.normal(interaction_mean, interaction_std))
             
         if sel_interaction_type==1:
             
@@ -620,7 +620,7 @@ no_repeats=500
 
 x_init0=np.random.random(no_factors)*0.4
 
-sel_intervention_node=5#20#np.random.permutation(np.arange(1, no_factors))[0]
+sel_intervention_node=20#5#np.random.permutation(np.arange(1, no_factors))[0]
 
 ###############################################################################
 
@@ -636,7 +636,7 @@ sel_node=0
 
 sel_other_node=sel_intervention_node#20
 
-all_variable_values=np.arange(0, 0.4, 0.05)
+all_variable_values=np.arange(0, 1, 0.1)
 
 no_vars=len(all_variable_values)
 
@@ -664,15 +664,15 @@ for sel_variable_value in all_variable_values:
                 
                 if sel_interaction_type==-1:
                     
-                    #sel_interaction=-abs(np.random.normal(-interaction_mean, interaction_std))
+                    sel_interaction=-abs(np.random.normal(interaction_mean, interaction_std))
                     
-                    sel_interaction=np.random.normal(-interaction_mean, interaction_std)
+                    #sel_interaction=np.random.normal(-interaction_mean, interaction_std)
                     
                 if sel_interaction_type==1:
                     
-                    #sel_interaction=abs(np.random.normal(interaction_mean, interaction_std))
+                    sel_interaction=abs(np.random.normal(interaction_mean, interaction_std))
                     
-                    sel_interaction=np.random.normal(interaction_mean, interaction_std)
+                    #sel_interaction=np.random.normal(interaction_mean, interaction_std)
                     
                 if sel_interaction_type==2:
                     

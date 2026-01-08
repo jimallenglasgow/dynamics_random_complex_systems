@@ -1,6 +1,6 @@
 ##location: cd Github/dynamics_random_complex_systems
 
-##to run: python PA_interventions_pd_vary_parameter.py
+##to run: python3 PA_interventions_pd_vary_parameter.py
 
 ########################################################
 
@@ -614,7 +614,7 @@ full_inputs=np.append(full_inputs, set_interactions_long)
 
 ##and plot the intervention effects
 
-no_repeats=500
+no_repeats=250
 
 ##choose a node to change
 
@@ -636,11 +636,11 @@ sel_node=0
 
 sel_other_node=sel_intervention_node#20
 
-all_variable_values=np.arange(0, 1, 0.1)
+all_variable_values=np.arange(0, 1.2, 0.1)
 
 no_vars=len(all_variable_values)
 
-all_data=np.zeros([int(no_vars*no_factors), 3])
+all_data=np.zeros([int(no_vars*no_factors), 4])
 
 data_count=0
 
@@ -715,6 +715,12 @@ for sel_variable_value in all_variable_values:
     intervention_array_sign=intervention_array>0
 
     pd_calc=np.sum(intervention_array_sign, axis=1)/no_repeats
+    
+    ##and also check for 0's
+    
+    intervention_array_zeros=abs(intervention_array)<0.05
+
+    rope_calc=np.sum(intervention_array_zeros, axis=1)/no_repeats
 
 #    print("intervention_array_sign")
 
@@ -724,11 +730,17 @@ for sel_variable_value in all_variable_values:
 
     print(pd_calc)
     
+    print("rope...")
+    
+    print(rope_calc)
+    
     all_data[int(data_count*no_factors):int((data_count+1)*no_factors), 0]=sel_variable_value
     
     all_data[int(data_count*no_factors):int((data_count+1)*no_factors), 1]=np.arange(no_factors)
     
     all_data[int(data_count*no_factors):int((data_count+1)*no_factors), 2]=pd_calc
+    
+    all_data[int(data_count*no_factors):int((data_count+1)*no_factors), 3]=rope_calc
     
     data_count=data_count+1
 
@@ -738,7 +750,7 @@ print(all_data)
 
 ##create the data frame
 
-df=pd.DataFrame(data=all_data, columns=["Var", "Factor", "pd_value"])
+df=pd.DataFrame(data=all_data, columns=["Var", "Factor", "pd_value", "rope_value"])
 
 ##and save it
 

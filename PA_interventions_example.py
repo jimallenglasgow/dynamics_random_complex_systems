@@ -1,6 +1,6 @@
 ##location: cd Github/dynamics_random_complex_systems
 
-##to run: python PA_interventions_example.py
+##to run: python3 PA_interventions_example.py
 
 ########################################################
 
@@ -90,7 +90,7 @@ def Single_Behaviour_Kick(kick_size, no_factors, no_t, max_t, plot_dynamics=0):
 			
 	#print("b_dot = ",b_dot)
 
-	x_init=np.random.random(no_factors)*0.4
+	x_init=x_init0#np.random.random(no_factors)*0.4
 		
 	full_z=np.reshape(x_init,(no_factors,1))
 
@@ -274,7 +274,7 @@ def Single_Model_Run(full_inputs, model_inputs):
 
     single_kick_data=[]
 
-    x_init=np.random.random(no_factors)*0.2#(1/no_factors)
+    x_init=x_init0#np.random.random(no_factors)*0.2#(1/no_factors)
             
     full_z=np.reshape(x_init,(no_factors,1))
 
@@ -509,15 +509,15 @@ no_each_type_of_factor=[1, 0, 0] ##must add up to the number of factors [desirab
 
 no_t=1000
 
-max_t=100
+max_t=50
 
 prop_interactions=0.5
 
 interaction_mean=0#/no_factors ##average strength of the interactions
 
-interaction_std=0.2#/no_factors ##standard deviation of the strength of the interactions
+interaction_std=0.4#/no_factors ##standard deviation of the strength of the interactions
 
-kick_size=1#/no_factors
+kick_size=0.2#/no_factors
 
 ##decide which nodes are desirable and undesirable
 
@@ -568,11 +568,15 @@ for i in np.arange(no_factors):
         
         if sel_interaction_type==-1:
             
-            sel_interaction=-abs(np.random.normal(interaction_mean, interaction_std))
+#            sel_interaction=-abs(np.random.normal(interaction_mean, interaction_std))
+            
+            sel_interaction=np.random.normal(-interaction_mean, interaction_std)
             
         if sel_interaction_type==1:
             
-            sel_interaction=abs(np.random.normal(interaction_mean, interaction_std))
+#            sel_interaction=abs(np.random.normal(interaction_mean, interaction_std))
+            
+            sel_interaction=np.random.normal(interaction_mean, interaction_std)
             
         if sel_interaction_type==2:
             
@@ -597,6 +601,10 @@ print(set_interactions)
 ##also, set the interaction between 1 and 0 to be 0.5 (always positive, and somewhere in the middle)
 
 #interactions[1, 0]=0.5
+
+##initialise general starting values
+
+x_init0=np.random.random(no_factors)*0.4
 
 ##set other random inputs
 
@@ -637,7 +645,7 @@ fig, ax = plt.subplots(nrows=3, ncols=2)
 
 ##choose a node at random to change
 
-sel_intervention_node=20#5#np.random.permutation(np.arange(1, no_factors))[0]
+sel_intervention_node=5#20#np.random.permutation(np.arange(1, no_factors))[0]
 
 ##value intervention
 

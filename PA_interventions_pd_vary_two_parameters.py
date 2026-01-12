@@ -1,6 +1,6 @@
 ##location: cd Github/dynamics_random_complex_systems
 
-##to run: python3 PA_interventions_all_changes.py
+##to run: python3 PA_interventions_pd_vary_two_parameters.py
 
 ########################################################
 
@@ -47,7 +47,7 @@ def Calc_x_dot(x):
         x_dot=np.zeros(no_factors)
         
         for sel_ind in np.arange(no_factors):
-
+        
                 #print(interactions[sel_ind, sel_ind])
 
                 x_growth=x[sel_ind]*growth_rate[sel_ind]
@@ -64,11 +64,11 @@ def Calc_x_dot(x):
                 
         for sel_ind in np.arange(no_factors):
             
-            x_dot_tmp=x_dot[sel_ind]
+            x_tmp=x[sel_ind]
             
-            if x_dot_tmp>100:
+            if x_tmp>50:
                 
-                x_dot[sel_ind]=100
+                x_dot[sel_ind]=0
 			
         return(x_dot)
 
@@ -328,7 +328,19 @@ def Single_Model_Run(full_inputs, model_inputs):
         
     if kick_type==2:
 
-        max_resources[sel_node]=max_resources[sel_node]+kick_size#np.random.random(2)*2
+        interaction_type=interactions[sel_node, 0]
+        
+        #print("interaction_type = ", interaction_type)
+
+        kick_sign=np.sign(interaction_type)
+        
+        if kick_sign==0:
+        
+                kick_sign=1
+
+        #print("kick_sign = ", kick_sign)
+
+        max_resources[sel_node]=max_resources[sel_node]+kick_size*kick_sign#np.random.random(2)*2
         
     if kick_type==3:
 
@@ -471,15 +483,15 @@ no_each_type_of_factor=[1, 0, 0] ##must add up to the number of factors [desirab
 
 no_t=1000
 
-max_t=50
+max_t=100
 
 prop_interactions=0.5
 
-interaction_mean=0#1/no_factors ##average strength of the interactions
+interaction_mean=0#1#/no_factors ##average strength of the interactions
 
-interaction_std=1/no_factors ##standard deviation of the strength of the interactions
+interaction_std=0.4#1/no_factors ##standard deviation of the strength of the interactions
 
-kick_size=4/no_factors
+kick_size=0.1#4/no_factors
 
 ##decide which nodes are desirable and undesirable
 
@@ -510,7 +522,7 @@ print("Interactions to include")
 
 print(interactions_include)
 
-##no self loops
+##include negative self loops
 
 for i in np.arange(no_factors):
 
@@ -530,7 +542,7 @@ for i in np.arange(no_factors):
         
         if sel_interaction_type==-1:
             
-            sel_interaction=-abs(np.random.normal(-interaction_mean, interaction_std))
+            sel_interaction=-abs(np.random.normal(interaction_mean, interaction_std))
             
         if sel_interaction_type==1:
             
@@ -542,8 +554,8 @@ for i in np.arange(no_factors):
             
         if sel_interaction_type==3:
             
-            sel_interaction=-abs(np.random.normal(0.5, interaction_std))
-            
+            sel_interaction=-1#abs(np.random.normal(0.5, interaction_std))
+                    
         set_interactions[i, j]=sel_interaction
 
 print("Connections")
@@ -553,6 +565,12 @@ print(interactions_include)
 print("Interaction strength")
 
 print(set_interactions)
+
+##add in a self-interaction, which will take a different value from the other interactions
+
+for i in np.arange(no_factors):
+
+    interactions_include[i,i]=3#0
 
 
     
@@ -596,255 +614,13 @@ full_inputs=np.append(full_inputs, set_interactions_long)
 
 ##and plot the intervention effects
 
-no_repeats=200
+no_repeats=250
 
 ##choose a node to change
 
 x_init0=np.random.random(no_factors)*0.4
 
 sel_intervention_node=5#20#np.random.permutation(np.arange(1, no_factors))[0]
-
-sel_node=sel_intervention_node#20
-
-sel_other_node=0
-
-fig, ax = plt.subplots(ncols=2, nrows=4)
-
-###############################################################################
-
-##value intervention
-
-intervention_array=np.zeros([no_factors, no_repeats])
-
-intervention_factors=np.zeros([no_factors, no_repeats])
-
-plot_row=0
-
-kick_type=1 ##1=value, 2=max, 3=interaction, 4=random
-
-for intervention_count in np.arange(no_repeats):
-    
-    print("int type = ", plot_row, ", no. = ", intervention_count)
-    
-    set_interactions=np.zeros([no_factors, no_factors])
-
-    for i in np.arange(no_factors):
-        
-        for j in np.arange(no_factors):
-            
-            sel_interaction=0
-            
-            sel_interaction_type=interactions_include[i, j]
-            
-            if sel_interaction_type==-1:
-                
-                sel_interaction=-abs(np.random.normal(-interaction_mean, interaction_std))
-                
-            if sel_interaction_type==1:
-                
-                sel_interaction=abs(np.random.normal(interaction_mean, interaction_std))
-                
-            if sel_interaction_type==2:
-                
-                sel_interaction=np.random.normal(0, interaction_std)
-                
-            if sel_interaction_type==3:
-            
-                sel_interaction=-abs(np.random.normal(0.5, interaction_std))
-            
-            set_interactions[i, j]=sel_interaction
-            
-    full_interactions_long=np.reshape(set_interactions, (1,-1))
-
-    set_interactions_long=full_interactions_long[0, :]
-
-    full_inputs=np.append(set_growth_rate, set_growth_to_max_rate)
-
-    full_inputs=np.append(full_inputs, set_max_resources)
-
-    full_inputs=np.append(full_inputs, set_interactions_long)
-
-    model_inputs=[plot_output, no_factors, no_each_type_of_factor, no_t, max_t, prop_interactions, kick_size, kick_type, sel_node, sel_other_node, factor_order, plot_row]
-
-    intervention_effects=Single_Model_Run(full_inputs, model_inputs)
-
-    intervention_array[:, intervention_count]=intervention_effects
-    
-    intervention_factors[:, intervention_count]=np.arange(no_factors)
-
-print("Intervention factors")
-
-print(intervention_factors)
-
-print("Intervention effects")
-
-print(intervention_array)
-
-##first for the PA and em supp
-
-main_factors_to_plot=[0, sel_intervention_node]
-
-intervention_array_long=np.reshape(intervention_array[main_factors_to_plot, :], (1, -1))[0, :]
-
-intervention_factors_long=np.reshape(intervention_factors[main_factors_to_plot, :], (1, -1))[0, :]
-
-print("intervention_array_long")
-
-print(intervention_array_long)
-
-print("intervention_factors_long")
-
-print(intervention_factors_long)
-
-ax[plot_row, 0].plot(intervention_array_long, -intervention_factors_long, '.')
-
-ax[plot_row, 0].axvline(x=0)
-
-##and now the rest
-
-all_factors_to_plot=np.arange(no_factors)
-    
-factors_to_plot=np.delete(all_factors_to_plot, main_factors_to_plot)
-    
-intervention_array_long=np.reshape(intervention_array[factors_to_plot, :], (1, -1))[0, :]
-
-intervention_factors_long=np.reshape(intervention_factors[factors_to_plot, :], (1, -1))[0, :]
-
-print("intervention_array_long")
-
-print(intervention_array_long)
-
-print("intervention_factors_long")
-
-print(intervention_factors_long)
-
-ax[plot_row, 1].plot(intervention_array_long, -intervention_factors_long, '.')
-
-ax[plot_row, 1].axvline(x=0)
-
-##max intervention
-
-plot_row=1
-
-kick_type=2 ##1=value, 2=max, 3=interaction, 4=random
-
-
-
-###############################################################################
-
-##max value intervention
-
-intervention_array=np.zeros([no_factors, no_repeats])
-
-intervention_factors=np.zeros([no_factors, no_repeats])
-
-plot_row=1
-
-kick_type=2 ##1=value, 2=max, 3=interaction, 4=random
-
-sel_node=sel_intervention_node#20
-
-sel_other_node=20
-
-for intervention_count in np.arange(no_repeats):
-    
-    print("int type = ", plot_row, ", no. = ", intervention_count)
-    
-    set_interactions=np.zeros([no_factors, no_factors])
-
-    for i in np.arange(no_factors):
-        
-        for j in np.arange(no_factors):
-            
-            sel_interaction=0
-            
-            sel_interaction_type=interactions_include[i, j]
-            
-            if sel_interaction_type==-1:
-                
-                sel_interaction=-abs(np.random.normal(-interaction_mean, interaction_std))
-                
-            if sel_interaction_type==1:
-                
-                sel_interaction=abs(np.random.normal(interaction_mean, interaction_std))
-                
-            if sel_interaction_type==2:
-                
-                sel_interaction=np.random.normal(0, interaction_std)
-                
-            if sel_interaction_type==3:
-            
-                sel_interaction=-abs(np.random.normal(0.5, interaction_std))
-                
-            set_interactions[i, j]=sel_interaction
-            
-    full_interactions_long=np.reshape(set_interactions, (1,-1))
-
-    set_interactions_long=full_interactions_long[0, :]
-
-    full_inputs=np.append(set_growth_rate, set_growth_to_max_rate)
-
-    full_inputs=np.append(full_inputs, set_max_resources)
-
-    full_inputs=np.append(full_inputs, set_interactions_long)
-
-    model_inputs=[plot_output, no_factors, no_each_type_of_factor, no_t, max_t, prop_interactions, kick_size, kick_type, sel_node, sel_other_node, factor_order, plot_row]
-
-    intervention_effects=Single_Model_Run(full_inputs, model_inputs)
-
-    intervention_array[:, intervention_count]=intervention_effects
-    
-    intervention_factors[:, intervention_count]=np.arange(no_factors)
-
-print("Intervention factors")
-
-print(intervention_factors)
-
-print("Intervention effects")
-
-print(intervention_array)
-
-##first for the PA and em supp
-
-main_factors_to_plot=[0, sel_intervention_node]
-
-intervention_array_long=np.reshape(intervention_array[main_factors_to_plot, :], (1, -1))[0, :]
-
-intervention_factors_long=np.reshape(intervention_factors[main_factors_to_plot, :], (1, -1))[0, :]
-
-print("intervention_array_long")
-
-print(intervention_array_long)
-
-print("intervention_factors_long")
-
-print(intervention_factors_long)
-
-ax[plot_row, 0].plot(intervention_array_long, -intervention_factors_long, '.')
-
-ax[plot_row, 0].axvline(x=0)
-
-##and now the rest
-
-all_factors_to_plot=np.arange(no_factors)
-    
-factors_to_plot=np.delete(all_factors_to_plot, main_factors_to_plot)
-    
-intervention_array_long=np.reshape(intervention_array[factors_to_plot, :], (1, -1))[0, :]
-
-intervention_factors_long=np.reshape(intervention_factors[factors_to_plot, :], (1, -1))[0, :]
-
-print("intervention_array_long")
-
-print(intervention_array_long)
-
-print("intervention_factors_long")
-
-print(intervention_factors_long)
-
-ax[plot_row, 1].plot(intervention_array_long, -intervention_factors_long, '.')
-
-ax[plot_row, 1].axvline(x=0)
 
 ###############################################################################
 
@@ -854,232 +630,239 @@ intervention_array=np.zeros([no_factors, no_repeats])
 
 intervention_factors=np.zeros([no_factors, no_repeats])
 
-plot_row=2
-
 kick_type=3 ##1=value, 2=max, 3=interaction, 4=random
 
 sel_node=0
 
 sel_other_node=sel_intervention_node#20
 
-for intervention_count in np.arange(no_repeats):
-    
-    print("int type = ", plot_row, ", no. = ", intervention_count)
-    
-    set_interactions=np.zeros([no_factors, no_factors])
+all_variable_values_1=np.arange(0, 1.02, 0.1)
 
-    for i in np.arange(no_factors):
-        
-        for j in np.arange(no_factors):
+all_variable_values_2=np.arange(0.01, 0.51, 0.1)
+
+no_vars_1=len(all_variable_values_1)
+
+no_vars_2=len(all_variable_values_2)
+
+all_data=np.zeros([int(no_vars_1*no_vars_2*no_factors), 5])
+
+data_count=0
+
+for sel_variable_value_1 in all_variable_values_1:
+
+        interaction_mean=sel_variable_value_1
+
+        for sel_variable_value_2 in all_variable_values_2:
             
-            sel_interaction=0
+            interaction_std=sel_variable_value_2
             
-            sel_interaction_type=interactions_include[i, j]
+            for intervention_count in np.arange(no_repeats):
             
-            if sel_interaction_type==-1:
+                print("variable value 1 = ", sel_variable_value_1, "variable value 2 = ", sel_variable_value_2, ", no. = ", intervention_count)
                 
-                sel_interaction=-abs(np.random.normal(-interaction_mean, interaction_std))
+                set_interactions=np.zeros([no_factors, no_factors])
+
+                for i in np.arange(no_factors):
+                    
+                    for j in np.arange(no_factors):
+                        
+                        sel_interaction=0
+                        
+                        sel_interaction_type=interactions_include[i, j]
+                        
+                        if sel_interaction_type==-1:
+                            
+                            sel_interaction=-abs(np.random.normal(interaction_mean, interaction_std))
+                            
+                            #sel_interaction=np.random.normal(-interaction_mean, interaction_std)
+                            
+                        if sel_interaction_type==1:
+                            
+                            sel_interaction=abs(np.random.normal(interaction_mean, interaction_std))
+                            
+                            #sel_interaction=np.random.normal(interaction_mean, interaction_std)
+                            
+                        if sel_interaction_type==2:
+                            
+                            sel_interaction=np.random.normal(0, interaction_std)
+                            
+                        if sel_interaction_type==3:
+                    
+                            sel_interaction=-1#abs(np.random.normal(0.5, interaction_std))
+                            
+                        set_interactions[i, j]=sel_interaction
+                        
+                full_interactions_long=np.reshape(set_interactions, (1,-1))
+
+                set_interactions_long=full_interactions_long[0, :]
+
+                full_inputs=np.append(set_growth_rate, set_growth_to_max_rate)
+
+                full_inputs=np.append(full_inputs, set_max_resources)
+
+                full_inputs=np.append(full_inputs, set_interactions_long)
+
+                model_inputs=[plot_output, no_factors, no_each_type_of_factor, no_t, max_t, prop_interactions, kick_size, kick_type, sel_node, sel_other_node, factor_order, 0]
+
+                intervention_effects=Single_Model_Run(full_inputs, model_inputs)
+
+                intervention_array[:, intervention_count]=intervention_effects
                 
-            if sel_interaction_type==1:
-                
-                sel_interaction=abs(np.random.normal(interaction_mean, interaction_std))
-                
-            if sel_interaction_type==2:
-                
-                sel_interaction=np.random.normal(0, interaction_std)
+                intervention_factors[:, intervention_count]=np.arange(no_factors)
+
+        #    print("Intervention factors")
+
+        #    print(intervention_factors)
+
+        #    print("Intervention effects")
+
+        #    print(intervention_array)
+
+            ##check the pd for each node from this set of interventions
+
+            intervention_array_sign=intervention_array>0
+
+            pd_calc=np.sum(intervention_array_sign, axis=1)/no_repeats
             
-            if sel_interaction_type==3:
+            ##and also check for 0's
             
-                sel_interaction=-abs(np.random.normal(0.5, interaction_std))
-                
-            set_interactions[i, j]=sel_interaction
+            intervention_array_zeros=abs(intervention_array)<0.05
+
+            rope_calc=np.sum(intervention_array_zeros, axis=1)/no_repeats
+
+        #    print("intervention_array_sign")
+
+        #    print(intervention_array_sign)
+
+            print("pd...")
+
+            print(pd_calc)
             
-    full_interactions_long=np.reshape(set_interactions, (1,-1))
-
-    set_interactions_long=full_interactions_long[0, :]
-
-    full_inputs=np.append(set_growth_rate, set_growth_to_max_rate)
-
-    full_inputs=np.append(full_inputs, set_max_resources)
-
-    full_inputs=np.append(full_inputs, set_interactions_long)
-
-    model_inputs=[plot_output, no_factors, no_each_type_of_factor, no_t, max_t, prop_interactions, kick_size, kick_type, sel_node, sel_other_node, factor_order, plot_row]
-
-    intervention_effects=Single_Model_Run(full_inputs, model_inputs)
-
-    intervention_array[:, intervention_count]=intervention_effects
-    
-    intervention_factors[:, intervention_count]=np.arange(no_factors)
-
-print("Intervention factors")
-
-print(intervention_factors)
-
-print("Intervention effects")
-
-print(intervention_array)
-
-##first for the PA and em supp
-
-main_factors_to_plot=[0, sel_intervention_node]
-
-intervention_array_long=np.reshape(intervention_array[main_factors_to_plot, :], (1, -1))[0, :]
-
-intervention_factors_long=np.reshape(intervention_factors[main_factors_to_plot, :], (1, -1))[0, :]
-
-print("intervention_array_long")
-
-print(intervention_array_long)
-
-print("intervention_factors_long")
-
-print(intervention_factors_long)
-
-ax[plot_row, 0].plot(intervention_array_long, -intervention_factors_long, '.')
-
-ax[plot_row, 0].axvline(x=0)
-
-##and now the rest
-
-all_factors_to_plot=np.arange(no_factors)
-    
-factors_to_plot=np.delete(all_factors_to_plot, main_factors_to_plot)
-    
-intervention_array_long=np.reshape(intervention_array[factors_to_plot, :], (1, -1))[0, :]
-
-intervention_factors_long=np.reshape(intervention_factors[factors_to_plot, :], (1, -1))[0, :]
-
-print("intervention_array_long")
-
-print(intervention_array_long)
-
-print("intervention_factors_long")
-
-print(intervention_factors_long)
-
-ax[plot_row, 1].plot(intervention_array_long, -intervention_factors_long, '.')
-
-ax[plot_row, 1].axvline(x=0)
-
-##and plot only those changes up to 50 to show what happens
-
-##first for the PA and em supp
-
-main_factors_to_plot=[0, sel_intervention_node]
-
-intervention_array_long=np.reshape(intervention_array[main_factors_to_plot, :], (1, -1))[0, :]
-
-intervention_factors_long=np.reshape(intervention_factors[main_factors_to_plot, :], (1, -1))[0, :]
-
-print("intervention_array_long")
-
-print(intervention_array_long)
-
-print("intervention_factors_long")
-
-print(intervention_factors_long)
-
-ax[plot_row+1, 0].plot(intervention_array_long, -intervention_factors_long, '.')
-
-ax[plot_row+1, 0].axvline(x=0)
-
-min_intervention_effect=np.min(intervention_array_long)
-
-if min_intervention_effect<-50:
-    
-    min_intervention_effect=-50
-    
-if min_intervention_effect>0:
-    
-    min_intervention_effect=0
-    
-max_intervention_effect=np.max(intervention_array_long)
-
-if max_intervention_effect>50:
-    
-    max_intervention_effect=50
-
-ax[plot_row+1, 0].set_xlim([min_intervention_effect-1, max_intervention_effect+1])
-
-##and now the rest
-
-all_factors_to_plot=np.arange(no_factors)
-    
-factors_to_plot=np.delete(all_factors_to_plot, main_factors_to_plot)
-    
-intervention_array_long=np.reshape(intervention_array[factors_to_plot, :], (1, -1))[0, :]
-
-intervention_factors_long=np.reshape(intervention_factors[factors_to_plot, :], (1, -1))[0, :]
-
-print("intervention_array_long")
-
-print(intervention_array_long)
-
-print("intervention_factors_long")
-
-print(intervention_factors_long)
-
-ax[plot_row+1, 1].plot(intervention_array_long, -intervention_factors_long, '.')
-
-ax[plot_row+1, 1].axvline(x=0)
-
-min_intervention_effect=np.min(intervention_array_long)
-
-if min_intervention_effect<-50:
-    
-    min_intervention_effect=-50
-    
-if min_intervention_effect>0:
-    
-    min_intervention_effect=0
-    
-max_intervention_effect=np.max(intervention_array_long)
-
-if max_intervention_effect>50:
-    
-    max_intervention_effect=50
-
-ax[plot_row+1, 1].set_xlim([min_intervention_effect-1, max_intervention_effect+1])
-
-
-
-
-
-
-
-
-#############################################################
-
-##save the plot
-
-plt.show()
+            print("rope...")
+            
+            print(rope_calc)
+            
+            all_data[int(data_count*no_factors):int((data_count+1)*no_factors), 0]=sel_variable_value_1
+            
+            all_data[int(data_count*no_factors):int((data_count+1)*no_factors), 1]=sel_variable_value_2
+            
+            all_data[int(data_count*no_factors):int((data_count+1)*no_factors), 2]=np.arange(no_factors)
+            
+            all_data[int(data_count*no_factors):int((data_count+1)*no_factors), 3]=pd_calc
+            
+            all_data[int(data_count*no_factors):int((data_count+1)*no_factors), 4]=rope_calc
+            
+            data_count=data_count+1
+
+print("All data")
+
+print(all_data)
+
+##create the data frame
+
+df=pd.DataFrame(data=all_data, columns=["Var_1", "Var_2", "Factor", "pd_value", "rope_value"])
+
+##and save it
 
 np.random.seed(int(time.time()))
 
 save_int=np.random.randint(low=100, high=999)
+
+df.to_csv(f'vary_two_variables_data_intervention_type_{kick_type}_sel_intervention_node_{sel_intervention_node}_{save_int}.csv', index=False)
+
+##and now plot it
+
+plot_data=np.array(df)
+
+print("plot_data")
+
+print(plot_data)
+
+##first PA and em supp
+
+sel_plot_factor=0
+
+factor_data_locs=np.where(plot_data[:, 2]==sel_plot_factor)[0]
+
+print("factor_data_locs")
+
+print(factor_data_locs)
+
+factor_var_data_1=np.unique(plot_data[factor_data_locs, 0])
+
+factor_var_data_2=np.unique(plot_data[factor_data_locs, 1])
+
+##plot for the pd
+
+factor_pd_data_long=plot_data[factor_data_locs, 3]
+
+print("factor_pd_data_long")
+
+print(factor_pd_data_long)
+
+no_vars_1=len(factor_var_data_1)
+
+no_vars_2=len(factor_var_data_2)
+
+factor_pd_data=np.reshape(factor_pd_data_long, (no_vars_2, no_vars_1))
+
+print("factor_pd_data")
+
+print(factor_pd_data)
+
+#im, cbar = #heatmap(factor_pd_data, all_variable_values_1, all_variable_values_2, ax=ax, cmap="YlGn", cbarlabel="pd")
+
+fig, ax = plt.subplots()
+
+im = ax.imshow(factor_pd_data, cmap="Blues")
+
+ax.set_xticks(range(no_vars_1), labels=np.round(factor_var_data_1, 2))
+ax.set_yticks(range(no_vars_2), labels=np.round(factor_var_data_2, 2))
+
+fig.colorbar(im, ax=ax)
+
+plt.show()
         
-fig.savefig(f"many_interventions_{use_emp_network}_int_node_{sel_intervention_node}_{save_int}.png")
+fig.savefig(f"heat_map_pd_PA_em_supp_intervention_type_{kick_type}_sel_intervention_node_{sel_intervention_node}_{save_int}.png")
         
 plt.close()
 
+####
 
+##plot for the rope
 
+factor_pd_data_long=plot_data[factor_data_locs, 4]
 
+print("factor_pd_data_long")
 
+print(factor_pd_data_long)
 
+no_vars_1=len(factor_var_data_1)
 
+no_vars_2=len(factor_var_data_2)
 
+factor_pd_data=np.reshape(factor_pd_data_long, (no_vars_2, no_vars_1))
 
+print("factor_pd_data")
 
+print(factor_pd_data)
 
+fig, ax = plt.subplots()
 
+#im, cbar = #heatmap(factor_pd_data, all_variable_values_1, all_variable_values_2, ax=ax, cmap="YlGn", cbarlabel="pd")
 
+im = ax.imshow(factor_pd_data, cmap="Blues")
 
+ax.set_xticks(range(no_vars_1), labels=np.round(factor_var_data_1, 2))
+ax.set_yticks(range(no_vars_2), labels=np.round(factor_var_data_2, 2))
 
+fig.colorbar(im, ax=ax)
 
-
-
+plt.show()
+        
+fig.savefig(f"heat_map_rope_PA_em_supp_intervention_type_{kick_type}_sel_intervention_node_{sel_intervention_node}_{save_int}.png")
+        
+plt.close()
 
 
 

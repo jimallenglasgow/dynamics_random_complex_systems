@@ -504,7 +504,7 @@ def Single_Model_Run(full_inputs, model_inputs):
 
 #######################################################################################
 
-##function to generate the interactions
+##function to generate the interactions based on the normal distribution
 
 def Normal_Dist_Interactions(no_factors, interaction_mean, interaction_std):
 
@@ -541,6 +541,52 @@ def Normal_Dist_Interactions(no_factors, interaction_mean, interaction_std):
                 set_interactions[i, j]=sel_interaction
                 
         return(set_interactions)
+        
+#######################################################################################
+
+##function to generate the interactions based on one of two values
+
+def Binomial_Dist_Interactions(no_factors, prob_large_connection, large_connection_value, small_connection_value):
+
+        poss_connection_strengths=[small_connection_value, large_connection_value]
+
+        set_interactions=np.zeros([no_factors, no_factors])
+
+        for i in np.arange(no_factors):
+            
+            for j in np.arange(no_factors):
+                
+                sel_interaction=0
+                
+                selected_connection_strength=np.random.choice(2, 1, [1-prob_large_connection, prob_large_connection])
+
+                connection_strength=poss_connection_strengths[int(selected_connection_strength)]
+                
+                sel_interaction_type=interactions_include[i, j]
+                
+                if sel_interaction_type==-1:
+                    
+        #            sel_interaction=-abs(np.random.normal(neg_interaction_mean, interaction_std))
+                    
+                    sel_interaction=-connection_strength
+                    
+                if sel_interaction_type==1:
+                    
+          #          sel_interaction=abs(np.random.normal(pos_interaction_mean, interaction_std))
+                    
+                    sel_interaction=connection_strength#np.random.normal(interaction_mean, interaction_std)
+                    
+                if sel_interaction_type==2:
+                    
+                    sel_interaction=np.random.permutation([connection_strength, -connection_strength])[0]
+                    
+                if sel_interaction_type==3:
+                    
+                    sel_interaction=-(abs(np.random.normal(0, 1))+5)
+                    
+                set_interactions[i, j]=sel_interaction
+                
+        return(set_interactions)
 
 #######################################################################################
 
@@ -562,13 +608,18 @@ prop_interactions=0.5
 
 interaction_mean=1
 
-#pos_interaction_mean=1#/no_factors ##average strength of the interactions
-
-#neg_interaction_mean=1#/no_factors ##average strength of the interactions
-
 interaction_std=0.5#/no_factors ##standard deviation of the strength of the interactions
 
 kick_size=0.5#/no_factors
+
+##parameters for the binomial set
+
+prob_large_connection=0.5
+
+large_connection_value=1.2
+
+small_connection_value=0.8
+
 
 ##decide which nodes are desirable and undesirable
 
@@ -607,7 +658,9 @@ for i in np.arange(no_factors):
 
 ##generate some random interactions
     
-set_interactions=Normal_Dist_Interactions(no_factors, interaction_mean, interaction_std)
+#set_interactions=Normal_Dist_Interactions(no_factors, interaction_mean, interaction_std)
+
+set_interactions=Binomial_Dist_Interactions(no_factors, prob_large_connection, large_connection_value, small_connection_value)
 
 print("Connections")
 

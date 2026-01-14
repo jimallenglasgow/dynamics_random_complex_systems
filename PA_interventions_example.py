@@ -502,6 +502,45 @@ def Single_Model_Run(full_inputs, model_inputs):
         
     return(final_value)
 
+#######################################################################################
+
+##function to generate the interactions
+
+def Normal_Dist_Interactions(no_factors, interaction_mean, interaction_std):
+
+        set_interactions=np.zeros([no_factors, no_factors])
+
+        for i in np.arange(no_factors):
+            
+            for j in np.arange(no_factors):
+                
+                sel_interaction=0
+                
+                sel_interaction_type=interactions_include[i, j]
+                
+                if sel_interaction_type==-1:
+                    
+        #            sel_interaction=-abs(np.random.normal(neg_interaction_mean, interaction_std))
+                    
+                    sel_interaction=np.random.normal(-interaction_mean, interaction_std)
+                    
+                if sel_interaction_type==1:
+                    
+          #          sel_interaction=abs(np.random.normal(pos_interaction_mean, interaction_std))
+                    
+                    sel_interaction=np.random.normal(interaction_mean, interaction_std)
+                    
+                if sel_interaction_type==2:
+                    
+                    sel_interaction=np.random.normal(0, interaction_std)
+                    
+                if sel_interaction_type==3:
+                    
+                    sel_interaction=-(abs(np.random.normal(0, 1))+5)
+                    
+                set_interactions[i, j]=sel_interaction
+                
+        return(set_interactions)
 
 #######################################################################################
 
@@ -568,37 +607,7 @@ for i in np.arange(no_factors):
 
 ##generate some random interactions
     
-set_interactions=np.zeros([no_factors, no_factors])
-
-for i in np.arange(no_factors):
-    
-    for j in np.arange(no_factors):
-        
-        sel_interaction=0
-        
-        sel_interaction_type=interactions_include[i, j]
-        
-        if sel_interaction_type==-1:
-            
-#            sel_interaction=-abs(np.random.normal(neg_interaction_mean, interaction_std))
-            
-            sel_interaction=np.random.normal(-interaction_mean, interaction_std)
-            
-        if sel_interaction_type==1:
-            
-  #          sel_interaction=abs(np.random.normal(pos_interaction_mean, interaction_std))
-            
-            sel_interaction=np.random.normal(interaction_mean, interaction_std)
-            
-        if sel_interaction_type==2:
-            
-            sel_interaction=np.random.normal(0, interaction_std)
-            
-        if sel_interaction_type==3:
-            
-            sel_interaction=-(abs(np.random.normal(0, 1))+5)
-            
-        set_interactions[i, j]=sel_interaction
+set_interactions=Normal_Dist_Interactions(no_factors, interaction_mean, interaction_std)
 
 print("Connections")
 

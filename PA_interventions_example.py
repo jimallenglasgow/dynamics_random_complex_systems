@@ -48,7 +48,7 @@ def Calc_x_dot(x):
         
         for sel_ind in np.arange(no_factors):
 
-                x_growth=x[sel_ind]*growth_rate[sel_ind]
+                x_growth=x[sel_ind]*growth_rate[sel_ind]*(1-x[sel_ind])
 
                 #x_logistic_growth=growth_to_max_rate[sel_ind]*max_resources[sel_ind]#-x[sel_ind]
                 
@@ -64,7 +64,7 @@ def Calc_x_dot(x):
             
             x_tmp=x[sel_ind]
             
-            if x_tmp>50:
+            if x_tmp>1.1:
                 
                 x_dot[sel_ind]=0
                 
@@ -320,9 +320,15 @@ def Single_Model_Run(full_inputs, model_inputs):
 
     ##nudge the system
 
+    intervention_plot_node=sel_node
+
     if kick_type==1:
 
         x_init[sel_node]=x_init[sel_node]+kick_size#np.random.random(2)*2
+        
+        if x_init[sel_node]>0.99: ##make sure that the intervention doesn't lift the value above 1
+        
+                x_init[sel_node]=0.99
         
     if kick_type==2:
 
@@ -341,6 +347,8 @@ def Single_Model_Run(full_inputs, model_inputs):
         max_resources[sel_node]=max_resources[sel_node]+kick_size*kick_sign#np.random.random(2)*2
         
     if kick_type==3:
+    
+        intervention_plot_node=sel_other_node
 
         interactions[sel_other_node, sel_node]=interactions[sel_other_node, sel_node]+kick_size#np.random.random(2)*2
         
@@ -430,13 +438,13 @@ def Single_Model_Run(full_inputs, model_inputs):
         
     ##plot the PA and em supp factors
     
-    if no_factors>20:
+#    if no_factors>20:
         
-        main_factors_to_plot=[0, 20]
+    main_factors_to_plot=[0, intervention_plot_node]
         
-    else:
+ #   else:
         
-        main_factors_to_plot=[0]
+  #      main_factors_to_plot=[0]
     
     for sel_factor in main_factors_to_plot:
 
@@ -509,15 +517,19 @@ no_each_type_of_factor=[1, 0, 0] ##must add up to the number of factors [desirab
 
 no_t=1000
 
-max_t=50
+max_t=20
 
 prop_interactions=0.5
 
-interaction_mean=0#/no_factors ##average strength of the interactions
+interaction_mean=1
 
-interaction_std=0.4#/no_factors ##standard deviation of the strength of the interactions
+#pos_interaction_mean=1#/no_factors ##average strength of the interactions
 
-kick_size=0.2#/no_factors
+#neg_interaction_mean=1#/no_factors ##average strength of the interactions
+
+interaction_std=0.5#/no_factors ##standard deviation of the strength of the interactions
+
+kick_size=0.5#/no_factors
 
 ##decide which nodes are desirable and undesirable
 
@@ -568,13 +580,13 @@ for i in np.arange(no_factors):
         
         if sel_interaction_type==-1:
             
-#            sel_interaction=-abs(np.random.normal(interaction_mean, interaction_std))
+#            sel_interaction=-abs(np.random.normal(neg_interaction_mean, interaction_std))
             
             sel_interaction=np.random.normal(-interaction_mean, interaction_std)
             
         if sel_interaction_type==1:
             
-#            sel_interaction=abs(np.random.normal(interaction_mean, interaction_std))
+  #          sel_interaction=abs(np.random.normal(pos_interaction_mean, interaction_std))
             
             sel_interaction=np.random.normal(interaction_mean, interaction_std)
             
@@ -584,7 +596,7 @@ for i in np.arange(no_factors):
             
         if sel_interaction_type==3:
             
-            sel_interaction=-1#abs(np.random.normal(0.5, interaction_std))
+            sel_interaction=-(abs(np.random.normal(0, 1))+5)
             
         set_interactions[i, j]=sel_interaction
 
@@ -604,15 +616,15 @@ print(set_interactions)
 
 ##initialise general starting values
 
-x_init0=np.random.random(no_factors)*0.4
+x_init0=np.random.random(no_factors)#*0.4
 
 ##set other random inputs
 
-set_growth_rate=np.ones(no_factors)#np.random.random(no_factors)#*(1/no_factors)
+set_growth_rate=np.ones(no_factors)#*0.5#np.random.random(no_factors)#*(1/no_factors)
 
 set_growth_to_max_rate=np.ones(no_factors)#np.random.random(no_factors)*2
 
-set_max_resources=np.random.random(no_factors)*2
+set_max_resources=np.ones(no_factors)#*0.2#np.random.random(no_factors)
 
 #for i in np.arange(no_factors):
 

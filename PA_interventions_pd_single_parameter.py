@@ -593,7 +593,7 @@ self_regulation_level=10
 
 ##intervention size
 
-kick_size=2#4/no_factors
+kick_size=4#4/no_factors
 
 ##decide which nodes are desirable and undesirable
 
@@ -655,7 +655,7 @@ set_growth_rate=np.ones(no_factors)#np.random.random(no_factors)*2
 
 set_growth_to_max_rate=np.ones(no_factors)#np.random.random(no_factors)*2
 
-set_max_resources=np.random.random(no_factors)*2#np.ones(no_factors)#
+set_max_resources=np.ones(no_factors)#np.random.random(no_factors)*2#
 
 ##and put all inputs into own long vector
 

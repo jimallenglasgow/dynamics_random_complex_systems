@@ -504,7 +504,7 @@ def Normal_Dist_Interactions(no_factors, interaction_mean, interaction_std, self
                     
                 if sel_interaction_type==3:
                     
-                    sel_interaction=-self_regulation_level#(abs(np.random.normal(0, 1))+5)
+                    sel_interaction=-self_regulation_level#(abs(np.random.normal(0, 1))+self_regulation_level)
                     
                 set_interactions[i, j]=sel_interaction
                 
@@ -577,9 +577,9 @@ max_t=50
 
 prop_interactions=0.5
 
-interaction_mean=1#1/no_factors ##average strength of the interactions
+interaction_mean=2#1/no_factors ##average strength of the interactions
 
-interaction_std=0.2#1/no_factors ##standard deviation of the strength of the interactions
+interaction_std=2#1/no_factors ##standard deviation of the strength of the interactions
 
 ##parameters for the binomial set
 
@@ -589,7 +589,7 @@ large_connection_value=1.2
 
 small_connection_value=0.8
 
-self_regulation_level=7
+self_regulation_level=10
 
 ##intervention size
 
@@ -599,7 +599,7 @@ kick_size=2#4/no_factors
 
 factor_order=np.random.permutation(np.arange(no_factors))
 
-sel_intervention_node=20#5#np.random.permutation(np.arange(1, no_factors))[0]
+sel_intervention_node=5#20#np.random.permutation(np.arange(1, no_factors))[0]
 
 ################################################
 
@@ -655,7 +655,7 @@ set_growth_rate=np.ones(no_factors)#np.random.random(no_factors)*2
 
 set_growth_to_max_rate=np.ones(no_factors)#np.random.random(no_factors)*2
 
-set_max_resources=np.ones(no_factors)#np.random.random(no_factors)*2
+set_max_resources=np.random.random(no_factors)*2#np.ones(no_factors)#
 
 ##and put all inputs into own long vector
 

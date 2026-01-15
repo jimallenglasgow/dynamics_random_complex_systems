@@ -10,7 +10,9 @@ ds_network<-data.table(read.csv("pa_ds_network.csv"))
 
 ##and the additional nodes
 
-additional_nodes<-data.table(read.csv("additional_nodes.csv"))
+# additional_nodes<-data.table(read.csv("additional_nodes.csv"))
+
+additional_nodes<-data.table(read.csv("additional_nodes_no_ambiguous_signs.csv"))
 
 ##and combine
 

@@ -536,7 +536,7 @@ def Normal_Dist_Interactions(no_factors, interaction_mean, interaction_std, self
                     
                 if sel_interaction_type==3:
                     
-                    sel_interaction=-(abs(np.random.normal(0, 1))+self_regulation_level)
+                    sel_interaction=-self_regulation_level#(abs(np.random.normal(0, 1))+self_regulation_level)
                     
                 set_interactions[i, j]=sel_interaction
                 
@@ -610,9 +610,9 @@ max_t=20
 
 prop_interactions=0.5
 
-interaction_mean=1
+interaction_mean=2
 
-interaction_std=0.2#/no_factors ##standard deviation of the strength of the interactions
+interaction_std=2#/no_factors ##standard deviation of the strength of the interactions
 
 kick_size=2#/no_factors
 
@@ -632,7 +632,7 @@ factor_order=np.random.permutation(np.arange(no_factors))
 
 ##select the intervention node
 
-sel_intervention_node=20#5#np.random.permutation(np.arange(1, no_factors))[0]
+sel_intervention_node=5#20#np.random.permutation(np.arange(1, no_factors))[0]
 
 
 ################################################

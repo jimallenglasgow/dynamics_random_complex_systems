@@ -516,7 +516,7 @@ def Normal_Dist_Interactions(no_factors, interaction_mean, interaction_std):
 
 ##function to generate the interactions based on one of two values
 
-def Binomial_Dist_Interactions(no_factors, prob_large_connection, large_connection_value, small_connection_value):
+def Binomial_Dist_Interactions(no_factors, prob_large_connection, large_connection_value, small_connection_value, self_regulation_level):
 
         poss_connection_strengths=[small_connection_value, large_connection_value]
 
@@ -528,7 +528,7 @@ def Binomial_Dist_Interactions(no_factors, prob_large_connection, large_connecti
                 
                 sel_interaction=0
                 
-                selected_connection_strength=np.random.choice(2, 1, [1-prob_large_connection, prob_large_connection])
+                selected_connection_strength=np.random.choice(2, 1, p=[1-prob_large_connection, prob_large_connection])
 
                 connection_strength=poss_connection_strengths[int(selected_connection_strength)]
                 
@@ -552,7 +552,7 @@ def Binomial_Dist_Interactions(no_factors, prob_large_connection, large_connecti
                     
                 if sel_interaction_type==3:
                     
-                    sel_interaction=-(abs(np.random.normal(0, 1))+5)
+                    sel_interaction=-self_regulation_level#(abs(np.random.normal(0, 1))+5)
                     
                 set_interactions[i, j]=sel_interaction
                 
@@ -583,11 +583,13 @@ interaction_std=0.5#1/no_factors ##standard deviation of the strength of the int
 
 ##parameters for the binomial set
 
-prob_large_connection=0
+prob_large_connection=0.5
 
 large_connection_value=1.2
 
 small_connection_value=0.8
+
+self_regulation_level=7
 
 ##intervention size
 
@@ -597,6 +599,7 @@ kick_size=2#4/no_factors
 
 factor_order=np.random.permutation(np.arange(no_factors))
 
+sel_intervention_node=5#20#np.random.permutation(np.arange(1, no_factors))[0]
 
 ################################################
 
@@ -648,11 +651,11 @@ print(set_interactions)
 
 ##set other random inputs
 
-set_growth_rate=np.random.random(no_factors)*2
+set_growth_rate=np.ones(no_factors)#np.random.random(no_factors)*2
 
-set_growth_to_max_rate=np.random.random(no_factors)*2
+set_growth_to_max_rate=np.ones(no_factors)#np.random.random(no_factors)*2
 
-set_max_resources=np.random.random(no_factors)*2
+set_max_resources=np.ones(no_factors)#np.random.random(no_factors)*2
 
 ##and put all inputs into own long vector
 
@@ -688,8 +691,6 @@ no_repeats=250
 
 x_init0=np.random.random(no_factors)#*0.4
 
-sel_intervention_node=5#20#np.random.permutation(np.arange(1, no_factors))[0]
-
 sel_node=sel_intervention_node#20
 
 sel_other_node=0
@@ -714,7 +715,7 @@ for intervention_count in np.arange(no_repeats):
     
     #set_interactions=Normal_Dist_Interactions(no_factors, interaction_mean, interaction_std)
             
-    set_interactions=Binomial_Dist_Interactions(no_factors, prob_large_connection, large_connection_value, small_connection_value)
+    set_interactions=Binomial_Dist_Interactions(no_factors, prob_large_connection, large_connection_value, small_connection_value, self_regulation_level)
             
     ##set the key interaction size to +/-1 to be consistent
     
@@ -818,7 +819,7 @@ for intervention_count in np.arange(no_repeats):
     
     #set_interactions=Normal_Dist_Interactions(no_factors, interaction_mean, interaction_std)
      
-    set_interactions=Binomial_Dist_Interactions(no_factors, prob_large_connection, large_connection_value, small_connection_value)
+    set_interactions=Binomial_Dist_Interactions(no_factors, prob_large_connection, large_connection_value, small_connection_value, self_regulation_level)
             
     ##set the key interaction size to +/-1 to be consistent
     
@@ -914,7 +915,7 @@ for intervention_count in np.arange(no_repeats):
     
     #set_interactions=Normal_Dist_Interactions(no_factors, interaction_mean, interaction_std)
      
-    set_interactions=Binomial_Dist_Interactions(no_factors, prob_large_connection, large_connection_value, small_connection_value)
+    set_interactions=Binomial_Dist_Interactions(no_factors, prob_large_connection, large_connection_value, small_connection_value, self_regulation_level)
            
     ##set the key interaction size to +/-1 to be consistent
     

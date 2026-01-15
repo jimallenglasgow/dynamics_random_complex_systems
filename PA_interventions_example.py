@@ -546,7 +546,7 @@ def Normal_Dist_Interactions(no_factors, interaction_mean, interaction_std):
 
 ##function to generate the interactions based on one of two values
 
-def Binomial_Dist_Interactions(no_factors, prob_large_connection, large_connection_value, small_connection_value):
+def Binomial_Dist_Interactions(no_factors, prob_large_connection, large_connection_value, small_connection_value, self_regulation_level):
 
         poss_connection_strengths=[small_connection_value, large_connection_value]
 
@@ -558,7 +558,11 @@ def Binomial_Dist_Interactions(no_factors, prob_large_connection, large_connecti
                 
                 sel_interaction=0
                 
-                selected_connection_strength=np.random.choice(2, 1, [1-prob_large_connection, prob_large_connection])
+                selected_connection_strength=np.random.choice(2, 1, p=[1-prob_large_connection, prob_large_connection])
+                
+                print("selected_connection_strength")
+                
+                print(selected_connection_strength)
 
                 connection_strength=poss_connection_strengths[int(selected_connection_strength)]
                 
@@ -582,7 +586,7 @@ def Binomial_Dist_Interactions(no_factors, prob_large_connection, large_connecti
                     
                 if sel_interaction_type==3:
                     
-                    sel_interaction=-(abs(np.random.normal(0, 1))+5)
+                    sel_interaction=-self_regulation_level#(abs(np.random.normal(0, 1))+5)
                     
                 set_interactions[i, j]=sel_interaction
                 
@@ -610,7 +614,7 @@ interaction_mean=1
 
 interaction_std=0.5#/no_factors ##standard deviation of the strength of the interactions
 
-kick_size=0.5#/no_factors
+kick_size=2#/no_factors
 
 ##parameters for the binomial set
 
@@ -620,10 +624,15 @@ large_connection_value=1.2
 
 small_connection_value=0.8
 
+self_regulation_level=7
 
 ##decide which nodes are desirable and undesirable
 
 factor_order=np.random.permutation(np.arange(no_factors))
+
+##select the intervention node
+
+sel_intervention_node=20#5#np.random.permutation(np.arange(1, no_factors))[0]
 
 
 ################################################
@@ -660,7 +669,7 @@ for i in np.arange(no_factors):
     
 #set_interactions=Normal_Dist_Interactions(no_factors, interaction_mean, interaction_std)
 
-set_interactions=Binomial_Dist_Interactions(no_factors, prob_large_connection, large_connection_value, small_connection_value)
+set_interactions=Binomial_Dist_Interactions(no_factors, prob_large_connection, large_connection_value, small_connection_value, self_regulation_level)
 
 print("Connections")
 
@@ -716,10 +725,6 @@ full_inputs=np.append(full_inputs, set_max_resources)
 full_inputs=np.append(full_inputs, set_interactions_long)
 
 fig, ax = plt.subplots(nrows=3, ncols=2)
-
-##choose a node at random to change
-
-sel_intervention_node=5#20#np.random.permutation(np.arange(1, no_factors))[0]
 
 ##value intervention
 

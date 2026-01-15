@@ -474,7 +474,7 @@ def Single_Model_Run(full_inputs, model_inputs):
 
 ##function to generate the interactions
 
-def Normal_Dist_Interactions(no_factors, interaction_mean, interaction_std):
+def Normal_Dist_Interactions(no_factors, interaction_mean, interaction_std, self_regulation_level):
 
         set_interactions=np.zeros([no_factors, no_factors])
 
@@ -504,7 +504,7 @@ def Normal_Dist_Interactions(no_factors, interaction_mean, interaction_std):
                     
                 if sel_interaction_type==3:
                     
-                    sel_interaction=-(abs(np.random.normal(0, 1))+5)
+                    sel_interaction=-self_regulation_level#(abs(np.random.normal(0, 1))+5)
                     
                 set_interactions[i, j]=sel_interaction
                 
@@ -579,7 +579,7 @@ prop_interactions=0.5
 
 interaction_mean=1#1/no_factors ##average strength of the interactions
 
-interaction_std=0.5#1/no_factors ##standard deviation of the strength of the interactions
+interaction_std=0.2#1/no_factors ##standard deviation of the strength of the interactions
 
 ##parameters for the binomial set
 
@@ -599,7 +599,7 @@ kick_size=2#4/no_factors
 
 factor_order=np.random.permutation(np.arange(no_factors))
 
-sel_intervention_node=5#20#np.random.permutation(np.arange(1, no_factors))[0]
+sel_intervention_node=20#5#np.random.permutation(np.arange(1, no_factors))[0]
 
 ################################################
 
@@ -633,7 +633,7 @@ for i in np.arange(no_factors):
 
 ##generate some random interactions
     
-set_interactions=Normal_Dist_Interactions(no_factors, interaction_mean, interaction_std)
+set_interactions=Normal_Dist_Interactions(no_factors, interaction_mean, interaction_std, self_regulation_level)
 
 print("Connections")
 
@@ -713,9 +713,9 @@ for intervention_count in np.arange(no_repeats):
     
     print("int type = ", plot_row, ", no. = ", intervention_count)
     
-    #set_interactions=Normal_Dist_Interactions(no_factors, interaction_mean, interaction_std)
+    set_interactions=Normal_Dist_Interactions(no_factors, interaction_mean, interaction_std, self_regulation_level)
             
-    set_interactions=Binomial_Dist_Interactions(no_factors, prob_large_connection, large_connection_value, small_connection_value, self_regulation_level)
+    #set_interactions=Binomial_Dist_Interactions(no_factors, prob_large_connection, large_connection_value, small_connection_value, self_regulation_level)
             
     ##set the key interaction size to +/-1 to be consistent
     
@@ -817,9 +817,9 @@ for intervention_count in np.arange(no_repeats):
     
     print("int type = ", plot_row, ", no. = ", intervention_count)
     
-    #set_interactions=Normal_Dist_Interactions(no_factors, interaction_mean, interaction_std)
+    set_interactions=Normal_Dist_Interactions(no_factors, interaction_mean, interaction_std, self_regulation_level)
      
-    set_interactions=Binomial_Dist_Interactions(no_factors, prob_large_connection, large_connection_value, small_connection_value, self_regulation_level)
+    #set_interactions=Binomial_Dist_Interactions(no_factors, prob_large_connection, large_connection_value, small_connection_value, self_regulation_level)
             
     ##set the key interaction size to +/-1 to be consistent
     
@@ -913,9 +913,9 @@ for intervention_count in np.arange(no_repeats):
     
     print("int type = ", plot_row, ", no. = ", intervention_count)
     
-    #set_interactions=Normal_Dist_Interactions(no_factors, interaction_mean, interaction_std)
+    set_interactions=Normal_Dist_Interactions(no_factors, interaction_mean, interaction_std, self_regulation_level)
      
-    set_interactions=Binomial_Dist_Interactions(no_factors, prob_large_connection, large_connection_value, small_connection_value, self_regulation_level)
+    #set_interactions=Binomial_Dist_Interactions(no_factors, prob_large_connection, large_connection_value, small_connection_value, self_regulation_level)
            
     ##set the key interaction size to +/-1 to be consistent
     

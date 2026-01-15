@@ -506,7 +506,7 @@ def Single_Model_Run(full_inputs, model_inputs):
 
 ##function to generate the interactions based on the normal distribution
 
-def Normal_Dist_Interactions(no_factors, interaction_mean, interaction_std):
+def Normal_Dist_Interactions(no_factors, interaction_mean, interaction_std, self_regulation_level):
 
         set_interactions=np.zeros([no_factors, no_factors])
 
@@ -536,7 +536,7 @@ def Normal_Dist_Interactions(no_factors, interaction_mean, interaction_std):
                     
                 if sel_interaction_type==3:
                     
-                    sel_interaction=-(abs(np.random.normal(0, 1))+5)
+                    sel_interaction=-(abs(np.random.normal(0, 1))+self_regulation_level)
                     
                 set_interactions[i, j]=sel_interaction
                 
@@ -612,7 +612,7 @@ prop_interactions=0.5
 
 interaction_mean=1
 
-interaction_std=0.5#/no_factors ##standard deviation of the strength of the interactions
+interaction_std=0.2#/no_factors ##standard deviation of the strength of the interactions
 
 kick_size=2#/no_factors
 
@@ -624,7 +624,7 @@ large_connection_value=1.2
 
 small_connection_value=0.8
 
-self_regulation_level=7
+self_regulation_level=10
 
 ##decide which nodes are desirable and undesirable
 
@@ -667,9 +667,9 @@ for i in np.arange(no_factors):
 
 ##generate some random interactions
     
-#set_interactions=Normal_Dist_Interactions(no_factors, interaction_mean, interaction_std)
+set_interactions=Normal_Dist_Interactions(no_factors, interaction_mean, interaction_std, self_regulation_level)
 
-set_interactions=Binomial_Dist_Interactions(no_factors, prob_large_connection, large_connection_value, small_connection_value, self_regulation_level)
+#set_interactions=Binomial_Dist_Interactions(no_factors, prob_large_connection, large_connection_value, small_connection_value, self_regulation_level)
 
 print("Connections")
 
@@ -691,11 +691,11 @@ x_init0=np.random.random(no_factors)#*0.4
 
 ##set other random inputs
 
-set_growth_rate=np.ones(no_factors)#*0.5#np.random.random(no_factors)#*(1/no_factors)
+set_growth_rate=np.ones(no_factors)#np.random.random(no_factors)#*(1/no_factors)
 
-set_growth_to_max_rate=np.ones(no_factors)#np.random.random(no_factors)*2
+set_growth_to_max_rate=np.ones(no_factors)#
 
-set_max_resources=np.ones(no_factors)#*0.2#np.random.random(no_factors)
+set_max_resources=np.ones(no_factors)#np.random.random(no_factors)*2#
 
 #for i in np.arange(no_factors):
 

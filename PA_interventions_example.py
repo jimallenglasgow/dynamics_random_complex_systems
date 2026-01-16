@@ -332,7 +332,7 @@ def Single_Model_Run(full_inputs, model_inputs):
         
     if kick_type==2:
 
-        interaction_type=interactions[sel_node, 0]
+        interaction_type=interactions[sel_other_node, 0]
         
         #print("interaction_type = ", interaction_type)
 
@@ -344,7 +344,7 @@ def Single_Model_Run(full_inputs, model_inputs):
 
         #print("kick_sign = ", kick_sign)
 
-        max_resources[sel_node]=max_resources[sel_node]+kick_size*kick_sign#np.random.random(2)*2
+        max_resources[sel_other_node]=max_resources[sel_other_node]+kick_size*kick_sign#np.random.random(2)*2
         
     if kick_type==3:
     

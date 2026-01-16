@@ -332,7 +332,7 @@ def Single_Model_Run(full_inputs, model_inputs):
         
     if kick_type==2:
 
-        interaction_type=interactions[sel_node, 0]
+        interaction_type=interactions[sel_other_node, 0]
         
         #print("interaction_type = ", interaction_type)
 
@@ -344,7 +344,7 @@ def Single_Model_Run(full_inputs, model_inputs):
 
         #print("kick_sign = ", kick_sign)
 
-        max_resources[sel_node]=max_resources[sel_node]+kick_size#*kick_sign#np.random.random(2)*2
+        max_resources[sel_other_node]=max_resources[sel_other_node]+kick_size*kick_sign#np.random.random(2)*2
         
     if kick_type==3:
 
@@ -491,25 +491,23 @@ def Normal_Dist_Interactions(no_factors, interaction_mean, interaction_std, self
                 
                 if sel_interaction_type==-1:
                     
-        #            sel_interaction=-abs(np.random.normal(interaction_mean, interaction_std))
+                    sel_interaction=-abs(np.random.normal(interaction_mean, interaction_std))
                     
-                    sel_interaction=np.random.normal(-interaction_mean, interaction_std)
-                    
+          #          sel_interaction=np.random.normal(-interaction_mean, interaction_std)
+         #           
                 if sel_interaction_type==1:
                     
-        #            sel_interaction=abs(np.random.normal(interaction_mean, interaction_std))
+                    sel_interaction=abs(np.random.normal(interaction_mean, interaction_std))
                     
-                    sel_interaction=np.random.normal(interaction_mean, interaction_std)
+        #            sel_interaction=np.random.normal(interaction_mean, interaction_std)
                     
                 if sel_interaction_type==2:
                     
                     sel_interaction=np.random.normal(0, interaction_std)
                     
-                sel_interaction=np.random.normal(interaction_mean, interaction_std)
-                    
                 if sel_interaction_type==3:
                     
-                    sel_interaction=-self_regulation_level#(abs(np.random.normal(0, 1))+self_regulation_level)
+                    sel_interaction=-self_regulation_level#(abs(np.random.normal(0, 1))+self_regulation_level)#
                     
                 set_interactions[i, j]=sel_interaction
                 
@@ -583,11 +581,11 @@ max_t=50
 
 prop_interactions=0.5
 
-interaction_mean=-0.2#1/no_factors ##average strength of the interactions
+interaction_mean=1#1/no_factors ##average strength of the interactions
 
-interaction_std=1.5#1/no_factors ##standard deviation of the strength of the interactions
+interaction_std=0.5#1/no_factors ##standard deviation of the strength of the interactions
 
-kick_size=0.7#4/no_factors
+kick_size=1#4/no_factors
 
 ##parameters for the binomial set
 
@@ -597,7 +595,7 @@ large_connection_value=1.2
 
 small_connection_value=0.8
 
-self_regulation_level=7
+self_regulation_level=5
 
 ##decide which nodes are desirable and undesirable
 
@@ -605,7 +603,7 @@ factor_order=np.random.permutation(np.arange(no_factors))
 
 ##select the intervention node
 
-sel_intervention_node=5#20#np.random.permutation(np.arange(1, no_factors))[0]
+sel_intervention_node=10#5#20#np.random.permutation(np.arange(1, no_factors))[0]
 
 
 ################################################
@@ -668,7 +666,7 @@ set_growth_rate=np.ones(no_factors)#np.random.random(no_factors)*2
 
 set_growth_to_max_rate=np.ones(no_factors)#np.random.random(no_factors)*2
 
-set_max_resources=np.ones(no_factors)#np.random.random(no_factors)*2#
+set_max_resources=np.random.random(no_factors)*2#np.ones(no_factors)#
 
 ##and put all inputs into own long vector
 
@@ -696,11 +694,9 @@ full_inputs=np.append(full_inputs, set_max_resources)
 
 full_inputs=np.append(full_inputs, set_interactions_long)
 
-
-
 ##choose a node to change
 
-x_init0=np.ones(no_factors)*0.01#np.random.random(no_factors)
+x_init0=np.random.random(no_factors)#np.ones(no_factors)*0.01#
 
 ###############################################################################
 
@@ -714,7 +710,9 @@ sel_node=0
 
 sel_other_node=sel_intervention_node#20
 
-all_variable_values=np.round(np.arange(0.01, 10.02, 1), 2)
+#all_variable_values=np.round(np.arange(0.01, 4.02, 1), 2)
+
+all_variable_values=np.arange(1, no_factors)
 
 no_vars=len(all_variable_values)
 
@@ -730,7 +728,9 @@ for network_count in np.arange(no_networks):
 
     for sel_variable_value in all_variable_values:
         
-        kick_size=sel_variable_value
+ #       kick_size=sel_variable_value
+        
+        sel_other_node=int(sel_variable_value)
             
         full_interactions_long=np.reshape(set_interactions, (1,-1))
 

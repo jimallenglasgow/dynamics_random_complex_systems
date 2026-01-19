@@ -1,6 +1,6 @@
 ##location: cd Github/dynamics_random_complex_systems
 
-##to run: python3 PA_interventions_example.py
+##to run: python3 PA_two_interventions_examples.py
 
 ########################################################
 
@@ -274,7 +274,7 @@ def Single_Model_Run(full_inputs, model_inputs):
 
     single_kick_data=[]
 
-    x_init=x_init0#np.random.random(no_factors)*0.2#(1/no_factors)
+    x_init=x_init0.copy()#np.random.random(no_factors)*0.2#(1/no_factors)
             
     full_z=np.reshape(x_init,(no_factors,1))
 
@@ -320,15 +320,15 @@ def Single_Model_Run(full_inputs, model_inputs):
 
     ##nudge the system
 
-    intervention_plot_node=sel_node
+    intervention_plot_node=sel_other_node
 
     if kick_type==1:
 
-        x_init[sel_node]=x_init[sel_node]+kick_size#np.random.random(2)*2
+        x_init[sel_other_node]=x_init[sel_other_node]+kick_size#np.random.random(2)*2
         
-        if x_init[sel_node]>0.99: ##make sure that the intervention doesn't lift the value above 1
+        if x_init[sel_other_node]>0.99: ##make sure that the intervention doesn't lift the value above 1
         
-                x_init[sel_node]=0.99
+                x_init[sel_other_node]=0.99
         
     if kick_type==2:
 
@@ -440,60 +440,38 @@ def Single_Model_Run(full_inputs, model_inputs):
     
 #    if no_factors>20:
         
-    main_factors_to_plot=[0, intervention_plot_node]
+#    main_factors_to_plot=[0, intervention_plot_node]
         
  #   else:
         
   #      main_factors_to_plot=[0]
     
-    for sel_factor in main_factors_to_plot:
+    sel_factor=0
 
-        set_line_width=1
-        
-        set_line_type="solid"
-        
-        if sel_factor==0:
-        
-                set_line_width=3
-                
+    set_line_type="solid"
+    
+    set_line_width=3
+            
 #        if sel_assignment==-1:
-        
- #               set_line_width=3
-                
-  #              set_line_type="dashed"
-
-        ax[plot_row, 0].plot(full_t, full_z.T[:, sel_factor], linewidth=set_line_width, linestyle=set_line_type, label=f"{sel_factor}")
-        
-        if plot_row==0:
+    
+#               set_line_width=3
             
-            ax[plot_row, 0].set_title("PA (thick) and Em. supp.")
-            ax[plot_row, 1].set_title("All other constructs")
+#              set_line_type="dashed"
+
+    ax[plot_row].plot(full_t, full_z.T[:, sel_factor], linewidth=set_line_width, linestyle=set_line_type, label=f"Int node = {sel_other_node}")
+    
+    if plot_row==0:
         
-        if plot_row==2:
-            
-            ax[plot_row, 0].set_xlabel("Time")
-            ax[plot_row, 1].set_xlabel("Time")
+        ax[plot_row].set_title("PA")
+    
+        ax[plot_row].legend()#bbox_to_anchor=(1, -0.1))
+    
+    if plot_row==2:
         
-#        ax[0].legend(bbox_to_anchor=(1, -0.1), ncol=no_factors)
-
-    ##and plot all the others
-
-    all_factors_to_plot=np.arange(no_factors)
-    
-    factors_to_plot=np.delete(all_factors_to_plot, main_factors_to_plot)
-    
-    print("factors_to_plot")
-    
-    print(factors_to_plot)
-    
-    for sel_factor in factors_to_plot:
-
-        set_line_width=1
+        ax[plot_row].set_xlabel("Time")
         
-        set_line_type="solid"
+        
 
-        ax[plot_row, 1].plot(full_t, full_z.T[:, sel_factor], linewidth=set_line_width, linestyle=set_line_type, label=f"{sel_factor}")
-    
     print("single_kick_data")
     print(single_kick_data)
 
@@ -614,7 +592,7 @@ interaction_mean=2
 
 interaction_std=2#/no_factors ##standard deviation of the strength of the interactions
 
-kick_size=2#/no_factors
+kick_size=0#/no_factors
 
 ##parameters for the binomial set
 
@@ -724,67 +702,69 @@ full_inputs=np.append(full_inputs, set_max_resources)
 
 full_inputs=np.append(full_inputs, set_interactions_long)
 
-fig, ax = plt.subplots(nrows=3, ncols=2)
+fig, ax = plt.subplots(nrows=3, ncols=1)
 
 ##value intervention
 
-plot_row=0
+for sel_intervention_node in [20, 10]:
 
-kick_type=1 ##1=value, 2=max, 3=interaction, 4=structure, 5=random
+    plot_row=0
 
-sel_node=sel_intervention_node#20
+    kick_type=1 ##1=value, 2=max, 3=interaction, 4=structure, 5=random
 
-sel_other_node=0
+    sel_node=0#sel_intervention_node#20
 
-model_inputs=[plot_output, no_factors, no_each_type_of_factor, no_t, max_t, prop_interactions, kick_size, kick_type, sel_node, sel_other_node, factor_order, plot_row]
+    sel_other_node=sel_intervention_node
 
-final_values=Single_Model_Run(full_inputs, model_inputs)
+    model_inputs=[plot_output, no_factors, no_each_type_of_factor, no_t, max_t, prop_interactions, kick_size, kick_type, sel_node, sel_other_node, factor_order, plot_row]
 
-##max intervention
+    final_values=Single_Model_Run(full_inputs, model_inputs)
 
-full_inputs=np.append(set_growth_rate, set_growth_to_max_rate)
+    ##max intervention
 
-full_inputs=np.append(full_inputs, set_max_resources)
+    full_inputs=np.append(set_growth_rate, set_growth_to_max_rate)
 
-full_inputs=np.append(full_inputs, set_interactions_long)
+    full_inputs=np.append(full_inputs, set_max_resources)
 
-plot_row=1
+    full_inputs=np.append(full_inputs, set_interactions_long)
 
-kick_type=2 ##1=value, 2=max, 3=interaction, 4=structure, 5=random
+    plot_row=1
 
-sel_node=sel_intervention_node#20
+    kick_type=2 ##1=value, 2=max, 3=interaction, 4=structure, 5=random
 
-sel_other_node=20
+    #sel_node=sel_intervention_node#20
 
-model_inputs=[plot_output, no_factors, no_each_type_of_factor, no_t, max_t, prop_interactions, kick_size, kick_type, sel_node, sel_other_node, factor_order, plot_row]
+    #sel_other_node=20
 
-final_values=Single_Model_Run(full_inputs, model_inputs)
+    model_inputs=[plot_output, no_factors, no_each_type_of_factor, no_t, max_t, prop_interactions, kick_size, kick_type, sel_node, sel_other_node, factor_order, plot_row]
 
-##interaction intervention
+    final_values=Single_Model_Run(full_inputs, model_inputs)
 
-full_inputs=np.append(set_growth_rate, set_growth_to_max_rate)
+    ##interaction intervention
 
-full_inputs=np.append(full_inputs, set_max_resources)
+    full_inputs=np.append(set_growth_rate, set_growth_to_max_rate)
 
-full_inputs=np.append(full_inputs, set_interactions_long)
+    full_inputs=np.append(full_inputs, set_max_resources)
 
-plot_row=2
+    full_inputs=np.append(full_inputs, set_interactions_long)
 
-kick_type=3 ##1=value, 2=max, 3=interaction, 4=structure, 5=random
+    plot_row=2
 
-sel_node=0
+    kick_type=3 ##1=value, 2=max, 3=interaction, 4=structure, 5=random
 
-sel_other_node=sel_intervention_node#20
+    #sel_node=0
 
-model_inputs=[plot_output, no_factors, no_each_type_of_factor, no_t, max_t, prop_interactions, kick_size, kick_type, sel_node, sel_other_node, factor_order, plot_row]
+    #sel_other_node=sel_intervention_node#20
 
-final_values=Single_Model_Run(full_inputs, model_inputs)
+    model_inputs=[plot_output, no_factors, no_each_type_of_factor, no_t, max_t, prop_interactions, kick_size, kick_type, sel_node, sel_other_node, factor_order, plot_row]
 
-print("Final values")
+    final_values=Single_Model_Run(full_inputs, model_inputs)
 
-print(final_values)
+    print("Final values")
 
-print("sel intervention node = ", sel_intervention_node)
+    print(final_values)
+
+    print("sel intervention node = ", sel_intervention_node)
 
 ##structure intervention
 
@@ -822,7 +802,7 @@ np.random.seed(int(time.time()))
 
 save_int=np.random.randint(low=100, high=999)
         
-fig.savefig(f"model_plots/intervention_examples_{save_int}.png")
+fig.savefig(f"model_plots/two_intervention_examples_{save_int}.png")
         
 plt.close()
 

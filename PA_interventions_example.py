@@ -221,8 +221,8 @@ def Single_Model_Run(full_inputs, model_inputs):
     prop_interactions=model_inputs[5]
     kick_size=model_inputs[6]
     kick_type=model_inputs[7]
-    sel_node=model_inputs[8]
-    sel_other_node=model_inputs[9]
+    sel_target_node=model_inputs[8]
+    sel_intervention_node=model_inputs[9]
     factor_order=model_inputs[10]
     plot_row=model_inputs[11]
 
@@ -320,19 +320,17 @@ def Single_Model_Run(full_inputs, model_inputs):
 
     ##nudge the system
 
-    intervention_plot_node=sel_node
-
     if kick_type==1:
 
-        x_init[sel_node]=x_init[sel_node]+kick_size#np.random.random(2)*2
+        x_init[sel_intervention_node]=x_init[sel_intervention_node]+kick_size#np.random.random(2)*2
         
-        if x_init[sel_node]>0.99: ##make sure that the intervention doesn't lift the value above 1
+        if x_init[sel_intervention_node]>0.99: ##make sure that the intervention doesn't lift the value above 1
         
-                x_init[sel_node]=0.99
+                x_init[sel_intervention_node]=0.99
         
     if kick_type==2:
 
-        interaction_type=interactions[sel_other_node, 0]
+        interaction_type=interactions[sel_intervention_node, sel_target_node]
         
         #print("interaction_type = ", interaction_type)
 
@@ -344,13 +342,11 @@ def Single_Model_Run(full_inputs, model_inputs):
 
         #print("kick_sign = ", kick_sign)
 
-        max_resources[sel_other_node]=max_resources[sel_other_node]+kick_size*kick_sign#np.random.random(2)*2
+        max_resources[sel_intervention_node]=max_resources[sel_intervention_node]+kick_size*kick_sign#np.random.random(2)*2
         
     if kick_type==3:
     
-        intervention_plot_node=sel_other_node
-
-        interactions[sel_other_node, sel_node]=interactions[sel_other_node, sel_node]+kick_size#np.random.random(2)*2
+        interactions[sel_intervention_node, sel_target_node]=interactions[sel_intervention_node, sel_target_node]+kick_size#np.random.random(2)*2
         
     if kick_type==4:
         
@@ -440,7 +436,7 @@ def Single_Model_Run(full_inputs, model_inputs):
     
 #    if no_factors>20:
         
-    main_factors_to_plot=[0, intervention_plot_node]
+    main_factors_to_plot=[sel_target_node, sel_intervention_node]
         
  #   else:
         
@@ -596,7 +592,7 @@ def Binomial_Dist_Interactions(no_factors, prob_large_connection, large_connecti
 
 #np.random.seed(1214)
 
-use_emp_network=1
+use_emp_network=2
 
 plot_output=1
 
@@ -624,7 +620,7 @@ large_connection_value=1.2
 
 small_connection_value=0.8
 
-self_regulation_level=10
+self_regulation_level=7
 
 ##decide which nodes are desirable and undesirable
 
@@ -632,7 +628,7 @@ factor_order=np.random.permutation(np.arange(no_factors))
 
 ##select the intervention node
 
-sel_intervention_node=5#20#np.random.permutation(np.arange(1, no_factors))[0]
+sel_intervention_node=1#20#np.random.permutation(np.arange(1, no_factors))[0]
 
 
 ################################################
@@ -648,6 +644,14 @@ interactions_include=(np.random.choice([0, -1, 1, 2], no_factors*no_factors, p=[
 if use_emp_network==1:
 
         interactions_include=np.array(pd.read_csv("PA_network.csv"))#, header=None)
+        
+        no_factors=len(interactions_include[:,0])
+        
+        factor_order=np.arange(no_factors)
+        
+if use_emp_network==2:
+
+        interactions_include=np.array(pd.read_csv("toy_network.csv"))#, header=None)
         
         no_factors=len(interactions_include[:,0])
         
@@ -732,11 +736,11 @@ plot_row=0
 
 kick_type=1 ##1=value, 2=max, 3=interaction, 4=structure, 5=random
 
-sel_node=sel_intervention_node#20
+sel_target_node=0#20
 
-sel_other_node=0
+#sel_intervention_node=0
 
-model_inputs=[plot_output, no_factors, no_each_type_of_factor, no_t, max_t, prop_interactions, kick_size, kick_type, sel_node, sel_other_node, factor_order, plot_row]
+model_inputs=[plot_output, no_factors, no_each_type_of_factor, no_t, max_t, prop_interactions, kick_size, kick_type, sel_target_node, sel_intervention_node, factor_order, plot_row]
 
 final_values=Single_Model_Run(full_inputs, model_inputs)
 
@@ -752,11 +756,11 @@ plot_row=1
 
 kick_type=2 ##1=value, 2=max, 3=interaction, 4=structure, 5=random
 
-sel_node=sel_intervention_node#20
+#sel_node=sel_intervention_node#20
 
-sel_other_node=20
+#sel_other_node=0
 
-model_inputs=[plot_output, no_factors, no_each_type_of_factor, no_t, max_t, prop_interactions, kick_size, kick_type, sel_node, sel_other_node, factor_order, plot_row]
+model_inputs=[plot_output, no_factors, no_each_type_of_factor, no_t, max_t, prop_interactions, kick_size, kick_type, sel_target_node, sel_intervention_node, factor_order, plot_row]
 
 final_values=Single_Model_Run(full_inputs, model_inputs)
 
@@ -772,11 +776,11 @@ plot_row=2
 
 kick_type=3 ##1=value, 2=max, 3=interaction, 4=structure, 5=random
 
-sel_node=0
+#sel_node=0
 
-sel_other_node=sel_intervention_node#20
+#sel_other_node=sel_intervention_node#20
 
-model_inputs=[plot_output, no_factors, no_each_type_of_factor, no_t, max_t, prop_interactions, kick_size, kick_type, sel_node, sel_other_node, factor_order, plot_row]
+model_inputs=[plot_output, no_factors, no_each_type_of_factor, no_t, max_t, prop_interactions, kick_size, kick_type, sel_target_node, sel_intervention_node, factor_order, plot_row]
 
 final_values=Single_Model_Run(full_inputs, model_inputs)
 

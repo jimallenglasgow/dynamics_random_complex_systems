@@ -48,7 +48,7 @@ def Calc_x_dot(x):
         
         for sel_ind in np.arange(no_factors):
 
-                x_growth=x[sel_ind]*growth_rate[sel_ind]*(1-x[sel_ind])
+                x_growth=1#x[sel_ind]*growth_rate[sel_ind]*(1-x[sel_ind])
 
                 #x_logistic_growth=growth_to_max_rate[sel_ind]*max_resources[sel_ind]#-x[sel_ind]
                 
@@ -56,17 +56,19 @@ def Calc_x_dot(x):
 
                 for sel_other_ind in np.arange(no_factors):
 		
-                        x_logistic_growth=x_logistic_growth+interactions[sel_other_ind, sel_ind]*x[sel_other_ind]
+                        #x_logistic_growth=x_logistic_growth+interactions[sel_other_ind, sel_ind]*x[sel_other_ind]
+                        
+                        x_logistic_growth=x_logistic_growth+interactions[sel_ind, sel_other_ind]*x[sel_other_ind]
 			
                 x_dot[sel_ind]=x_growth*x_logistic_growth
                 
-        for sel_ind in np.arange(no_factors):
+#        for sel_ind in np.arange(no_factors):
             
-            x_tmp=x[sel_ind]
+ #           x_tmp=x[sel_ind]
             
-            if x_tmp>1.1:
+  #          if x_tmp>1.1:
                 
-                x_dot[sel_ind]=0
+   #             x_dot[sel_ind]=0
                 
         return(x_dot)
 
@@ -346,7 +348,7 @@ def Single_Model_Run(full_inputs, model_inputs):
         
     if kick_type==3:
     
-        interactions[sel_intervention_node, sel_target_node]=interactions[sel_intervention_node, sel_target_node]+kick_size#np.random.random(2)*2
+        interactions[sel_target_node, sel_intervention_node]=interactions[sel_target_node, sel_intervention_node]+kick_size#np.random.random(2)*2
         
     if kick_type==4:
         
@@ -602,11 +604,11 @@ no_each_type_of_factor=[1, 0, 0] ##must add up to the number of factors [desirab
 
 no_t=1000
 
-max_t=20
+max_t=30
 
 prop_interactions=0.5
 
-interaction_mean=2
+interaction_mean=1
 
 interaction_std=2#/no_factors ##standard deviation of the strength of the interactions
 
@@ -614,13 +616,13 @@ kick_size=2#/no_factors
 
 ##parameters for the binomial set
 
-prob_large_connection=0.5
+prob_large_connection=1
 
-large_connection_value=1.2
+large_connection_value=1
 
 small_connection_value=0.8
 
-self_regulation_level=7
+self_regulation_level=2
 
 ##decide which nodes are desirable and undesirable
 
@@ -651,6 +653,8 @@ if use_emp_network==1:
         
 if use_emp_network==2:
 
+#        interactions_include=np.array(pd.read_csv("toy_network_no_loop.csv"))#, header=None)
+        
         interactions_include=np.array(pd.read_csv("toy_network.csv"))#, header=None)
         
         no_factors=len(interactions_include[:,0])
@@ -671,9 +675,9 @@ for i in np.arange(no_factors):
 
 ##generate some random interactions
     
-set_interactions=Normal_Dist_Interactions(no_factors, interaction_mean, interaction_std, self_regulation_level)
+#set_interactions=Normal_Dist_Interactions(no_factors, interaction_mean, interaction_std, self_regulation_level)
 
-#set_interactions=Binomial_Dist_Interactions(no_factors, prob_large_connection, large_connection_value, small_connection_value, self_regulation_level)
+set_interactions=Binomial_Dist_Interactions(no_factors, prob_large_connection, large_connection_value, small_connection_value, self_regulation_level)
 
 print("Connections")
 
@@ -699,7 +703,7 @@ set_growth_rate=np.ones(no_factors)#np.random.random(no_factors)#*(1/no_factors)
 
 set_growth_to_max_rate=np.ones(no_factors)#
 
-set_max_resources=np.ones(no_factors)#np.random.random(no_factors)*2#
+set_max_resources=np.ones(no_factors)*0.5#np.random.random(no_factors)*2#
 
 #for i in np.arange(no_factors):
 
@@ -727,6 +731,20 @@ full_inputs=np.append(set_growth_rate, set_growth_to_max_rate)
 full_inputs=np.append(full_inputs, set_max_resources)
 
 full_inputs=np.append(full_inputs, set_interactions_long)
+
+##calculate the equilibrium solution
+
+inv_interactions=np.linalg.inv(set_interactions)
+
+print("Inverse interactions")
+
+print(inv_interactions)
+
+equilibrium_solution=np.matmul(inv_interactions, -set_max_resources)#np.random.random(no_factors)
+
+print("equilibrium_solution")
+
+print(equilibrium_solution)
 
 fig, ax = plt.subplots(nrows=3, ncols=2)
 
@@ -817,6 +835,34 @@ print("sel intervention node = ", sel_intervention_node)
 #print("sel intervention node = ", sel_intervention_node)
 
 ########
+
+##also include the stationary empirical solution
+
+main_factors_to_plot=[sel_target_node, sel_intervention_node]
+
+for plot_row in np.arange(3):
+
+        for sel_factor in main_factors_to_plot:
+        
+                ax[plot_row, 0].hlines(y=equilibrium_solution[sel_factor], xmin=0, xmax=max_t, color="k", linestyle='--', linewidth=0.7)
+
+all_factors_to_plot=np.arange(no_factors)
+    
+factors_to_plot=np.delete(all_factors_to_plot, main_factors_to_plot)
+
+for plot_row in np.arange(3):
+
+        for sel_factor in factors_to_plot:
+        
+                ax[plot_row, 1].hlines(y=equilibrium_solution[sel_factor], xmin=0, xmax=max_t, color="k", linestyle='--', linewidth=0.7)
+                
+##finally, calculate what the influence of the intervention should be
+
+x1=equilibrium_solution[1]
+
+new_0_after_intervention=x1+x1/(2+0.125)
+
+ax[2, 0].hlines(y=new_0_after_intervention, xmin=0, xmax=max_t, color="red", linestyle='--', linewidth=0.7)
 
 ##plot and save the results
 

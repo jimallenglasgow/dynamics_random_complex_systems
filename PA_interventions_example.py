@@ -518,15 +518,15 @@ def Normal_Dist_Interactions(no_factors, interaction_mean, interaction_std, self
                 
                 if sel_interaction_type==-1:
                     
-        #            sel_interaction=-abs(np.random.normal(neg_interaction_mean, interaction_std))
+                    sel_interaction=-abs(np.random.normal(interaction_mean, interaction_std))
                     
-                    sel_interaction=np.random.normal(-interaction_mean, interaction_std)
+        #            sel_interaction=np.random.normal(-interaction_mean, interaction_std)
                     
                 if sel_interaction_type==1:
                     
-          #          sel_interaction=abs(np.random.normal(pos_interaction_mean, interaction_std))
+                    sel_interaction=abs(np.random.normal(interaction_mean, interaction_std))
                     
-                    sel_interaction=np.random.normal(interaction_mean, interaction_std)
+#                    sel_interaction=np.random.normal(interaction_mean, interaction_std)
                     
                 if sel_interaction_type==2:
                     
@@ -610,7 +610,7 @@ prop_interactions=0.5
 
 interaction_mean=1
 
-interaction_std=2#/no_factors ##standard deviation of the strength of the interactions
+interaction_std=0.1#/no_factors ##standard deviation of the strength of the interactions
 
 kick_size=2#/no_factors
 
@@ -632,6 +632,7 @@ factor_order=np.random.permutation(np.arange(no_factors))
 
 sel_intervention_node=1#20#np.random.permutation(np.arange(1, no_factors))[0]
 
+##set variables
 
 ################################################
 
@@ -722,7 +723,8 @@ print("growth_to_max_rate = ", set_growth_to_max_rate)
 
 print("max_resources = ", set_max_resources)
 
-print("interactions = ", set_interactions)
+print("interactions = ")
+print(set_interactions)
 
 #print("interactions long = ", interactions_long)
 
@@ -745,6 +747,40 @@ equilibrium_solution=np.matmul(inv_interactions, -set_max_resources)#np.random.r
 print("equilibrium_solution")
 
 print(equilibrium_solution)
+
+##calculate the equilibrium solution for x0
+
+det_A=np.linalg.det(set_interactions)
+
+print("det_A = ", det_A)
+
+det_A_calc=set_interactions[0,0]*(set_interactions[1,1]*set_interactions[2,2]*set_interactions[3,3]+set_interactions[1,3]*(-set_interactions[2,2]*set_interactions[3,1]))-set_interactions[0,1]*(set_interactions[1,0]*(set_interactions[2,2]*set_interactions[3,3]))
+
+print("det_A_calc = ", det_A_calc)
+
+delta0=set_interactions.copy()
+
+delta0[:,0]=-set_max_resources
+
+print("delta0")
+
+print(delta0)
+
+det_delta0=np.linalg.det(delta0)
+
+print("det_delta0 = ", det_delta0)
+
+det_delta0_calc=delta0[0,0]*(delta0[1,1]*(delta0[2,2]*delta0[3,3])+delta0[1,3]*(-delta0[2,2]*delta0[3,1]))-delta0[0,1]*(delta0[1,0]*(delta0[2,2]*delta0[3,3])+delta0[1,3]*(-delta0[2,2]*delta0[3,0]))
+
+print("det_delta0_calc = ", det_delta0_calc)
+
+x0_sol=det_delta0_calc/det_A_calc
+
+print("x0 = ", x0_sol)
+
+##and substitute it
+
+equilibrium_solution[0]=x0_sol
 
 fig, ax = plt.subplots(nrows=3, ncols=2)
 
@@ -858,11 +894,39 @@ for plot_row in np.arange(3):
                 
 ##finally, calculate what the influence of the intervention should be
 
-x1=equilibrium_solution[1]
+set_interactions[0, 1]=set_interactions[0, 1]+kick_size
 
-new_0_after_intervention=x1+x1/(2+0.125)
+#det_A=np.linalg.det(set_interactions)
 
-ax[2, 0].hlines(y=new_0_after_intervention, xmin=0, xmax=max_t, color="red", linestyle='--', linewidth=0.7)
+det_A=set_interactions[0,0]*(set_interactions[1,1]*set_interactions[2,2]*set_interactions[3,3]+set_interactions[1,3]*(-set_interactions[2,2]*set_interactions[3,1]))-set_interactions[0,1]*(set_interactions[1,0]*(set_interactions[2,2]*set_interactions[3,3]))
+
+delta0=set_interactions.copy()
+
+delta0[:,0]=-set_max_resources
+
+#print("delta0")
+
+#print(delta0)
+
+#det_delta0=np.linalg.det(delta0)
+
+det_delta0=delta0[0,0]*(delta0[1,1]*(delta0[2,2]*delta0[3,3])+delta0[1,3]*(-delta0[2,2]*delta0[3,1]))-delta0[0,1]*(delta0[1,0]*(delta0[2,2]*delta0[3,3])+delta0[1,3]*(-delta0[2,2]*delta0[3,0]))
+
+x0_sol=det_delta0/det_A
+
+#inv_interactions=np.linalg.inv(set_interactions)
+
+#print("Inverse interactions")
+
+#print(inv_interactions)
+
+#equilibrium_solution=np.matmul(inv_interactions, -set_max_resources)#np.random.random(no_factors)
+
+#print("equilibrium_solution")
+
+#print(equilibrium_solution)
+
+ax[2, 0].hlines(y=x0_sol, xmin=0, xmax=max_t, color="red", linestyle='--', linewidth=0.7)
 
 ##plot and save the results
 

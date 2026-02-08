@@ -791,7 +791,7 @@ print("det_delta0 = ", det_delta0)
 
 det_delta0_calc=delta0[0,0]*(delta0[1,1]*(delta0[2,2]*delta0[3,3]))-delta0[0,1]*(delta0[1,0]*(delta0[2,2]*delta0[3,3])+delta0[1,3]*(delta0[2,0]*delta0[3,2]-delta0[2,2]*delta0[3,0]))
 
-det_delta0_calc=R*(A**3+a01*(A**2+a*(a32+a)))
+det_delta0_calc=R*(A**3+a01*(A**2+a*(a32+A)))
 
 print("det_delta0_calc = ", det_delta0_calc)
 

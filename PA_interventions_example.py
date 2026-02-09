@@ -584,7 +584,7 @@ def Binomial_Dist_Interactions(no_factors, prob_large_connection, large_connecti
                     
                 if sel_interaction_type==3:
                     
-                    sel_interaction=-self_regulation_level#(abs(np.random.normal(0, 1))+5)
+                    sel_interaction=(abs(np.random.normal(0, 1))-self_regulation_level)
                     
                 set_interactions[i, j]=sel_interaction
                 
@@ -644,7 +644,7 @@ a=1
 
 a01=1
 
-a32=-1
+a32=-7
 
 ################################################
 
@@ -688,9 +688,9 @@ for i in np.arange(no_factors):
 
 ##generate some random interactions
     
-#set_interactions=Normal_Dist_Interactions(no_factors, interaction_mean, interaction_std, self_regulation_level)
-
-set_interactions=Binomial_Dist_Interactions(no_factors, prob_large_connection, large_connection_value, small_connection_value, self_regulation_level)
+set_interactions=Normal_Dist_Interactions(no_factors, interaction_mean, interaction_std, self_regulation_level)
+#
+#set_interactions=Binomial_Dist_Interactions(no_factors, prob_large_connection, large_connection_value, small_connection_value, self_regulation_level)
 
 print("Connections")
 
@@ -698,7 +698,7 @@ print(interactions_include)
 
 ##add in the set interaction strengths
 
-set_interactions[0,1]=a01
+#set_interactions[0,1]=a01
 
 set_interactions[3,2]=a32
 
@@ -798,6 +798,14 @@ print("det_delta0_calc = ", det_delta0_calc)
 x0_sol=det_delta0_calc/det_A_calc
 
 print("x0 = ", x0_sol)
+
+x0_calc1=A**3+a01*(A**2+a*(a32+A))
+
+x0_calc2=A**4-a01*a32*a**2
+
+x0_calc=R*(x0_calc1/x0_calc2)
+
+print("x0_calc = ", x0_calc)
 
 ##and substitute it
 

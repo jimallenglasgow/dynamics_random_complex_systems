@@ -1,6 +1,6 @@
 ##location: cd Github/dynamics_random_complex_systems
 
-##to run: python3 PA_interventions_example.py
+##to run: python3 PA_interventions_example_2.py
 
 ########################################################
 
@@ -32,11 +32,11 @@ from scipy.integrate import solve_ivp
 
 def Calc_x_dot(x):
 
-        growth_rate=full_inputs[0:no_factors]
+        a_vector=full_inputs[0:no_factors]
 
-        growth_to_max_rate=full_inputs[no_factors:2*no_factors]
+        k_vector=full_inputs[no_factors:2*no_factors]
 
-        max_resources=full_inputs[2*no_factors:3*no_factors]
+        sigma_vector=full_inputs[2*no_factors:3*no_factors]
 
         no_full_inputs=len(full_inputs)
 
@@ -48,19 +48,15 @@ def Calc_x_dot(x):
         
         for sel_ind in np.arange(no_factors):
 
-                x_growth=1#x[sel_ind]*growth_rate[sel_ind]*(1-x[sel_ind])
-
-                #x_logistic_growth=growth_to_max_rate[sel_ind]*max_resources[sel_ind]#-x[sel_ind]
-                
-                x_logistic_growth=max_resources[sel_ind]#-x[sel_ind]
+                x_self=(a_vector[sel_ind]*x[sel_ind])/(sigma_vector[sel_ind]+x[sel_ind])-k_vector[sel_ind]*x[sel_ind]
 
                 for sel_other_ind in np.arange(no_factors):
 		
                         #x_logistic_growth=x_logistic_growth+interactions[sel_other_ind, sel_ind]*x[sel_other_ind]
                         
-                        x_logistic_growth=x_logistic_growth+interactions[sel_ind, sel_other_ind]*x[sel_other_ind]
+                        x_other=(interactions[sel_ind, sel_other_ind]*sigma_vector[sel_ind])/(sigma_vector[sel_ind]+x[sel_other_ind])
 			
-                x_dot[sel_ind]=x_growth*x_logistic_growth
+                x_dot[sel_ind]=x_self*x_other
                 
 #        for sel_ind in np.arange(no_factors):
             
@@ -250,11 +246,11 @@ def Single_Model_Run(full_inputs, model_inputs):
 
     ##separate the full input into the actual inputs
 
-    growth_rate=full_inputs[0:no_factors]
+    a_vector=full_inputs[0:no_factors]
 
-    growth_to_max_rate=full_inputs[no_factors:2*no_factors]
+    k_vector=full_inputs[no_factors:2*no_factors]
 
-    max_resources=full_inputs[2*no_factors:3*no_factors]
+    sigma_vector=full_inputs[2*no_factors:3*no_factors]
 
     no_full_inputs=len(full_inputs)
 
@@ -344,7 +340,7 @@ def Single_Model_Run(full_inputs, model_inputs):
 
         #print("kick_sign = ", kick_sign)
 
-        max_resources[sel_intervention_node]=max_resources[sel_intervention_node]+kick_size*kick_sign#np.random.random(2)*2
+        a_vector[sel_intervention_node]=a_vector[sel_intervention_node]+kick_size*kick_sign#np.random.random(2)*2
         
     if kick_type==3:
     
@@ -632,19 +628,6 @@ factor_order=np.random.permutation(np.arange(no_factors))
 
 sel_intervention_node=1#20#np.random.permutation(np.arange(1, no_factors))[0]
 
-##set variables
-
-R=0.5
-
-A=2
-
-self_regulation_level=A
-
-a=1
-
-a01=1
-
-a32=-5
 
 ################################################
 
@@ -668,7 +651,7 @@ if use_emp_network==2:
 
 #        interactions_include=np.array(pd.read_csv("toy_network_no_loop.csv"))#, header=None)
         
-        interactions_include=np.array(pd.read_csv("toy_network.csv"))#, header=None)
+        interactions_include=np.array(pd.read_csv("toy_network_example_2.csv"))#, header=None)
         
         no_factors=len(interactions_include[:,0])
         
@@ -684,23 +667,19 @@ print(interactions_include)
 
 for i in np.arange(no_factors):
 
-    interactions_include[i,i]=3#0
+    interactions_include[i,i]=0
 
 ##generate some random interactions
     
-#set_interactions=Normal_Dist_Interactions(no_factors, interaction_mean, interaction_std, self_regulation_level)
+set_interactions=Normal_Dist_Interactions(no_factors, interaction_mean, interaction_std, self_regulation_level)
 #
-set_interactions=Binomial_Dist_Interactions(no_factors, prob_large_connection, large_connection_value, small_connection_value, self_regulation_level)
+#set_interactions=Binomial_Dist_Interactions(no_factors, prob_large_connection, large_connection_value, small_connection_value, self_regulation_level)
 
 print("Connections")
 
 print(interactions_include)
 
 ##add in the set interaction strengths
-
-#set_interactions[0,1]=a01
-
-set_interactions[3,2]=a32
 
 print("Interaction strength")
 
@@ -717,11 +696,11 @@ x_init0=np.random.random(no_factors)#*0.4
 
 ##set other random inputs
 
-set_growth_rate=np.ones(no_factors)#np.random.random(no_factors)#*(1/no_factors)
+set_a_vector=np.ones(no_factors)#np.random.random(no_factors)#*(1/no_factors)
 
-set_growth_to_max_rate=np.ones(no_factors)#
+set_k_vector=np.ones(no_factors)#
 
-set_max_resources=np.ones(no_factors)*R#np.random.random(no_factors)*2#
+set_sigma_vector=np.ones(no_factors)#np.random.random(no_factors)*2#
 
 #for i in np.arange(no_factors):
 
@@ -734,82 +713,22 @@ full_interactions_long=np.reshape(set_interactions, (1,-1))
 
 set_interactions_long=full_interactions_long[0, :]
 
-print("growth_rate = ", set_growth_rate)
+#print("growth_rate = ", set_growth_rate)
 
-print("growth_to_max_rate = ", set_growth_to_max_rate)
+#print("growth_to_max_rate = ", set_growth_to_max_rate)
 
-print("max_resources = ", set_max_resources)
+#print("max_resources = ", set_max_resources)
 
 print("interactions = ")
 print(set_interactions)
 
 #print("interactions long = ", interactions_long)
 
-full_inputs=np.append(set_growth_rate, set_growth_to_max_rate)
+full_inputs=np.append(set_a_vector, set_k_vector)
 
-full_inputs=np.append(full_inputs, set_max_resources)
+full_inputs=np.append(full_inputs, set_sigma_vector)
 
 full_inputs=np.append(full_inputs, set_interactions_long)
-
-##calculate the equilibrium solution
-
-inv_interactions=np.linalg.inv(set_interactions)
-
-print("Inverse interactions")
-
-print(inv_interactions)
-
-equilibrium_solution=np.matmul(inv_interactions, -set_max_resources)#np.random.random(no_factors)
-
-print("equilibrium_solution")
-
-print(equilibrium_solution)
-
-##calculate the equilibrium solution for x0
-
-det_A=np.linalg.det(set_interactions)
-
-print("det_A = ", det_A)
-
-det_A_calc=set_interactions[0,0]*(set_interactions[1,1]*set_interactions[2,2]*set_interactions[3,3])-set_interactions[0,1]*(set_interactions[1,0]*(set_interactions[2,2]*set_interactions[3,3])+set_interactions[1,3]*(set_interactions[2,0]*set_interactions[3,2]))
-
-det_A_calc=A**4-a01*a32*a**2
-
-print("det_A_calc = ", det_A_calc)
-
-delta0=set_interactions.copy()
-
-delta0[:,0]=-set_max_resources
-
-print("delta0")
-
-print(delta0)
-
-det_delta0=np.linalg.det(delta0)
-
-print("det_delta0 = ", det_delta0)
-
-det_delta0_calc=delta0[0,0]*(delta0[1,1]*(delta0[2,2]*delta0[3,3]))-delta0[0,1]*(delta0[1,0]*(delta0[2,2]*delta0[3,3])+delta0[1,3]*(delta0[2,0]*delta0[3,2]-delta0[2,2]*delta0[3,0]))
-
-det_delta0_calc=R*(A**3+a01*(A**2+a*(a32+A)))
-
-print("det_delta0_calc = ", det_delta0_calc)
-
-x0_sol=det_delta0_calc/det_A_calc
-
-print("x0 = ", x0_sol)
-
-x0_calc1=A**3+a01*(A**2+a*(a32+A))
-
-x0_calc2=A**4-a01*a32*a**2
-
-x0_calc=R*(x0_calc1/x0_calc2)
-
-print("x0_calc = ", x0_calc)
-
-##and substitute it
-
-equilibrium_solution[0]=x0_sol
 
 fig, ax = plt.subplots(nrows=3, ncols=2)
 
@@ -829,9 +748,9 @@ final_values=Single_Model_Run(full_inputs, model_inputs)
 
 ##max intervention
 
-full_inputs=np.append(set_growth_rate, set_growth_to_max_rate)
+full_inputs=np.append(set_a_vector, set_k_vector)
 
-full_inputs=np.append(full_inputs, set_max_resources)
+full_inputs=np.append(full_inputs, set_sigma_vector)
 
 full_inputs=np.append(full_inputs, set_interactions_long)
 
@@ -849,9 +768,9 @@ final_values=Single_Model_Run(full_inputs, model_inputs)
 
 ##interaction intervention
 
-full_inputs=np.append(set_growth_rate, set_growth_to_max_rate)
+full_inputs=np.append(set_a_vector, set_k_vector)
 
-full_inputs=np.append(full_inputs, set_max_resources)
+full_inputs=np.append(full_inputs, set_sigma_vector)
 
 full_inputs=np.append(full_inputs, set_interactions_long)
 
@@ -900,62 +819,6 @@ print("sel intervention node = ", sel_intervention_node)
 #print("sel intervention node = ", sel_intervention_node)
 
 ########
-
-##also include the stationary empirical solution
-
-main_factors_to_plot=[sel_target_node, sel_intervention_node]
-
-for plot_row in np.arange(3):
-
-        for sel_factor in main_factors_to_plot:
-        
-                ax[plot_row, 0].hlines(y=equilibrium_solution[sel_factor], xmin=0, xmax=max_t, color="k", linestyle='--', linewidth=0.7)
-
-all_factors_to_plot=np.arange(no_factors)
-    
-factors_to_plot=np.delete(all_factors_to_plot, main_factors_to_plot)
-
-for plot_row in np.arange(3):
-
-        for sel_factor in factors_to_plot:
-        
-                ax[plot_row, 1].hlines(y=equilibrium_solution[sel_factor], xmin=0, xmax=max_t, color="k", linestyle='--', linewidth=0.7)
-                
-##finally, calculate what the influence of the intervention should be
-
-set_interactions[0, 1]=set_interactions[0, 1]+kick_size
-
-#det_A=np.linalg.det(set_interactions)
-
-det_A=set_interactions[0,0]*(set_interactions[1,1]*set_interactions[2,2]*set_interactions[3,3])-set_interactions[0,1]*(set_interactions[1,0]*(set_interactions[2,2]*set_interactions[3,3])+set_interactions[1,3]*(set_interactions[2,0]*set_interactions[3,2]))
-
-delta0=set_interactions.copy()
-
-delta0[:,0]=-set_max_resources
-
-#print("delta0")
-
-#print(delta0)
-
-#det_delta0=np.linalg.det(delta0)
-
-det_delta0=delta0[0,0]*(delta0[1,1]*(delta0[2,2]*delta0[3,3]))-delta0[0,1]*(delta0[1,0]*(delta0[2,2]*delta0[3,3])+delta0[1,3]*(delta0[2,0]*delta0[3,2]-delta0[2,2]*delta0[3,0]))
-
-x0_sol=det_delta0/det_A
-
-#inv_interactions=np.linalg.inv(set_interactions)
-
-#print("Inverse interactions")
-
-#print(inv_interactions)
-
-#equilibrium_solution=np.matmul(inv_interactions, -set_max_resources)#np.random.random(no_factors)
-
-#print("equilibrium_solution")
-
-#print(equilibrium_solution)
-
-ax[2, 0].hlines(y=x0_sol, xmin=0, xmax=max_t, color="red", linestyle='--', linewidth=0.7)
 
 ##plot and save the results
 

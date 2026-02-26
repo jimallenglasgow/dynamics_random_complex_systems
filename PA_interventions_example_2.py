@@ -49,14 +49,17 @@ def Calc_x_dot(x):
         for sel_ind in np.arange(no_factors):
 
                 x_self=(a_vector[sel_ind]*x[sel_ind])/(sigma_vector[sel_ind]+x[sel_ind])-k_vector[sel_ind]*x[sel_ind]
+                
+                
+                x_other=0
 
                 for sel_other_ind in np.arange(no_factors):
 		
                         #x_logistic_growth=x_logistic_growth+interactions[sel_other_ind, sel_ind]*x[sel_other_ind]
                         
-                        x_other=(interactions[sel_ind, sel_other_ind]*sigma_vector[sel_ind])/(sigma_vector[sel_ind]+x[sel_other_ind])
+                        x_other=x_other+(interactions[sel_ind, sel_other_ind]*sigma_vector[sel_ind])/(sigma_vector[sel_ind]+x[sel_other_ind])
 			
-                x_dot[sel_ind]=x_self*x_other
+                x_dot[sel_ind]=x_self+x_other
                 
 #        for sel_ind in np.arange(no_factors):
             
@@ -322,9 +325,9 @@ def Single_Model_Run(full_inputs, model_inputs):
 
         x_init[sel_intervention_node]=x_init[sel_intervention_node]+kick_size#np.random.random(2)*2
         
-        if x_init[sel_intervention_node]>0.99: ##make sure that the intervention doesn't lift the value above 1
+#        if x_init[sel_intervention_node]>0.99: ##make sure that the intervention doesn't lift the value above 1
         
-                x_init[sel_intervention_node]=0.99
+ #               x_init[sel_intervention_node]=0.99
         
     if kick_type==2:
 

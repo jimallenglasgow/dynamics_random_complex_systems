@@ -210,6 +210,8 @@ def Single_Behaviour_Kick(kick_size, no_factors, no_t, max_t, plot_dynamics=0):
 	
 	return(single_kick_data)
     
+#####################################################################################
+    
 def Single_Model_Run(full_inputs, model_inputs):
 
     plot_output=model_inputs[0]
@@ -491,6 +493,134 @@ def Single_Model_Run(full_inputs, model_inputs):
     
     print("single_kick_data")
     print(single_kick_data)
+
+        #############################################################
+
+        
+    return(final_value)
+    
+    
+    
+#####################################################################################
+    
+def Single_Model_Run_No_Kicks(full_inputs, model_inputs):
+
+    plot_output=model_inputs[0]
+    no_factors=model_inputs[1]
+    no_each_type_of_factor=model_inputs[2]
+    no_t=model_inputs[3]
+    max_t=model_inputs[4]
+    prop_interactions=model_inputs[5]
+    kick_size=model_inputs[6]
+    kick_type=model_inputs[7]
+    sel_target_node=model_inputs[8]
+    sel_intervention_node=model_inputs[9]
+    factor_order=model_inputs[10]
+    plot_row=model_inputs[11]
+
+    #print("Factor order")
+
+    #print(factor_order)
+
+    factor_assignment=np.ones(no_factors)*-1
+
+    des_factors=factor_order[0:no_each_type_of_factor[0]]
+
+    factor_assignment[des_factors]=1
+
+    neutral_factors=factor_order[no_each_type_of_factor[0]:(no_each_type_of_factor[0]+no_each_type_of_factor[1])]
+
+    factor_assignment[neutral_factors]=0
+
+    print("Factor assignment")
+
+    print(factor_assignment)
+
+    #print("full inputs = ", full_inputs)
+
+    ##separate the full input into the actual inputs
+
+    a_vector=full_inputs[0:no_factors]
+
+    k_vector=full_inputs[no_factors:2*no_factors]
+
+    sigma_vector=full_inputs[2*no_factors:3*no_factors]
+
+    no_full_inputs=len(full_inputs)
+
+    interactions_long=full_inputs[3*no_factors:(no_full_inputs+1)]
+
+    interactions=np.reshape(interactions_long, (no_factors, no_factors))
+
+    #print("growth_rate = ", growth_rate)
+
+    #print("growth_to_max_rate = ", growth_to_max_rate)
+
+    #print("max_resources = ", max_resources)
+
+    #print("interactions = ", interactions)
+
+    ###########
+
+    ##run the dynamics
+
+    single_kick_data=[]
+
+    x_init=x_init1#0#np.random.random(no_factors)*0.2#(1/no_factors)
+            
+    full_z=np.reshape(x_init,(no_factors,1))
+
+    full_t=[0]
+
+    print(full_t)
+
+    nudge_behaviour=0
+            
+    t_min=0
+
+    t_max=int(max_t/2)
+
+    t_sol=np.linspace(t_min, t_max, no_t)
+            
+    sol=solve_ivp(Behaviour_Model_ODE, [np.min(t_sol), np.max(t_sol)], x_init, dense_output=True, t_eval=t_sol)
+
+    z=sol.sol(t_sol)
+
+    full_z=np.hstack([full_z,z])
+    
+    print("Factor evolution")
+    
+    print(full_z.T)
+            
+    full_t=np.hstack([full_t,t_sol])
+
+    L=len(z[0,:])
+
+    x_init=z[:,L-1]
+
+    single_kick_data=np.hstack([single_kick_data, x_init[[0, 1]]])
+
+    ##record the value before the kick_size
+
+    before_intervention_value=x_init[0]
+    
+    final_value=x_init
+    
+#    print("Key interaction value = ", set_interactions[20, 0])
+
+    print("before_intervention_value = ", before_intervention_value)
+
+
+    for sel_factor in np.arange(no_factors):
+    
+        ax[sel_factor].plot(full_t, full_z.T[:, sel_factor], linewidth=1, label=f"{sel_factor}")
+        
+        if sel_factor==(no_factors-1):
+            
+            ax[sel_factor].set_xlabel("Time")
+        
+#        ax[0].legend(bbox_to_anchor=(1, -0.1), ncol=no_factors)
+
 
         #############################################################
 
@@ -846,8 +976,41 @@ fig.savefig(f"model_plots/intervention_examples_{save_int}.png")
         
 plt.close()
 
+####################################################################
 
+##plots from many initial conditions
 
+fig, ax = plt.subplots(nrows=no_factors, ncols=1)
+
+full_inputs=np.append(set_a_vector, set_k_vector)
+
+full_inputs=np.append(full_inputs, set_sigma_vector)
+
+full_inputs=np.append(full_inputs, set_interactions_long)
+
+#sel_node=0
+
+#sel_other_node=sel_intervention_node#20
+
+for init_conds in np.arange(109):
+
+        x_init1=np.random.random(no_factors)*2#(1/no_factors)
+
+        model_inputs=[plot_output, no_factors, no_each_type_of_factor, no_t, max_t, prop_interactions, kick_size, kick_type, sel_target_node, sel_intervention_node, factor_order, plot_row]
+
+        final_values=Single_Model_Run_No_Kicks(full_inputs, model_inputs)
+
+##plot and save the results
+
+plt.show()
+
+np.random.seed(int(time.time()))
+
+save_int=np.random.randint(low=100, high=999)
+        
+fig.savefig(f"model_plots/many_initial_conditions_{save_int}.png")
+        
+plt.close()
 
 
 

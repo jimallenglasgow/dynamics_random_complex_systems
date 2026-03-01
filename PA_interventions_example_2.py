@@ -836,7 +836,7 @@ print(set_interactions)
 
 ##initialise general starting values
 
-x_init0=np.random.random(no_factors)*2#0.01#*0.4
+x_init0=np.random.random(no_factors)*2-1#0.01#*0.4
 
 ##set other random inputs
 
@@ -994,7 +994,7 @@ full_inputs=np.append(full_inputs, set_interactions_long)
 
 for init_conds in np.arange(109):
 
-        x_init1=np.random.random(no_factors)*2#(1/no_factors)
+        x_init1=np.random.random(no_factors)*2-1#(1/no_factors)
 
         model_inputs=[plot_output, no_factors, no_each_type_of_factor, no_t, max_t, prop_interactions, kick_size, kick_type, sel_target_node, sel_intervention_node, factor_order, plot_row]
 

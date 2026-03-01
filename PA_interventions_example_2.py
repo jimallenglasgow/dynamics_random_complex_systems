@@ -795,7 +795,7 @@ if use_emp_network==2:
 
 #        interactions_include=np.array(pd.read_csv("toy_network_no_loop.csv"))#, header=None)
         
-        interactions_include=np.array(pd.read_csv("toy_network_example_2_n_2.csv"))#, header=None)
+        interactions_include=np.array(pd.read_csv("toy_network_example_2_n_4.csv"))#, header=None)
         
         no_factors=len(interactions_include[:,0])
         
@@ -836,15 +836,15 @@ print(set_interactions)
 
 ##initialise general starting values
 
-x_init0=np.random.random(no_factors)*2#*0.4
+x_init0=np.random.random(no_factors)*2#0.01#*0.4
 
 ##set other random inputs
 
-set_a_vector=np.ones(no_factors)*a#np.random.random(no_factors)#*(1/no_factors)
+set_a_vector=np.random.normal(a, 0.1, size=no_factors)#np.ones(no_factors)*a#np.random.random(no_factors)#*(1/no_factors)
 
-set_k_vector=np.ones(no_factors)*k#
+set_k_vector=np.random.normal(k, 0.1, size=no_factors)#np.ones(no_factors)*k#
 
-set_sigma_vector=np.ones(no_factors)*sigma#np.random.random(no_factors)*2#
+set_sigma_vector=np.random.normal(sigma, 0.1, size=no_factors)#np.ones(no_factors)*sigma#np.random.random(no_factors)*2#
 
 #for i in np.arange(no_factors):
 
@@ -1004,9 +1004,9 @@ for init_conds in np.arange(109):
 
 plt.show()
 
-np.random.seed(int(time.time()))
+#np.random.seed(int(time.time()))
 
-save_int=np.random.randint(low=100, high=999)
+#save_int=np.random.randint(low=100, high=999)
         
 fig.savefig(f"model_plots/many_initial_conditions_{save_int}.png")
         

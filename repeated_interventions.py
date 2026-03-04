@@ -243,9 +243,9 @@ def Single_Model_Run(full_inputs, model_inputs):
 
     factor_assignment[neutral_factors]=0
 
-    print("Factor assignment")
+#    print("Factor assignment")
 
-    print(factor_assignment)
+ #   print(factor_assignment)
 
     #print("full inputs = ", full_inputs)
 
@@ -317,7 +317,7 @@ def Single_Model_Run(full_inputs, model_inputs):
     
 #    print("Key interaction value = ", set_interactions[20, 0])
 
-    print("before_intervention_value = ", before_intervention_value)
+  #  print("before_intervention_value = ", before_intervention_value)
 
     ######
 
@@ -385,9 +385,9 @@ def Single_Model_Run(full_inputs, model_inputs):
         
         possible_intervention_points=all_possible_intervention_points[all_possible_intervention_points>2*no_factors]
 
-        print("Poss intervention points")
+   #     print("Poss intervention points")
 
-        print(possible_intervention_points)
+    #    print(possible_intervention_points)
 
         sel_intervention_point=np.random.permutation(possible_intervention_points)[0]
 
@@ -425,11 +425,11 @@ def Single_Model_Run(full_inputs, model_inputs):
 
         last_value=x_init[0]
 
-        print("last_value = ", last_value)
+     #   print("last_value = ", last_value)
 
         intervention_effect=last_value-before_intervention_value
 
-        print("intervention_effect = ", intervention_effect)
+#        print("intervention_effect = ", intervention_effect)
 
         single_kick_data=np.hstack([single_kick_data, x_init[[0, 1]]])
         
@@ -495,8 +495,8 @@ def Single_Model_Run(full_inputs, model_inputs):
 
                 ax[plot_row, 1].plot(full_t, full_z.T[:, sel_factor], linewidth=set_line_width, linestyle=set_line_type, label=f"{sel_factor}")
             
-    print("single_kick_data")
-    print(single_kick_data)
+    #print("single_kick_data")
+    #print(single_kick_data)
 
     #############################################################
 
@@ -616,7 +616,7 @@ prop_interactions=0.5
 
 interaction_mean=1
 
-interaction_std=0.1#/no_factors ##standard deviation of the strength of the interactions
+interaction_std=2#/no_factors ##standard deviation of the strength of the interactions
 
 kick_size=2#/no_factors
 
@@ -691,37 +691,8 @@ print(interactions_include)
 for i in np.arange(no_factors):
 
     interactions_include[i,i]=3#0
-
-##generate some random interactions
     
-#set_interactions=Normal_Dist_Interactions(no_factors, interaction_mean, interaction_std, self_regulation_level)
-#
-set_interactions=Binomial_Dist_Interactions(no_factors, prob_large_connection, large_connection_value, small_connection_value, self_regulation_level)
-
-print("Connections")
-
-print(interactions_include)
-
-##add in the set interaction strengths
-
-#set_interactions[0,1]=a01
-
-set_interactions[3,2]=a32
-
-print("Interaction strength")
-
-print(set_interactions)
-
-    
-##also, set the interaction between 1 and 0 to be 0.5 (always positive, and somewhere in the middle)
-
-#interactions[1, 0]=0.5
-
-##initialise general starting values
-
-x_init0=np.random.random(no_factors)#*0.4
-
-##set other random inputs
+##set other inputs
 
 set_growth_rate=np.ones(no_factors)#np.random.random(no_factors)#*(1/no_factors)
 
@@ -729,75 +700,167 @@ set_growth_to_max_rate=np.ones(no_factors)#
 
 set_max_resources=np.ones(no_factors)*R#np.random.random(no_factors)*2#
 
-#for i in np.arange(no_factors):
-
- #       set_max_resources[i]=abs(set_interactions[i, i])
-        
-        
-##and put all inputs into own long vector
-
-full_interactions_long=np.reshape(set_interactions, (1,-1))
-
-set_interactions_long=full_interactions_long[0, :]
-
 print("growth_rate = ", set_growth_rate)
 
 print("growth_to_max_rate = ", set_growth_to_max_rate)
 
 print("max_resources = ", set_max_resources)
 
-print("interactions = ")
-print(set_interactions)
-
-#print("interactions long = ", interactions_long)
-
-full_inputs=np.append(set_growth_rate, set_growth_to_max_rate)
-
-full_inputs=np.append(full_inputs, set_max_resources)
-
-full_inputs=np.append(full_inputs, set_interactions_long)
-
 kick_type=3 ##1=value, 2=max, 3=interaction, 4=structure, 5=random
 
 sel_target_node=0#20
 
-#sel_node=0
 
-#sel_other_node=sel_intervention_node#20
+#set_interactions=Binomial_Dist_Interactions(no_factors, prob_large_connection, large_connection_value, small_connection_value, self_regulation_level)
 
-model_inputs=[plot_output, no_factors, no_each_type_of_factor, no_t, max_t, prop_interactions, kick_size, kick_type, sel_target_node, sel_intervention_node, factor_order, plot_row]
+#print("Connections")
 
-final_values=Single_Model_Run(full_inputs, model_inputs)
+#print(interactions_include)
 
-print("Final values")
+##add in the set interaction strengths
 
-print(final_values)
+#set_interactions[0,1]=a01
 
+#set_interactions[3,2]=a32
 
+#print("Interaction strength")
 
+#print(set_interactions)
 
+    
+##also, set the interaction between 1 and 0 to be 0.5 (always positive, and somewhere in the middle)
 
+#interactions[1, 0]=0.5
 
+###################################
 
+##run many intervention tests
 
+no_intervention_tests=100
 
+all_intervention_data=np.zeros([no_intervention_tests, 2])
 
+for i in np.arange(no_intervention_tests):
 
+    ##initialise general starting values
 
+    x_init0=np.random.random(no_factors)#*0.4
+    
+    ##generate some random interactions
+    
+    set_interactions=Normal_Dist_Interactions(no_factors, interaction_mean, interaction_std, self_regulation_level)
 
+    ##and put all inputs into own long vector
 
+    full_interactions_long=np.reshape(set_interactions, (1,-1))
 
+    set_interactions_long=full_interactions_long[0, :]
 
+    print("interactions = ")
+    print(set_interactions)
 
+    #print("interactions long = ", interactions_long)
 
+    full_inputs=np.append(set_growth_rate, set_growth_to_max_rate)
 
+    full_inputs=np.append(full_inputs, set_max_resources)
 
+    full_inputs=np.append(full_inputs, set_interactions_long)
 
+    #sel_node=0
 
+    #sel_other_node=sel_intervention_node#20
 
+    model_inputs=[plot_output, no_factors, no_each_type_of_factor, no_t, max_t, prop_interactions, kick_size, kick_type, sel_target_node, sel_intervention_node, factor_order, plot_row]
 
+    final_values=Single_Model_Run(full_inputs, model_inputs)
 
+    #print("Final values")
 
+    #print(final_values)
+
+    ##find the values at a particular time
+
+    sel_t=10
+
+    times=final_values[0, :]
+
+    #print("Times")
+
+    #print(times)
+
+    diff_from_set_time=abs(times-sel_t)
+
+    #print("diff_from_set_time")
+
+    #print(diff_from_set_time)
+
+    ##where is the closest time?
+
+    closest_time_id=np.argmin(diff_from_set_time)
+
+    #print("closest_time_id = ", closest_time_id)
+
+    closest_time=times[closest_time_id]
+
+    #print("closest_time = ",closest_time)
+
+    value_before_intervention=final_values[sel_target_node+1, closest_time_id-1]
+
+    intervention_node_value=final_values[sel_intervention_node+1, closest_time_id-1]
+
+    #print("value_before_intervention = ", value_before_intervention)
+
+    sel_t=30
+
+    times=final_values[0, :]
+
+    #print("Times")
+
+    #print(times)
+
+    diff_from_set_time=abs(times-sel_t)
+
+    #print("diff_from_set_time")
+
+    #print(diff_from_set_time)
+
+    closest_time_id=np.argmin(diff_from_set_time)
+
+    value_after_intervention=final_values[sel_target_node+1, closest_time_id-1]
+
+    #print("value_after_intervention = ", value_after_intervention)
+
+    intervention_effect=value_after_intervention-value_before_intervention
+
+#    print("intervention_node_value = ", np.round(intervention_node_value,2), ", intervention_effect = ", np.round(intervention_effect,2))
+
+    all_intervention_data[i, 0]=np.round(intervention_effect,2)
+    all_intervention_data[i, 1]=np.round(intervention_node_value,2)
+
+print("all_intervention_data")
+
+print(all_intervention_data)
+
+fig, ax = plt.subplots(1, 1)
+
+ax.hist(all_intervention_data[:, 0], bins=no_intervention_tests)
+
+plt.show()
+
+plt.close()
+
+##and then only plot the ones within +/-3
+
+selected_int_data=all_intervention_data[abs(all_intervention_data[:, 0])<3, :]
+
+fig, ax = plt.subplots(1, 1)
+
+ax.hist(selected_int_data[:, 0], bins=int(no_intervention_tests/2))
+
+plt.show()
+
+plt.close()
 
 
 

@@ -737,7 +737,7 @@ prop_interactions=0.5
 
 interaction_mean=1
 
-interaction_std=0.01#/no_factors ##standard deviation of the strength of the interactions
+interaction_std=0.1#/no_factors ##standard deviation of the strength of the interactions
 
 kick_size=2#/no_factors
 
@@ -763,13 +763,13 @@ sel_intervention_node=1#20#np.random.permutation(np.arange(1, no_factors))[0]
 
 a=1
 
-k=1.1
+k=0.4#1.1
 
 b=0.2
 
 sigma=0.5
 
-n=4
+n=2
 
 interaction_mean=b
 
@@ -795,7 +795,7 @@ if use_emp_network==2:
 
 #        interactions_include=np.array(pd.read_csv("toy_network_no_loop.csv"))#, header=None)
         
-        interactions_include=np.array(pd.read_csv("toy_network_example_2_n_4.csv"))#, header=None)
+        interactions_include=np.array(pd.read_csv("toy_network_example_2_n_2.csv"))#, header=None)
         
         no_factors=len(interactions_include[:,0])
         
@@ -836,13 +836,15 @@ print(set_interactions)
 
 ##initialise general starting values
 
-x_init0=np.random.random(no_factors)*2-1#0.01#*0.4
+x_init0=np.random.random(no_factors)*2#0.01#*0.4
 
 ##set other random inputs
 
 set_a_vector=np.random.normal(a, 0.1, size=no_factors)#np.ones(no_factors)*a#np.random.random(no_factors)#*(1/no_factors)
 
 set_k_vector=np.random.normal(k, 0.1, size=no_factors)#np.ones(no_factors)*k#
+
+#set_k_vector[1]=0.3
 
 set_sigma_vector=np.random.normal(sigma, 0.1, size=no_factors)#np.ones(no_factors)*sigma#np.random.random(no_factors)*2#
 
@@ -994,7 +996,7 @@ full_inputs=np.append(full_inputs, set_interactions_long)
 
 for init_conds in np.arange(109):
 
-        x_init1=np.random.random(no_factors)*2-1#(1/no_factors)
+        x_init1=np.random.random(no_factors)*2#(1/no_factors)
 
         model_inputs=[plot_output, no_factors, no_each_type_of_factor, no_t, max_t, prop_interactions, kick_size, kick_type, sel_target_node, sel_intervention_node, factor_order, plot_row]
 

@@ -281,11 +281,11 @@ def Single_Model_Run(full_inputs, model_inputs):
             
     full_z=np.reshape(x_init,(no_factors,1))
 
-    print(full_z)
+#   print(full_z)
 
     full_t=[0]
 
-    print(full_t)
+#    print(full_t)
 
     nudge_behaviour=0
             
@@ -614,7 +614,7 @@ max_t=30
 
 prop_interactions=0.5
 
-interaction_mean=1
+interaction_mean=2
 
 interaction_std=2#/no_factors ##standard deviation of the strength of the interactions
 
@@ -706,7 +706,7 @@ print("growth_to_max_rate = ", set_growth_to_max_rate)
 
 print("max_resources = ", set_max_resources)
 
-kick_type=3 ##1=value, 2=max, 3=interaction, 4=structure, 5=random
+kick_type=2 ##1=value, 2=max, 3=interaction, 4=structure, 5=random
 
 sel_target_node=0#20
 
@@ -736,11 +736,13 @@ sel_target_node=0#20
 
 ##run many intervention tests
 
-no_intervention_tests=100
+no_intervention_tests=1000
 
 all_intervention_data=np.zeros([no_intervention_tests, 2])
 
 for i in np.arange(no_intervention_tests):
+    
+    print("Intervention = ", i)
 
     ##initialise general starting values
 
@@ -756,8 +758,8 @@ for i in np.arange(no_intervention_tests):
 
     set_interactions_long=full_interactions_long[0, :]
 
-    print("interactions = ")
-    print(set_interactions)
+#    print("interactions = ")
+ #   print(set_interactions)
 
     #print("interactions long = ", interactions_long)
 
@@ -862,8 +864,19 @@ plt.show()
 
 plt.close()
 
+##now separate them based on the sign of the intervention node
 
+negative_int_node_intervention_effects=selected_int_data[selected_int_data[:, 1]<0, 0]
+positive_int_node_intervention_effects=selected_int_data[selected_int_data[:, 1]>=0, 0]
 
+fig, ax = plt.subplots(2, 1)
+
+ax[0].hist(negative_int_node_intervention_effects, bins=int(len(negative_int_node_intervention_effects)/2))
+ax[1].hist(positive_int_node_intervention_effects, bins=int(len(positive_int_node_intervention_effects)/2))
+
+plt.show()
+
+plt.close()
 
 
 

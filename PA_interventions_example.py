@@ -636,7 +636,7 @@ sel_intervention_node=1#20#np.random.permutation(np.arange(1, no_factors))[0]
 
 R=0.5
 
-A=2
+A=5
 
 self_regulation_level=A
 
@@ -644,7 +644,7 @@ a=1
 
 a01=1
 
-a32=-20
+a32=-70
 
 ################################################
 
@@ -668,7 +668,9 @@ if use_emp_network==2:
 
 #        interactions_include=np.array(pd.read_csv("toy_network_no_loop.csv"))#, header=None)
         
-        interactions_include=np.array(pd.read_csv("toy_network.csv"))#, header=None)
+#        interactions_include=np.array(pd.read_csv("toy_network.csv"))#, header=None)
+
+        interactions_include=np.array(pd.read_csv("toy_network_2.csv"))#, header=None)
         
         no_factors=len(interactions_include[:,0])
         

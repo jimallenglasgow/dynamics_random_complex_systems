@@ -30,6 +30,28 @@ from scipy.integrate import solve_ivp
 
 ##dyadic behaviour model
 
+##define the functions
+
+def F_linear(x):
+    
+    y=x
+    
+    return(y)
+    
+def G_linear(x):
+    
+    y=x
+    
+    return(y)
+    
+def G_squared(x):
+    
+    y=x**2
+    
+    return(y)
+    
+
+
 def Calc_x_dot(x):
 
         growth_rate=full_inputs[0:no_factors]
@@ -48,7 +70,7 @@ def Calc_x_dot(x):
         
         for sel_ind in np.arange(no_factors):
 
-                x_growth=1#x[sel_ind]*growth_rate[sel_ind]*(1-x[sel_ind])
+                x_growth=x[sel_ind]#*growth_rate[sel_ind]*(1-x[sel_ind])
 
                 #x_logistic_growth=growth_to_max_rate[sel_ind]*max_resources[sel_ind]#-x[sel_ind]
                 
@@ -58,7 +80,7 @@ def Calc_x_dot(x):
 		
                         #x_logistic_growth=x_logistic_growth+interactions[sel_other_ind, sel_ind]*x[sel_other_ind]
                         
-                        x_logistic_growth=x_logistic_growth+interactions[sel_ind, sel_other_ind]*x[sel_other_ind]
+                        x_logistic_growth=x_logistic_growth+interactions[sel_ind, sel_other_ind]*G_squared(x[sel_other_ind])
 			
                 x_dot[sel_ind]=x_growth*x_logistic_growth
                 
@@ -636,7 +658,7 @@ sel_intervention_node=1#20#np.random.permutation(np.arange(1, no_factors))[0]
 
 R=0.5
 
-A=5
+A=2
 
 self_regulation_level=A
 
@@ -644,7 +666,7 @@ a=1
 
 a01=1
 
-a32=-70
+a32=-2
 
 ################################################
 
@@ -668,9 +690,9 @@ if use_emp_network==2:
 
 #        interactions_include=np.array(pd.read_csv("toy_network_no_loop.csv"))#, header=None)
         
-#        interactions_include=np.array(pd.read_csv("toy_network.csv"))#, header=None)
+        interactions_include=np.array(pd.read_csv("toy_network.csv"))#, header=None)
 
-        interactions_include=np.array(pd.read_csv("toy_network_2.csv"))#, header=None)
+#        interactions_include=np.array(pd.read_csv("toy_network_2.csv"))#, header=None)
         
         no_factors=len(interactions_include[:,0])
         
@@ -911,7 +933,7 @@ for plot_row in np.arange(3):
 
         for sel_factor in main_factors_to_plot:
         
-                ax[plot_row, 0].hlines(y=equilibrium_solution[sel_factor], xmin=0, xmax=max_t, color="k", linestyle='--', linewidth=0.7)
+                ax[plot_row, 0].hlines(y=np.sqrt(equilibrium_solution[sel_factor]), xmin=0, xmax=max_t, color="k", linestyle='--', linewidth=0.7)
 
 all_factors_to_plot=np.arange(no_factors)
     
@@ -921,7 +943,7 @@ for plot_row in np.arange(3):
 
         for sel_factor in factors_to_plot:
         
-                ax[plot_row, 1].hlines(y=equilibrium_solution[sel_factor], xmin=0, xmax=max_t, color="k", linestyle='--', linewidth=0.7)
+                ax[plot_row, 1].hlines(y=np.sqrt(equilibrium_solution[sel_factor]), xmin=0, xmax=max_t, color="k", linestyle='--', linewidth=0.7)
                 
 ##finally, calculate what the influence of the intervention should be
 
@@ -957,7 +979,7 @@ x0_sol=det_delta0/det_A
 
 #print(equilibrium_solution)
 
-ax[2, 0].hlines(y=x0_sol, xmin=0, xmax=max_t, color="red", linestyle='--', linewidth=0.7)
+ax[2, 0].hlines(y=np.sqrt(x0_sol), xmin=0, xmax=max_t, color="red", linestyle='--', linewidth=0.7)
 
 ##plot and save the results
 

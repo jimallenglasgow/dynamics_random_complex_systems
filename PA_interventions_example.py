@@ -80,7 +80,7 @@ def Calc_x_dot(x):
 		
                         #x_logistic_growth=x_logistic_growth+interactions[sel_other_ind, sel_ind]*x[sel_other_ind]
                         
-                        x_logistic_growth=x_logistic_growth+interactions[sel_ind, sel_other_ind]*G_squared(x[sel_other_ind])
+                        x_logistic_growth=x_logistic_growth+interactions[sel_ind, sel_other_ind]*G_linear(x[sel_other_ind])
 			
                 x_dot[sel_ind]=x_growth*x_logistic_growth
                 
@@ -644,7 +644,7 @@ large_connection_value=1
 
 small_connection_value=0.8
 
-self_regulation_level=2
+self_regulation_level=1.5
 
 ##decide which nodes are desirable and undesirable
 
@@ -656,9 +656,9 @@ sel_intervention_node=1#20#np.random.permutation(np.arange(1, no_factors))[0]
 
 ##set variables
 
-R=0.5
+R=1
 
-A=2
+A=1.5
 
 self_regulation_level=A
 
@@ -690,9 +690,11 @@ if use_emp_network==2:
 
 #        interactions_include=np.array(pd.read_csv("toy_network_no_loop.csv"))#, header=None)
         
-        interactions_include=np.array(pd.read_csv("toy_network.csv"))#, header=None)
+#        interactions_include=np.array(pd.read_csv("toy_network.csv"))#, header=None)
 
 #        interactions_include=np.array(pd.read_csv("toy_network_2.csv"))#, header=None)
+
+        interactions_include=np.array(pd.read_csv("toy_network_3.csv"))#, header=None)
         
         no_factors=len(interactions_include[:,0])
         
@@ -712,9 +714,9 @@ for i in np.arange(no_factors):
 
 ##generate some random interactions
     
-#set_interactions=Normal_Dist_Interactions(no_factors, interaction_mean, interaction_std, self_regulation_level)
+set_interactions=Normal_Dist_Interactions(no_factors, interaction_mean, interaction_std, self_regulation_level)
 #
-set_interactions=Binomial_Dist_Interactions(no_factors, prob_large_connection, large_connection_value, small_connection_value, self_regulation_level)
+#set_interactions=Binomial_Dist_Interactions(no_factors, prob_large_connection, large_connection_value, small_connection_value, self_regulation_level)
 
 print("Connections")
 
@@ -724,7 +726,7 @@ print(interactions_include)
 
 #set_interactions[0,1]=a01
 
-set_interactions[3,2]=a32
+#set_interactions[3,2]=a32
 
 print("Interaction strength")
 
@@ -745,7 +747,7 @@ set_growth_rate=np.ones(no_factors)#np.random.random(no_factors)#*(1/no_factors)
 
 set_growth_to_max_rate=np.ones(no_factors)#
 
-set_max_resources=np.ones(no_factors)*R#np.random.random(no_factors)*2#
+set_max_resources=np.random.random(no_factors)*R#np.ones(no_factors)*R#
 
 #for i in np.arange(no_factors):
 
@@ -795,7 +797,7 @@ det_A=np.linalg.det(set_interactions)
 
 print("det_A = ", det_A)
 
-det_A_calc=set_interactions[0,0]*(set_interactions[1,1]*set_interactions[2,2]*set_interactions[3,3])-set_interactions[0,1]*(set_interactions[1,0]*(set_interactions[2,2]*set_interactions[3,3])+set_interactions[1,3]*(set_interactions[2,0]*set_interactions[3,2]))
+det_A_calc=1#set_interactions[0,0]*(set_interactions[1,1]*set_interactions[2,2]*set_interactions[3,3])-set_interactions[0,1]*(set_interactions[1,0]*(set_interactions[2,2]*set_interactions[3,3])+set_interactions[1,3]*(set_interactions[2,0]*set_interactions[3,2]))
 
 det_A_calc=A**4-a01*a32*a**2
 
@@ -813,7 +815,7 @@ det_delta0=np.linalg.det(delta0)
 
 print("det_delta0 = ", det_delta0)
 
-det_delta0_calc=delta0[0,0]*(delta0[1,1]*(delta0[2,2]*delta0[3,3]))-delta0[0,1]*(delta0[1,0]*(delta0[2,2]*delta0[3,3])+delta0[1,3]*(delta0[2,0]*delta0[3,2]-delta0[2,2]*delta0[3,0]))
+det_delta0_calc=1#delta0[0,0]*(delta0[1,1]*(delta0[2,2]*delta0[3,3]))-delta0[0,1]*(delta0[1,0]*(delta0[2,2]*delta0[3,3])+delta0[1,3]*(delta0[2,0]*delta0[3,2]-delta0[2,2]*delta0[3,0]))
 
 det_delta0_calc=R*(A**3+a01*(A**2+a*(a32+A)))
 
@@ -951,7 +953,7 @@ set_interactions[0, 1]=set_interactions[0, 1]+kick_size
 
 #det_A=np.linalg.det(set_interactions)
 
-det_A=set_interactions[0,0]*(set_interactions[1,1]*set_interactions[2,2]*set_interactions[3,3])-set_interactions[0,1]*(set_interactions[1,0]*(set_interactions[2,2]*set_interactions[3,3])+set_interactions[1,3]*(set_interactions[2,0]*set_interactions[3,2]))
+det_A=1#set_interactions[0,0]*(set_interactions[1,1]*set_interactions[2,2]*set_interactions[3,3])-set_interactions[0,1]*(set_interactions[1,0]*(set_interactions[2,2]*set_interactions[3,3])+set_interactions[1,3]*(set_interactions[2,0]*set_interactions[3,2]))
 
 delta0=set_interactions.copy()
 
@@ -963,7 +965,7 @@ delta0[:,0]=-set_max_resources
 
 #det_delta0=np.linalg.det(delta0)
 
-det_delta0=delta0[0,0]*(delta0[1,1]*(delta0[2,2]*delta0[3,3]))-delta0[0,1]*(delta0[1,0]*(delta0[2,2]*delta0[3,3])+delta0[1,3]*(delta0[2,0]*delta0[3,2]-delta0[2,2]*delta0[3,0]))
+det_delta0=1#delta0[0,0]*(delta0[1,1]*(delta0[2,2]*delta0[3,3]))-delta0[0,1]*(delta0[1,0]*(delta0[2,2]*delta0[3,3])+delta0[1,3]*(delta0[2,0]*delta0[3,2]-delta0[2,2]*delta0[3,0]))
 
 x0_sol=det_delta0/det_A
 

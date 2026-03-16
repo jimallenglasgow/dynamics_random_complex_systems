@@ -48,7 +48,7 @@ def Calc_x_dot(x):
         
         for sel_ind in np.arange(no_factors):
 
-                x_growth=1#x[sel_ind]*growth_rate[sel_ind]*(1-x[sel_ind])
+                x_growth=x[sel_ind]#1#*growth_rate[sel_ind]*(1-x[sel_ind])
 
                 #x_logistic_growth=growth_to_max_rate[sel_ind]*max_resources[sel_ind]#-x[sel_ind]
                 
@@ -706,7 +706,7 @@ print("growth_to_max_rate = ", set_growth_to_max_rate)
 
 print("max_resources = ", set_max_resources)
 
-kick_type=2 ##1=value, 2=max, 3=interaction, 4=structure, 5=random
+kick_type=3 ##1=value, 2=max, 3=interaction, 4=structure, 5=random
 
 sel_target_node=0#20
 
@@ -738,7 +738,7 @@ sel_target_node=0#20
 
 no_intervention_tests=1000
 
-all_intervention_data=np.zeros([no_intervention_tests, 2])
+all_intervention_data=np.zeros([no_intervention_tests, 3])
 
 for i in np.arange(no_intervention_tests):
     
@@ -810,6 +810,8 @@ for i in np.arange(no_intervention_tests):
     value_before_intervention=final_values[sel_target_node+1, closest_time_id-1]
 
     intervention_node_value=final_values[sel_intervention_node+1, closest_time_id-1]
+    
+    target_node_value=final_values[sel_target_node+1, closest_time_id-1]
 
     #print("value_before_intervention = ", value_before_intervention)
 
@@ -839,46 +841,65 @@ for i in np.arange(no_intervention_tests):
 
     all_intervention_data[i, 0]=np.round(intervention_effect,2)
     all_intervention_data[i, 1]=np.round(intervention_node_value,2)
+    all_intervention_data[i, 2]=np.round(target_node_value,2)
 
 print("all_intervention_data")
 
 print(all_intervention_data)
 
-fig, ax = plt.subplots(1, 1)
+#fig, ax = plt.subplots(1, 1)
 
-ax.hist(all_intervention_data[:, 0], bins=no_intervention_tests)
+#ax.hist(all_intervention_data[:, 0], bins=no_intervention_tests)
 
-plt.show()
+#plt.show()
 
-plt.close()
+#plt.close()
 
 ##and then only plot the ones within +/-3
 
-selected_int_data=all_intervention_data[abs(all_intervention_data[:, 0])<3, :]
+#selected_int_data=all_intervention_data[abs(all_intervention_data[:, 0])<3, :]
 
-fig, ax = plt.subplots(1, 1)
+#fig, ax = plt.subplots(1, 1)
 
-ax.hist(selected_int_data[:, 0], bins=int(no_intervention_tests/2))
+#ax.hist(selected_int_data[:, 0], bins=int(no_intervention_tests/2))
 
-plt.show()
+#plt.show()
 
-plt.close()
+#plt.close()
 
 ##now separate them based on the sign of the intervention node
 
-negative_int_node_intervention_effects=selected_int_data[selected_int_data[:, 1]<0, 0]
-positive_int_node_intervention_effects=selected_int_data[selected_int_data[:, 1]>=0, 0]
+#negative_int_node_intervention_effects=selected_int_data[selected_int_data[:, 1]<0, 0]
+#positive_int_node_intervention_effects=selected_int_data[selected_int_data[:, 1]>=0, 0]
 
-fig, ax = plt.subplots(2, 1)
+#fig, ax = plt.subplots(2, 1)
 
-ax[0].hist(negative_int_node_intervention_effects, bins=int(len(negative_int_node_intervention_effects)/2))
-ax[1].hist(positive_int_node_intervention_effects, bins=int(len(positive_int_node_intervention_effects)/2))
+#ax[0].hist(negative_int_node_intervention_effects, bins=int(len(negative_int_node_intervention_effects)/2))
+#ax[1].hist(positive_int_node_intervention_effects, bins=int(len(positive_int_node_intervention_effects)/2))
+
+#plt.show()
+
+#plt.close()
+
+##and plot the intervention effects with the correlation between the target and the intervention node
+
+selected_int_data=all_intervention_data[abs(all_intervention_data[:, 0])<3, :]
+
+fig, ax = plt.subplots(1, 2)
+
+ax[0].hist(selected_int_data[:, 0], bins=int((len(selected_int_data[:, 0]))/2))
+
+ax[1].scatter(selected_int_data[:, 1], selected_int_data[:, 2])
 
 plt.show()
 
+np.random.seed(int(time.time()))
+
+save_int=np.random.randint(low=100, high=999)
+        
+fig.savefig(f"model_plots/repeated_intervention_effects_{save_int}.png")
+
 plt.close()
-
-
 
 
 

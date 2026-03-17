@@ -632,7 +632,7 @@ prop_interactions=0.5
 
 interaction_mean=1
 
-interaction_std=0.1#/no_factors ##standard deviation of the strength of the interactions
+interaction_std=0.5#/no_factors ##standard deviation of the strength of the interactions
 
 kick_size=2#/no_factors
 
@@ -658,7 +658,7 @@ sel_intervention_node=1#20#np.random.permutation(np.arange(1, no_factors))[0]
 
 R=1
 
-A=1.5
+A=2
 
 self_regulation_level=A
 
@@ -835,7 +835,7 @@ print("x0_calc = ", x0_calc)
 
 ##and substitute it
 
-equilibrium_solution[0]=x0_sol
+#equilibrium_solution[0]=x0_sol
 
 fig, ax = plt.subplots(nrows=3, ncols=2)
 
@@ -935,7 +935,7 @@ for plot_row in np.arange(3):
 
         for sel_factor in main_factors_to_plot:
         
-                ax[plot_row, 0].hlines(y=np.sqrt(equilibrium_solution[sel_factor]), xmin=0, xmax=max_t, color="k", linestyle='--', linewidth=0.7)
+                ax[plot_row, 0].hlines(y=equilibrium_solution[sel_factor], xmin=0, xmax=max_t, color="k", linestyle='--', linewidth=0.7)
 
 all_factors_to_plot=np.arange(no_factors)
     
@@ -945,7 +945,7 @@ for plot_row in np.arange(3):
 
         for sel_factor in factors_to_plot:
         
-                ax[plot_row, 1].hlines(y=np.sqrt(equilibrium_solution[sel_factor]), xmin=0, xmax=max_t, color="k", linestyle='--', linewidth=0.7)
+                ax[plot_row, 1].hlines(y=equilibrium_solution[sel_factor], xmin=0, xmax=max_t, color="k", linestyle='--', linewidth=0.7)
                 
 ##finally, calculate what the influence of the intervention should be
 

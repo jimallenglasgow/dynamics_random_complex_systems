@@ -1185,7 +1185,7 @@ plt.close()
 
 kick_type=3 ##1=value, 2=max, 3=interaction, 4=structure, 5=random
 
-no_repeats=100
+no_repeats=1000
 
 all_intervention_data=np.zeros([no_repeats, 3])
 
@@ -1206,7 +1206,11 @@ for sel_rep in np.arange(no_repeats):
 
         set_interactions=np.zeros([no_factors, no_factors])
 
-        int_values=sp.stats.truncnorm.rvs(0, 1, size=no_factors*no_factors)
+#        int_values=sp.stats.truncnorm.rvs(0, 3, size=no_factors*no_factors)
+
+        int_values=np.random.normal(0, 3, size=no_factors*no_factors)
+
+        print("int_values = ", int_values)
 
         set_interactions[0, 0]=-int_values[0]
         set_interactions[1, 1]=int_values[1]
@@ -1246,11 +1250,46 @@ scatter=ax.scatter(all_intervention_data[:, 1], all_intervention_data[:, 2], c=a
 
 ax.legend(*scatter.legend_elements())
 
+ax.set_xlabel("Target node")
+
+ax.set_ylabel("Intervention node")
+
 plt.show()
 
 np.random.seed(int(time.time()))
 
 save_int=np.random.randint(low=100, high=999)
+        
+fig.savefig(f"model_plots/full_2x2_int_values_{save_int}.png")
+        
+plt.close()
+
+
+##now only plot those within a reasonable range
+
+all_intervention_data[all_intervention_data>20]=np.nan
+
+print("all_intervention_data")
+
+print(all_intervention_data)
+
+fig, ax = plt.subplots(nrows=1, ncols=1)
+
+#ax.set_xlim([0, 20])
+
+#ax.set_ylim([0, 20])
+
+scatter=ax.scatter(all_intervention_data[:, 1], all_intervention_data[:, 2], c=all_intervention_data[:, 0])
+
+ax.legend(*scatter.legend_elements())
+
+ax.set_xlabel("Target node")
+
+ax.set_ylabel("Intervention node")
+
+
+
+plt.show()
         
 fig.savefig(f"model_plots/2x2_int_values_{save_int}.png")
         

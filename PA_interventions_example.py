@@ -70,7 +70,7 @@ def Calc_x_dot(x):
         
         for sel_ind in np.arange(no_factors):
 
-                x_growth=x[sel_ind]#*growth_rate[sel_ind]*(1-x[sel_ind])
+                x_growth=1#x[sel_ind]#*growth_rate[sel_ind]*(1-x[sel_ind])
 
                 #x_logistic_growth=growth_to_max_rate[sel_ind]*max_resources[sel_ind]#-x[sel_ind]
                 
@@ -656,7 +656,7 @@ sel_intervention_node=1#20#np.random.permutation(np.arange(1, no_factors))[0]
 
 ##set variables
 
-R=1
+R=3
 
 A=2
 
@@ -694,7 +694,9 @@ if use_emp_network==2:
 
 #        interactions_include=np.array(pd.read_csv("toy_network_2.csv"))#, header=None)
 
-        interactions_include=np.array(pd.read_csv("toy_network_3.csv"))#, header=None)
+#        interactions_include=np.array(pd.read_csv("toy_network_3.csv"))#, header=None)
+        
+        interactions_include=np.zeros([2, 2])
         
         no_factors=len(interactions_include[:,0])
         
@@ -717,6 +719,14 @@ for i in np.arange(no_factors):
 set_interactions=Normal_Dist_Interactions(no_factors, interaction_mean, interaction_std, self_regulation_level)
 #
 #set_interactions=Binomial_Dist_Interactions(no_factors, prob_large_connection, large_connection_value, small_connection_value, self_regulation_level)
+
+set_interactions=np.zeros([2, 2])
+
+set_interactions[0, 0]=-1.5
+set_interactions[1, 1]=1
+
+set_interactions[0, 1]=2
+set_interactions[1, 0]=-1.1
 
 print("Connections")
 

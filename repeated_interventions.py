@@ -44,6 +44,18 @@ def Calc_x_dot(x):
 
         interactions=np.reshape(interactions_long, (no_factors, no_factors))
         
+        r_jog=np.random.random()
+        
+        if r_jog<0.3:
+            
+            sel_factor=np.random.permutation(no_factors)[0]
+            
+            x[sel_factor]=x[sel_factor]+0.2
+            
+            if x[sel_factor]<0:
+                    
+                    x[sel_factor]=0.01
+        
         x_dot=np.zeros(no_factors)
         
         for sel_ind in np.arange(no_factors):
@@ -74,9 +86,13 @@ def Calc_x_dot(x):
 
 def Behaviour_Model_ODE(t, x):#, alpha, beta, gamma, delta, epsilon):
 
-	x_dot=Calc_x_dot(x)
-	
-	return(x_dot)
+    x_dot=Calc_x_dot(x)
+
+#    L=len(x_dot)
+
+ #   x_dot=x_dot+np.random.normal(0, 0.2, L)
+
+    return(x_dot)
 	
 ############################
 	
@@ -588,7 +604,7 @@ def Binomial_Dist_Interactions(no_factors, prob_large_connection, large_connecti
                     
                 if sel_interaction_type==3:
                     
-                    sel_interaction=-self_regulation_level#(abs(np.random.normal(0, 1))-self_regulation_level)
+                    sel_interaction=-self_regulation_level+np.random.normal(0, 0.1)#(abs(np.random.normal(0, 1))-self_regulation_level)
                     
                 set_interactions[i, j]=sel_interaction
                 
@@ -614,9 +630,9 @@ max_t=30
 
 prop_interactions=0.5
 
-interaction_mean=2
+interaction_mean=1
 
-interaction_std=2#/no_factors ##standard deviation of the strength of the interactions
+interaction_std=0.5#/no_factors ##standard deviation of the strength of the interactions
 
 kick_size=2#/no_factors
 
@@ -640,9 +656,9 @@ sel_intervention_node=1#20#np.random.permutation(np.arange(1, no_factors))[0]
 
 ##set variables
 
-R=0.5
+R=1
 
-A=2
+A=3
 
 self_regulation_level=A
 
@@ -674,7 +690,9 @@ if use_emp_network==2:
 
 #        interactions_include=np.array(pd.read_csv("toy_network_no_loop.csv"))#, header=None)
         
-        interactions_include=np.array(pd.read_csv("toy_network.csv"))#, header=None)
+#        interactions_include=np.array(pd.read_csv("toy_network.csv"))#, header=None)
+        
+        interactions_include=np.array(pd.read_csv("toy_network_3.csv"))#, header=None)
         
         no_factors=len(interactions_include[:,0])
         
@@ -736,7 +754,7 @@ sel_target_node=0#20
 
 ##run many intervention tests
 
-no_intervention_tests=1000
+no_intervention_tests=200
 
 all_intervention_data=np.zeros([no_intervention_tests, 3])
 
@@ -887,9 +905,13 @@ selected_int_data=all_intervention_data[abs(all_intervention_data[:, 0])<3, :]
 
 fig, ax = plt.subplots(1, 2)
 
-ax[0].hist(selected_int_data[:, 0], bins=int((len(selected_int_data[:, 0]))/2))
+ax[0].hist(selected_int_data[:, 0], bins=int((len(selected_int_data[:, 0]))/10))
 
 ax[1].scatter(selected_int_data[:, 1], selected_int_data[:, 2])
+
+x1x0_corr=np.corrcoef(selected_int_data[:, 1], selected_int_data[:, 2])
+
+ax[1].set_title(f"Correlation = {np.round(x1x0_corr[0, 1], 2)}")
 
 plt.show()
 

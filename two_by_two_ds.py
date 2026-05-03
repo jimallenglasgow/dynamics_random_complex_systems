@@ -48,7 +48,7 @@ def Calc_x_dot(x):
         
         for sel_ind in np.arange(no_factors):
 
-                x_growth=x[sel_ind]#1#*growth_rate[sel_ind]*(1-x[sel_ind])
+                x_growth=x[sel_ind]*(1-x[sel_ind])#1#*growth_rate[sel_ind]*(1-x[sel_ind])
 
                 #x_logistic_growth=growth_to_max_rate[sel_ind]*max_resources[sel_ind]#-x[sel_ind]
                 
@@ -859,7 +859,7 @@ interaction_mean=1
 
 interaction_std=0.5#/no_factors ##standard deviation of the strength of the interactions
 
-kick_size=2#/no_factors
+kick_size=0.2#/no_factors
 
 ##parameters for the binomial set
 
@@ -1185,7 +1185,7 @@ plt.close()
 
 kick_type=3 ##1=value, 2=max, 3=interaction, 4=structure, 5=random
 
-no_repeats=1000
+no_repeats=2000
 
 all_intervention_data=np.zeros([no_repeats, 3])
 
@@ -1295,8 +1295,17 @@ fig.savefig(f"model_plots/2x2_int_values_{save_int}.png")
         
 plt.close()
 
+##and plot just based on the value of the target node
 
+fig, ax = plt.subplots(nrows=1, ncols=1)
 
+ax.scatter(all_intervention_data[:, 1], all_intervention_data[:, 0])
+
+plt.show()
+        
+fig.savefig(f"model_plots/2x2_int_values_target_node_value_{save_int}.png")
+        
+plt.close()
 
 
 

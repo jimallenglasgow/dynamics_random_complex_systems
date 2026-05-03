@@ -1307,6 +1307,18 @@ fig.savefig(f"model_plots/2x2_int_values_target_node_value_{save_int}.png")
         
 plt.close()
 
+##and the intervention node
+
+fig, ax = plt.subplots(nrows=1, ncols=1)
+
+ax.scatter(all_intervention_data[:, 2], all_intervention_data[:, 0])
+
+plt.show()
+        
+fig.savefig(f"model_plots/2x2_int_values_intervention_node_value_{save_int}.png")
+        
+plt.close()
+
 
 
 

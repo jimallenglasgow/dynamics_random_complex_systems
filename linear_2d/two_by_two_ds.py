@@ -36,7 +36,7 @@ def Calc_x_dot(x):
         
         for sel_ind in np.arange(no_factors):
 
-                x_growth=1#x[sel_ind]*(1-x[sel_ind])#*growth_rate[sel_ind]*(1-x[sel_ind])
+                x_growth=x[sel_ind]*(max_x-x[sel_ind])#*growth_rate[sel_ind]*(1-x[sel_ind])
 
                 #x_logistic_growth=growth_to_max_rate[sel_ind]*max_resources[sel_ind]#-x[sel_ind]
                 
@@ -863,13 +863,13 @@ def Calc_Equilibrium_Point(set_interactions, set_max_resources, max_x):
 
     x0_sol=det_delta0/det_A
     
- #   if x0_sol>max_x:
-  #      
-   #     x0_sol=max_x
+    if x0_sol>max_x:
         
-    #if x0_sol<0:
+        x0_sol=max_x
         
-     #   x0_sol=0
+    if x0_sol<0:
+        
+        x0_sol=0
         
     return(x0_sol)
 
@@ -877,11 +877,11 @@ def Calc_Equilibrium_Point(set_interactions, set_max_resources, max_x):
 
 ##set variables
 
-R=1
+R=0.5
 
 no_factors=2
 
-max_x=1
+max_x=2
 
 max_t=40
 
@@ -889,27 +889,31 @@ no_t=1000
 
 set_interactions=np.zeros([2, 2])
 
-c=np.random.random()*4-2
+c=3.5*(np.random.random()*2-1)#-2.7
 
 print("c = ", c)
 
-set_interactions[0, 0]=-1
-set_interactions[0, 1]=1#np.random.random()*4-2
+a=3.5*(np.random.random()*2-1)#-3
+b=3.5*(np.random.random()*2-1)#4
+d=3.5*(np.random.random()*2-1)#2
+
+set_interactions[0, 0]=a
+set_interactions[0, 1]=b#np.random.random()*4-2
 
 set_interactions[1, 0]=c
-set_interactions[1, 1]=-1
+set_interactions[1, 1]=d
 
 print("set_interactions")
 
 print(set_interactions)
 
-set_max_resources=np.ones(2)
+set_max_resources=np.random.random(2)*2#np.ones(2)*R
 
 print("set_max_resources")
 
 print(set_max_resources)
 
-x_init=np.random.random(2)#*max_x
+x_init=np.random.random(2)*max_x
 
 #print(x_init)
 
